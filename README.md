@@ -194,3 +194,22 @@ The production environment is hosted on a combination of cloud services:
 ## 📜 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
+
+## 🙏 Acknowledgments
+
+A project of this scale would not be possible without the incredible open-source software and services that power it. We would like to extend our gratitude to the following:
+
+* **Key Technologies:**
+    * [Node.js](https://nodejs.org/) - For the core backend runtime environment.
+    * [Python](https://www.python.org/) - For powering our machine learning services.
+    * [Docker](https://www.docker.com/) - For containerizing our application for consistent deployment.
+    * [MySQL](https://www.mysql.com/) & [MongoDB](https://www.mongodb.com/) - For our data storage needs.
+
+* **APIs & Services:**
+    * [InsightFace](https://github.com/deepinsight/insightface) - For the powerful `buffalo_l` facial recognition model.
+    * [Google Cloud](https://cloud.google.com/) - For reliable and scalable object storage.
+    * [Linode](https://www.linode.com/), [Aiven](https://aiven.io/), and [MongoDB Atlas](https://www.mongodb.com/atlas) - For providing the infrastructure that hosts our live application.
+
+* **Authors & Contributors:**
+    * **Saikat-dot678** - *Project Lead & Developer*
