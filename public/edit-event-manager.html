@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Edit Event Manager - SOHOJIA FOUNDATION</title>
+<style>
+    /* Global Reset & Body */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    html {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Consistent font */
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333;
+    }
+    body {
+        background: #f0f2f5; /* Consistent background */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+        background: rgb(243,79,76); /* Consistent brand color */
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 {
+        color: #fff;
+        font-size: 1.5rem; /* Consistent font size */
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    /* Page Header / Sub-heading */
+    .page-header {
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 1.5rem; /* Space below header */
+    }
+    .page-header h2 {
+        font-size: 1.25rem; /* Consistent font size */
+        color: #555;
+        font-weight: normal;
+    }
+
+    /* Main Content Area */
+    main {
+        flex: 1;
+        padding: 1rem;
+        width: 100%;
+        max-width: 800px; /* Increased max-width for forms with many fields */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center form container */
+    }
+
+    /* Card Styling (for form container) */
+    .card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%; /* Ensure it takes full width within max-width */
+        max-width: 650px; /* Adjusted max-width for the form card itself */
+    }
+
+    /* Form Container */
+    .form-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: rgb(243, 79, 76);
+        text-align: center;
+        font-weight: 600;
+    }
+
+    /* Form Row for potential two-column layout */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap; /* Allow items to wrap to next line */
+        gap: 1rem; /* Space between columns */
+        margin-bottom: 0.5rem; /* Space below rows */
+    }
+    .form-group {
+        flex: 1; /* Allow form groups to grow */
+        min-width: 250px; /* Minimum width for each column */
+        display: flex;
+        flex-direction: column; /* Stack label and input */
+    }
+
+    /* Input/Select/Textarea general styling */
+    label {
+        display: block;
+        margin-bottom: 0.4rem; /* Space between label and input */
+        font-weight: 500;
+        color: #444;
+        font-size: 0.95rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"], /* Added password type here */
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.8rem; /* Increased padding */
+        border: 1px solid #ccc;
+        border-radius: 6px; /* Slightly more rounded corners */
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: rgb(243, 79, 76);
+        box-shadow: 0 0 0 3px rgba(243, 79, 76, 0.2); /* Subtle focus glow */
+    }
+    textarea {
+        resize: vertical; /* Allow vertical resizing */
+    }
+
+    /* Specific styles for current password verification */
+    .password-verify-section {
+        border-top: 1px solid #eee; /* Light line above */
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem; /* Space below this section */
+    }
+    .password-verify-section label {
+        font-weight: bold; /* Make this label more prominent */
+        color: rgb(243, 79, 76); /* Highlight color */
+    }
+
+    /* File Input Styling */
+    .file-input {
+        padding: 0.75rem; /* Adjust padding for file input */
+        background-color: #f9f9f9; /* Light background for file input */
+        border: 1px dashed #ccc; /* Dashed border for file input */
+        color: #555;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .file-input:hover {
+        background-color: #eaeaea;
+    }
+
+    /* Submit Button (consistent styling) */
+    .button-submit {
+        display: block;
+        width: 100%;
+        margin-top: 2rem; /* More space above button */
+        padding: 0.9rem 1.2rem;
+        background: rgb(243, 79, 76);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+        font-weight: 500;
+    }
+    .button-submit:hover {
+        background: #c73c39;
+        transform: translateY(-2px);
+    }
+    .button-submit:active {
+        transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+        background: #333;
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #aaa;
+        margin-top: auto;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        main {
+            padding: 0.75rem;
+        }
+        .card {
+            padding: 1rem;
+            max-width: 100%; /* Allow card to fill width on smaller screens */
+        }
+        .form-container h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .form-row {
+            flex-direction: column; /* Stack columns vertically on smaller screens */
+            gap: 0; /* Remove gap when stacked */
+        }
+        .form-group {
+            min-width: unset; /* Remove min-width constraint */
+            width: 100%; /* Take full width */
+            margin-bottom: 0.8rem; /* Add space between stacked groups */
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            margin-top: 0.8rem; /* Adjusted for mobile */
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            padding: 0.7rem;
+            font-size: 0.9rem;
+        }
+        .file-input {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        .button-submit {
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+        }
+        .password-verify-section {
+            padding-top: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* --- PHONE (≤480px) SPECIFIC OVERRIDES --- */
+    @media (max-width: 480px) {
+    /* Force every row into a single column */
+    .form-row {
+        display: flex;
+        flex-direction: column !important;
+        gap: 0;
+        margin-bottom: 1rem;
+    }
+    /* Make each group fill the width and add vertical spacing */
+    .form-group {
+        width: 100% !important;
+        min-width: unset;
+        margin-bottom: 1rem;
+    }
+    /* Labels a bit larger and spaced for tappability */
+    label {
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+    /* Inputs full width and more padding for touch */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+        width: 100% !important;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    /* File input full width too */
+    .file-input {
+        width: 100% !important;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    /* Bump the submit button down a bit */
+    .button-submit {
+        margin-top: 2rem;
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+    }
+
+</style>
+</head>
+<body>
+<header>
+    <h1>SOHOJIA FOUNDATION</h1>
+</header>
+<div class="page-header">
+    <h2>Edit Event Manager Details</h2>
+</div>
+<main>
+    <section class="form-container card">     <h3>Edit Profile</h3>
+    <form action="/event-manager-dashboard/{{ manager.manager_id }}/edit-details" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="manager_id" value="{{ manager.manager_id }}">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ manager.name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ manager.email }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" value="{{ manager.phone }}">
+            </div>
+            <div class="form-group">
+                <label for="alt_phone">Alternative Phone:</label>
+                <input type="text" id="alt_phone" name="alt_phone" value="{{ manager.alt_phone }}">
+            </div>
+        </div>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="4">{{ manager.address }}</textarea>
+
+        <label for="aadhar_number">Aadhar Number:</label>
+        <input type="text" id="aadhar_number" name="aadhar_number" value="{{ manager.aadhar_number }}" maxlength="12">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="education">Education:</label>
+                <input type="text" id="education" name="education" value="{{ manager.education }}">
+            </div>
+            <div class="form-group">
+                <label for="reimbursement">Reimbursement:</label>
+                <input type="number" id="reimbursement" name="reimbursement" value="{{ manager.reimbursement }}" step="0.01">
+            </div>
+        </div>
+
+        <label for="education_description">Education Description:</label>
+        <textarea id="education_description" name="education_description" rows="3">{{ manager.education_description }}</textarea>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bank_acc_no">Bank Account Number:</label>
+                <input type="text" id="bank_acc_no" name="bank_acc_no" value="{{ manager.bank_acc_no }}">
+            </div>
+            <div class="form-group">
+                <label for="bank_ifsc">Bank IFSC:</label>
+                <input type="text" id="bank_ifsc" name="bank_ifsc" value="{{ manager.bank_ifsc }}">
+            </div>
+        </div>
+
+        <label for="photo">Photo</label>
+        <input type="file" id="photo" name="photo" accept="image/*" class="file-input" required>
+
+        <div class="password-verify-section">
+            <label for="current_password">Verify with Current Password to Confirm Changes:</label>
+            <input
+                type="password"
+                id="current_password"
+                name="current_password"
+                placeholder="Enter your current password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="button-submit">Update Details</button>     </form>
+    </section>
+</main>
+<footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+
+</body>
+</html>

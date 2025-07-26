@@ -1,0 +1,261 @@
+<!-- public/Volunteer-edit.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <title>Edit Volunteer Details – SOHOJIA FOUNDATION</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+    body {
+      background: #f3f3f3;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: rgb(243, 79, 76);
+      padding: 1rem;
+      text-align: center;
+    }
+    header h1 {
+      color: #fff;
+      font-size: 1.25rem;
+      text-transform: uppercase;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    label {
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      color: #333;
+    }
+    input,
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+      background: #fff;
+    }
+    .file-input {
+      padding: 0.5rem;
+    }
+    button {
+      background: rgb(243, 79, 76);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #c73c39;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .back-link a {
+      font-size: 0.875rem;
+      color: #555;
+      text-decoration: none;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      input,
+      button {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+      }
+      header h1 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Edit Volunteer Details</h1>
+    </header>
+
+    <form
+      id="edit-form"
+      action="/edit-volunteer/{{ volunteer.volunteer_id }}"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <!-- Volunteer ID (read-only, but not editable) -->
+      <label for="volunteer_id">Volunteer ID</label>
+      <input
+        type="text"
+        id="volunteer_id"
+        name="volunteer_id"
+        value="{{ volunteer.volunteer_id }}"
+        readonly
+      />
+
+      <!-- Current Password (required for verification) -->
+      <label for="current_password">Current Password</label>
+      <input
+        type="password"
+        id="current_password"
+        name="current_password"
+        placeholder="Enter your current password"
+        required
+      />
+
+      <!-- Name -->
+      <label for="name">Full Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="{{ volunteer.name }}"
+        placeholder="Enter your full name"
+      />
+
+      <!-- Email -->
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value="{{ volunteer.email }}"
+        placeholder="Enter your email"
+      />
+
+      <!-- Phone -->
+      <label for="phone">Phone</label>
+      <input
+        type="text"
+        id="phone"
+        name="phone"
+        value="{{ volunteer.phone }}"
+        placeholder="Enter your phone number"
+      />
+
+      <!-- Alternative Phone -->
+      <label for="alt_phone">Alternative Phone</label>
+      <input
+        type="text"
+        id="alt_phone"
+        name="alt_phone"
+        value="{{ volunteer.alt_phone }}"
+        placeholder="Enter alternative phone number"
+      />
+
+      <!-- Address -->
+      <label for="address">Address</label>
+      <input
+        type="text"
+        id="address"
+        name="address"
+        value="{{ volunteer.address }}"
+        placeholder="Enter your address"
+      />
+
+      <!-- Education -->
+      <label for="education">Education</label>
+      <input
+        type="text"
+        id="education"
+        name="education"
+        value="{{ volunteer.education }}"
+        placeholder="e.g., B.Tech Computer Science"
+      />
+
+      <!-- Education Description -->
+      <label for="education_description">Education Description</label>
+      <input
+        type="text"
+        id="education_description"
+        name="education_description"
+        value="{{ volunteer.education_description }}"
+        placeholder="Brief description of your education"
+      />
+
+      <!-- Salary -->
+      <label for="salary">Reimbursement (₹)</label>
+      <input
+        type="number"
+        step="0.01"
+        id="salary"
+        name="salary"
+        value="{{ volunteer.salary }}"
+        placeholder="Enter your Reimbursement amount"
+      />
+
+      <!-- Bank Account Number -->
+      <label for="bank_acc_no">Bank Account Number</label>
+      <input
+        type="text"
+        id="bank_acc_no"
+        name="bank_acc_no"
+        value="{{ volunteer.bank_acc_no }}"
+        placeholder="Enter account number"
+      />
+
+      <!-- IFSC Code -->
+      <label for="bank_ifsc">IFSC Code</label>
+      <input
+        type="text"
+        id="bank_ifsc"
+        name="bank_ifsc"
+        value="{{ volunteer.bank_ifsc }}"
+        placeholder="Enter IFSC code"
+      />
+
+      <!-- Replace Photo? (optional) -->
+      <label for="photo">Replace Photo (optional)</label>
+      <input
+        type="file"
+        id="photo"
+        name="photo"
+        accept="image/*"
+        class="file-input"
+      />
+
+      <button type="submit">Save Changes</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/volunteer-dashboard/{{ volunteer.volunteer_id }}/dashboard">
+        &larr; Back to Dashboard
+      </a>
+    </div>
+  </div>
+</body>
+</html>

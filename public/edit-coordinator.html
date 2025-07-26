@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Edit Coordinator - SOHOJIA FOUNDATION</title>
+<style>
+    /* Styles are identical to edit-event-manager.html */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333; }
+    body { background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background: rgb(243,79,76); padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    header h1 { color: #fff; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .page-header { padding: 1rem; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); text-align: center; margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.25rem; color: #555; font-weight: normal; }
+    main { flex: 1; padding: 1rem; width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 650px; }
+    .form-container h3 { margin-bottom: 1.5rem; font-size: 1.6rem; color: rgb(243, 79, 76); text-align: center; font-weight: 600; }
+    .form-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem; }
+    .form-group { flex: 1; min-width: 250px; display: flex; flex-direction: column; }
+    label { display: block; margin-bottom: 0.4rem; font-weight: 500; color: #444; font-size: 0.95rem; }
+    input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, select { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: rgb(243, 79, 76); box-shadow: 0 0 0 3px rgba(243, 79, 76, 0.2); }
+    .password-verify-section { border-top: 1px solid #eee; padding-top: 1.5rem; margin-top: 1.5rem; margin-bottom: 1rem; }
+    .password-verify-section label { font-weight: bold; color: rgb(243, 79, 76); }
+    .file-input { padding: 0.75rem; background-color: #f9f9f9; border: 1px dashed #ccc; color: #555; cursor: pointer; }
+    .button-submit { display: block; width: 100%; margin-top: 2rem; padding: 0.9rem 1.2rem; background: rgb(243, 79, 76); color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; font-weight: 500; }
+    footer { background: #333; padding: 1rem; text-align: center; font-size: 0.85rem; color: #aaa; margin-top: auto; }
+</style>
+</head>
+<body>
+<header>
+    <h1>SOHOJIA FOUNDATION</h1>
+</header>
+<div class="page-header">
+    <h2>Edit Coordinator Details</h2>
+</div>
+<main>
+    <section class="form-container card">
+    <h3>Edit Profile</h3>
+    <form action="/coordinator-dashboard/{{ coordinator.coordinator_id }}/edit-details" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="coordinator_id" value="{{ coordinator.coordinator_id }}">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ coordinator.name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ coordinator.email }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" value="{{ coordinator.phone }}">
+            </div>
+            <div class="form-group">
+                <label for="alt_phone">Alternative Phone:</label>
+                <input type="text" id="alt_phone" name="alt_phone" value="{{ coordinator.alt_phone }}">
+            </div>
+        </div>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="4">{{ coordinator.address }}</textarea>
+
+        <label for="aadhar_number">Aadhar Number:</label>
+        <input type="text" id="aadhar_number" name="aadhar_number" value="{{ coordinator.aadhar_number }}" maxlength="12">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="education">Education:</label>
+                <input type="text" id="education" name="education" value="{{ coordinator.education }}">
+            </div>
+            <div class="form-group">
+                <label for="reimbursement">Reimbursement:</label>
+                <input type="number" id="reimbursement" name="reimbursement" value="{{ coordinator.reimbursement }}" step="0.01">
+            </div>
+        </div>
+
+        <label for="education_description">Education Description:</label>
+        <textarea id="education_description" name="education_description" rows="3">{{ coordinator.education_description }}</textarea>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bank_acc_no">Bank Account Number:</label>
+                <input type="text" id="bank_acc_no" name="bank_acc_no" value="{{ coordinator.bank_acc_no }}">
+            </div>
+            <div class="form-group">
+                <label for="bank_ifsc">Bank IFSC:</label>
+                <input type="text" id="bank_ifsc" name="bank_ifsc" value="{{ coordinator.bank_ifsc }}">
+            </div>
+        </div>
+
+        <label for="photo">Update Photo (Optional)</label>
+        <input type="file" id="photo" name="photo" accept="image/*" class="file-input">
+
+        <div class="password-verify-section">
+            <label for="current_password">Verify with Current Password to Confirm Changes:</label>
+            <input
+                type="password"
+                id="current_password"
+                name="current_password"
+                placeholder="Enter your current password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="button-submit">Update Details</button>
+    </form>
+    </section>
+</main>
+<footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+
+</body>
+</html>

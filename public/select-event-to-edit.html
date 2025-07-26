@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Select Event to Edit - SOHOJIA FOUNDATION</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { font-family: Arial, sans-serif; background: #f3f3f3; color: #333; }
+        header { background: rgb(243, 79, 76); padding: 16px; text-align: center; }
+        header h1 { color: #fff; font-size: 20px; text-transform: uppercase; }
+        .dashboard-header { background: #fff; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; }
+        .dashboard-header h2 { font-size: 24px; color: #333; }
+        main { padding: 24px; max-width: 900px; margin: 0 auto; }
+        .event-list { list-style: none; }
+        .event-item { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.3s; }
+        .event-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .event-details h3 { font-size: 20px; color: rgb(243, 79, 76); margin-bottom: 8px; }
+        .event-details p { font-size: 14px; color: #666; }
+        .event-link { background: #ffc107; color: #212529; text-decoration: none; padding: 10px 18px; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
+        .event-link:hover { background: #e0a800; }
+        .no-events { text-align: center; font-size: 18px; color: #777; margin-top: 40px; }
+        footer { background: #fff; padding: 12px; text-align: center; font-size: 12px; color: #777; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <header><h1>SOHOJIA FOUNDATION</h1></header>
+    <div class="dashboard-header"><h2>Select an Event to Edit</h2></div>
+    <main>
+        {% if events and events.length > 0 %}
+            <ul class="event-list">
+                {% for item in events %}
+                    <li class="event-item">
+                        <div class="event-details">
+                            <h3>{{ item.event_type }}</h3>
+                            <p>Date: {{ formatDate(item.date) }}</p>
+                        </div>
+                        <a href="/edit-event/{{ managerId }}/edit/{{ item.collectionType }}/{{ item._id }}" class="event-link">Manage Event</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-events">You have not created any events to manage.</p>
+        {% endif %}
+    </main>
+    <footer>&copy; {{ currentYear }} Sohojia Foundation. All rights reserved.</footer>
+</body>
+</html>

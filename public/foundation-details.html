@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{{ foundation.name }} Details – SOHOJIA FOUNDATION</title>
+  <style>
+    :root {
+      --brand-red: rgb(243, 79, 76);
+      --light-gray: #f3f3f3;
+      --card-bg: #fff;
+      --text-dark: #333;
+      --text-light: #666;
+      --border-color: #ccc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Arial, sans-serif; }
+    body { display: flex; flex-direction: column; background: var(--light-gray); color: var(--text-dark); }
+    header { background: var(--brand-red); padding: 16px; text-align: center; }
+    header h1 { color: var(--card-bg); font-size: 20px; text-transform: uppercase; }
+    .page-header { padding: 16px; background: var(--card-bg); box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; }
+    .page-header h2 { font-size: 22px; color: var(--text-dark); margin-bottom: 4px; }
+    .page-header p { font-size: 14px; color: var(--text-light); }
+    main { flex: 1; padding: 16px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .back-button { display: inline-block; margin-bottom: 16px; padding: 10px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-dark); }
+    .nav-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .nav-card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: var(--text-dark); transition: transform 0.2s, box-shadow 0.2s; }
+    .nav-card:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .nav-card h3 { font-size: 18px; margin-bottom: 8px; color: var(--brand-red); }
+    .nav-card span { font-size: 16px; color: var(--text-light); font-weight: bold; }
+    
+    .section-container { background: var(--card-bg); padding: 24px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-top: 24px; }
+    .section-container h3 { margin-bottom: 20px; font-size: 20px; color: var(--text-dark); border-bottom: 2px solid var(--light-gray); padding-bottom: 10px; }
+    
+    .filter-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; align-items: end; margin-bottom: 24px; }
+    .filter-form label { font-weight: bold; font-size: 14px; margin-bottom: 6px; display: block; }
+    .filter-form input, .filter-form select, .filter-form button { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
+    .filter-form button { background: var(--brand-red); color: white; border: none; cursor: pointer; font-weight: bold; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: center; margin-bottom: 24px; }
+    .stat-item { background-color: var(--light-gray); padding: 16px; border-radius: 6px; }
+    .stat-item .count { font-size: 24px; font-weight: bold; }
+    .stat-item .label { font-size: 14px; color: var(--text-light); }
+    .stat-item .present { color: #28a745; }
+    .stat-item .late { color: #ffc107; }
+    .stat-item .absent { color: #dc3545; }
+
+    .attendance-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    .attendance-table th, .attendance-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+    .attendance-table th { background-color: #f9f9f9; font-size: 14px; }
+    .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; text-transform: capitalize; }
+    .status-present { background-color: #28a745; }
+    .status-late { background-color: #ffc107; }
+    .status-absent { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+  <header><h1>SOHOJIA FOUNDATION</h1></header>
+  <div class="page-header">
+    <h2>{{ foundation.name }}</h2>
+    <p><strong>ID:</strong> {{ foundation.foundation_id }}</p>
+  </div>
+  <main>
+   {% if currentUser.role == 'center-program-director' %}
+      <a href="/director-dashboard/{{ currentUser.id }}/dashboard" class="back-button">&larr; Back to My Dashboard</a>
+    {% elif currentUser.role == 'center-program-coordinator' %}
+      <a href="/coordinator-dashboard/{{ currentUser.id }}/dashboard" class="back-button">&larr; Back to My Dashboard</a>
+    {% else %}
+      <a href="/dashboard" class="back-button">&larr; Back to Admin Dashboard</a>
+    {% endif %}
+    
+    <div class="nav-cards">
+      <a href="/students?foundation_id={{ foundation.foundation_id }}" class="nav-card">
+        <h3>Students</h3>
+        <span>{{ foundation.student_count or 0 }} Students</span>
+      </a>
+      <a href="/volunteers?foundation_id={{ foundation.foundation_id }}" class="nav-card">
+        <h3>Volunteers</h3>
+        <span>{{ foundation.volunteer_count or 0 }} Volunteers</span>
+      </a>
+      <a href="/event-managers?foundation_id={{ foundation.foundation_id }}" class="nav-card">
+        <h3>Event Managers</h3>
+        <span>{{ eventManagers.length }}</span>
+      </a>
+
+      {% if currentUser.role != 'center-program-director' and currentUser.role != 'center-program-coordinator' %}
+      <a href="/directors?foundation_id={{ foundation.foundation_id }}" class="nav-card">
+        <h3>Program Directors</h3>
+        <span>{{ directors.length }}</span>
+      </a>
+      {% endif %}
+
+      {% if currentUser.role != 'center-program-coordinator' %}
+      <a href="/coordinators?foundation_id={{ foundation.foundation_id }}" class="nav-card">
+        <h3>Program Coordinators</h3>
+        <span>{{ coordinators.length }}</span>
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="section-container">
+        <h3>Volunteer Attendance</h3>
+        <form class="filter-form" method="GET">
+            <div>
+                <label for="volunteer_id">Volunteer ID (Optional)</label>
+                <input type="text" id="volunteer_id" name="volunteer_id" placeholder="Leave blank for all" value="{{ filters.volunteer_id }}">
+            </div>
+            <div>
+                <label for="start_date">From Date</label>
+                <input type="date" id="start_date" name="start_date" value="{{ filters.start_date }}">
+            </div>
+            <div>
+                <label for="end_date">To Date</label>
+                <input type="date" id="end_date" name="end_date" value="{{ filters.end_date }}">
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button type="submit">Apply Filter</button>
+            </div>
+        </form>
+
+        {% if filters.volunteer_id and stats %}
+        <div class="stats-bar">
+            <div class="stat-item"><span class="count present">{{ stats.present }}</span><div class="label">Present</div></div>
+            <div class="stat-item"><span class="count late">{{ stats.late }}</span><div class="label">Late</div></div>
+            <div class="stat-item"><span class="count absent">{{ stats.absent }}</span><div class="label">Absent</div></div>
+        </div>
+        {% endif %}
+
+        <h3>Volunteer Summary</h3>
+        <div style="overflow-x: auto;">
+             <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Volunteer ID</th>
+                        <th>Name</th>
+                        <th>Present</th>
+                        <th>Late</th>
+                        <th>Absent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in summary %}
+                    <tr>
+                        <td>{{ item.volunteer_id }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.stats.present }}</td>
+                        <td>{{ item.stats.late }}</td>
+                        <td>{{ item.stats.absent }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">No volunteer data to summarize.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Detailed Logs</h3>
+        <div style="overflow-x: auto;">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Volunteer ID</th>
+                        <th>Date</th>
+                        <th>Shift</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.volunteer_id }}</td>
+                        <td>{{ log.session_date }}</td>
+                        <td>{{ log.shift }}</td>
+                        <td><span class="status-badge status-{{ log.status }}">{{ log.status }}</span></td>
+                        <td>{{ log.timestamp.toLocaleString('en-IN') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">No attendance logs found for the selected criteria.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="section-container">
+        <h3>Student Attendance Logs</h3>
+        <form class="filter-form" method="GET">
+            <div>
+                <label for="start_date">From Date</label>
+                <input type="date" id="start_date" name="start_date" value="{{ filters.start_date }}">
+            </div>
+            <div>
+                <label for="end_date">To Date</label>
+                <input type="date" id="end_date" name="end_date" value="{{ filters.end_date }}">
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button type="submit">Filter Logs</button>
+            </div>
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Shift</th>
+                        <th>Class</th>
+                        <th>Total Present</th>
+                        <th>Boys Present</th>
+                        <th>Girls Present</th>
+                        <th>Absent</th>
+                        <th>Logged By (Manager ID)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in studentAttendanceLogs %}
+                    <tr>
+                        <td>{{ log.date }}</td>
+                        <td>{{ log.shift }}</td>
+                        <td>{{ log.class }}</td>
+                        <td>{{ log.total_students_present }}</td>
+                        <td>{{ log.boys_present }}</td>
+                        <td>{{ log.girls_present }}</td>
+                        <td>{{ log.students_absent }}</td>
+                        <td>{{ log.manager_id }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px;">No student attendance logs found for the selected criteria.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+  </main>
+</body>
+</html>

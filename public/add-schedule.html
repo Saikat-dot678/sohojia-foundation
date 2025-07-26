@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Volunteer Schedule - Sohojia Foundation</title>
+    <style>
+      :root {
+        --brand-red: rgb(243, 79, 76);
+        --light-gray: #f9f9f9;
+        --dark-text: #333;
+        --border-color: #ccc;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--light-gray); color: var(--dark-text); }
+      body { display: flex; flex-direction: column; }
+      header { background: var(--brand-red); padding: 16px; text-align: center; }
+      header h1 { color: #fff; font-size: 22px; text-transform: uppercase; }
+      .dashboard-header { background: #fff; padding: 16px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); text-align: center; }
+      .dashboard-header h2 { font-size: 26px; color: var(--dark-text); }
+      main { flex: 1; padding: 20px; }
+      .form-container { background: #fff; padding: 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); max-width: 700px; margin: 0 auto; }
+      .form-container h3 { margin-bottom: 20px; font-size: 20px; color: var(--brand-red); text-align: center; }
+      form label { display: block; margin-bottom: 6px; font-weight: 600; }
+      form input, form select, form textarea { width: 100%; padding: 10px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 6px; background: #fff; font-size: 14px; }
+      button[type="submit"] { background: var(--brand-red); color: #fff; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; display: block; width: 100%; margin-top: 10px; }
+      
+      .day-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; }
+      .day-selector label { display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 4px; transition: background-color 0.2s; font-weight: normal; }
+      .day-selector input[type="checkbox"] { margin-right: 8px; width: 1.1em; height: 1.1em; }
+      .day-selector label:hover { background-color: #f0f0f0; }
+
+      .seasonal-fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-top: 20px; }
+      .seasonal-fieldset legend { font-weight: bold; color: var(--brand-red); padding: 0 10px; }
+      .seasonal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .back-button { display: inline-block; margin-bottom: 16px; padding: 10px 20px; background: var(--card-bg); border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: var(--text-dark); }
+      @media (max-width: 600px) {
+        .form-container { padding: 16px; }
+        .seasonal-row { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 768px){
+        .back-button {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+        font-size: 16px;
+    }
+    }
+    </style>
+  </head>
+  <body>
+    <header><h1>SOHOJIA FOUNDATION</h1></header>
+    <div class="dashboard-header"><h2>Add Volunteer Schedule</h2></div>
+    <main>
+      <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
+      <section class="form-container">
+        <form id="scheduleForm" action="/addition/api/add-schedule" method="POST">
+          <!-- ... other form fields ... -->
+          <label for="volunteer_id">Volunteer ID:</label>
+          <input type="number" name="volunteer_id" required />
+          <label>Day(s) of Week:</label>
+          <div class="day-selector">
+            <label><input type="checkbox" name="day_of_week" value="Monday"> Monday</label>
+            <label><input type="checkbox" name="day_of_week" value="Tuesday"> Tuesday</label>
+            <label><input type="checkbox" name="day_of_week" value="Wednesday"> Wednesday</label>
+            <label><input type="checkbox" name="day_of_week" value="Thursday"> Thursday</label>
+            <label><input type="checkbox" name="day_of_week" value="Friday"> Friday</label>
+            <label><input type="checkbox" name="day_of_week" value="Saturday"> Saturday</label>
+            <label><input type="checkbox" name="day_of_week" value="Sunday"> Sunday</label>
+          </div>
+          <label for="shift">Shift:</label>
+          <select name="shift" required>
+            <option value="">Select Shift</option>
+            <option>Morning</option>
+            <option>Afternoon</option>
+            <option>Evening</option>
+          </select>
+          <label for="subject">Subject(s) (comma-separated):</label>
+          <input type="text" name="subject" placeholder="e.g., Math, Science, English" />
+          <label for="class_standard">Class Standard:</label>
+          <input type="text" name="class_standard" />
+          <label for="latitude">Latitude:</label>
+          <input type="text" name="latitude" required />
+          <label for="longitude">Longitude:</label>
+          <input type="text" name="longitude" required />
+          <label for="role">Role:</label>
+          <input type="text" name="role" value="teacher" required />
+
+          <fieldset class="seasonal-fieldset">
+            <legend>Seasonal Timings (Optional)</legend>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Use MM-DD format for dates. This schedule will repeat annually.</p>
+            
+            <h4>Summer Schedule</h4>
+            <div class="seasonal-row">
+              <div>
+                <label for="summer_start_date">Summer Start Date:</label>
+                <input type="text" name="summer_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+              </div>
+              <div>
+                <label for="summer_end_date">Summer End Date:</label>
+                <input type="text" name="summer_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+              </div>
+            </div>
+            <div class="seasonal-row">
+              <div>
+                <label for="summer_start_time">Summer Start Time:</label>
+                <input type="time" name="summer_start_time" />
+              </div>
+              <div>
+                <label for="summer_end_time">Summer End Time:</label>
+                <input type="time" name="summer_end_time" />
+              </div>
+            </div>
+
+            <h4 style="margin-top: 20px;">Winter Schedule</h4>
+            <div class="seasonal-row">
+              <div>
+                <label for="winter_start_date">Winter Start Date:</label>
+                <input type="text" name="winter_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+              </div>
+              <div>
+                <label for="winter_end_date">Winter End Date:</label>
+                <input type="text" name="winter_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+              </div>
+            </div>
+            <div class="seasonal-row">
+              <div>
+                <label for="winter_start_time">Winter Start Time:</label>
+                <input type="time" name="winter_start_time" />
+              </div>
+              <div>
+                <label for="winter_end_time">Winter End Time:</label>
+                <input type="time" name="winter_end_time" />
+              </div>
+            </div>
+          </fieldset>
+
+          <button type="submit">Submit Schedule</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

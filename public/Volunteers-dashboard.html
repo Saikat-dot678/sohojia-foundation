@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Volunteer Dashboard – SOHOJIA FOUNDATION</title>
+  <meta name="theme-color" content="#f34f4c">
+  <link rel="apple-touch-icon" href="logo.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Arial, sans-serif; }
+    body { display: flex; flex-direction: column; background: #f3f3f3; color: #333; }
+    header { background: rgb(243,79,76); padding: 16px; text-align: center; }
+    header h1 { color: #fff; font-size: 20px; text-transform: uppercase; }
+    .page-header { padding: 16px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; }
+    .page-header h2 { font-size: 20px; color: #333; }
+    main { flex: 1; overflow-y: auto; padding: 16px; width: 100%; max-width: 600px; margin: 0 auto; }
+    .profile { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); text-align: center; margin-bottom: 24px; }
+    .profile img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; }
+    .profile h3 { font-size: 22px; margin-bottom: 8px; color: rgb(243,79,76); }
+    .profile p { font-size: 16px; color: #555; margin-bottom: 6px; text-align: left; }
+    .button-section { text-align: center; margin-bottom: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .button { display: inline-block; padding: 14px 28px; background: rgb(243,79,76); color: #fff; border: none; border-radius: 4px; text-decoration: none; font-size: 18px; cursor: pointer; }
+    .button:hover { background: #c73c39; }
+    .list-section { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin-bottom: 24px; }
+    .list-section h4 { font-size: 18px; margin-bottom: 12px; color: rgb(51,51,51); }
+    .list { list-style: none; }
+    .list li { padding: 10px 0; border-bottom: 1px solid #eee; }
+    .list li:last-child { border-bottom: none; }
+    .list li a { font-size: 16px; color: #333; text-decoration: none; }
+    .list li a:hover { color: rgb(243,79,76); }
+    footer { background: #fff; padding: 12px; text-align: center; font-size: 12px; color: #777; }
+    
+    /* --- Styles for Admin Controls and Modal --- */
+    .admin-controls { margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 20px; }
+    .admin-controls .button { background: #dc3545; }
+    .admin-controls .button:hover { background: #c82333; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .modal-content h4 { font-size: 18px; margin-bottom: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group select, .form-group input { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; }
+    .modal-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-actions button { padding: 10px 20px; border-radius: 4px; border: none; font-size: 14px; cursor: pointer; }
+    #confirm-status-change { background: #dc3545; color: white; }
+    #cancel-status-change { background: #6c757d; color: white; }
+
+    @media (max-width: 480px) {
+        header h1, .page-header h2 { font-size: 18px; }
+        .button { padding: 12px 20px; font-size: 16px; }
+        .profile h3 { font-size: 20px; }
+        .profile p, .list li a { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SOHOJIA FOUNDATION</h1>
+  </header>
+  <div class="page-header">
+    <h2>Volunteer Dashboard</h2>
+  </div>
+
+  <main>
+    <section class="profile">
+      <img src="{{ volunteer.photo_url or 'https://placehold.co/120x120/EFEFEF/333333?text=Photo' }}" alt="{{ volunteer.name }}">
+      <h3>{{ volunteer.name }}</h3>
+      <p> <strong>Volunteer ID: </strong>{{ volunteer.volunteer_id }}</p>
+      <p><strong>Center:</strong> {{ volunteer.foundation_name }} (ID: {{ volunteer.foundation_id }})</p>
+      <p><strong>Status:</strong> {{ volunteer.status | capitalize }}</p>
+      <p><strong>Education:</strong> {{ volunteer.education }}</p>
+      <p><strong>Reimbursement:</strong> ₹{{ volunteer.salary }}</p>
+      <p><strong>Aadhar:</strong> {{ volunteer.aadhar_number }}</p>
+      <p><strong>Email:</strong> {{ volunteer.email }}</p>
+      <p><strong>Phone:</strong> {{ volunteer.phone }}</p>
+      <p><strong>Address:</strong> {{ volunteer.address }}</p>
+      <p><strong>Bank A/C:</strong> {{ volunteer.bank_acc_no }}</p>
+      <p><strong>IFSC:</strong> {{ volunteer.bank_ifsc }}</p>
+      
+      <!-- Admin-Only Controls -->
+      {% if userRole == 'admin' %}
+      <div class="admin-controls">
+        <button id="update-status-btn" class="button">Update Status</button>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="button-section">
+      <a href="/volunteer-schedule/{{ volunteer.volunteer_id }}/schedule" class="button">View Schedule</a>
+      <a href="/volunteer-attendance/{{ volunteer.volunteer_id }}/attendance" class="button">View Attendance</a>
+    </section>
+
+    <section class="list-section">
+      <h4>Assigned Students</h4>
+      <ul class="list">
+        {% for student in volunteer.students %}
+          <li><a href="/student/{{ student.id }}">{{ student.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+  </main>
+
+  <!-- Status Update Modal (for Admins) -->
+  <div class="modal-overlay" id="status-modal">
+    <div class="modal-content">
+      <h4>Update Volunteer Status</h4>
+      <form id="status-update-form">
+        <div class="form-group">
+          <label for="new_status">New Status</label>
+          <select id="new_status" name="new_status">
+            <option value="active" {% if volunteer.status == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if volunteer.status == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="admin_password">Admin Password</label>
+          <input type="password" id="admin_password" name="admin_password" placeholder="Enter your password to confirm" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancel-status-change">Cancel</button>
+          <button type="submit" id="confirm-status-change">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>&copy; {{ currentYear }} SoHoJia Foundation. All rights reserved.</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Only run modal script if the button exists (i.e., user is admin)
+      const updateStatusBtn = document.getElementById('update-status-btn');
+      if (updateStatusBtn) {
+        const modal = document.getElementById('status-modal');
+        const cancelBtn = document.getElementById('cancel-status-change');
+        const statusForm = document.getElementById('status-update-form');
+
+        updateStatusBtn.addEventListener('click', () => {
+          modal.style.display = 'flex';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+          modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.style.display = 'none';
+          }
+        });
+
+        statusForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(statusForm);
+          const data = Object.fromEntries(formData.entries());
+          
+          const volunteerId = "{{ volunteer.volunteer_id }}";
+          
+          try {
+            const response = await fetch(`/volunteer/${volunteerId}/status`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                // You might need to include a CSRF token here if your app uses them
+              },
+              body: JSON.stringify(data),
+            });
+
+            const resultText = await response.text();
+
+            if (response.ok) {
+              alert('Success: ' + resultText);
+              window.location.reload(); // Refresh the page to show new status
+            } else {
+              alert('Error: ' + resultText);
+            }
+          } catch (error) {
+            console.error('Failed to update status:', error);
+            alert('A network error occurred. Please try again.');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

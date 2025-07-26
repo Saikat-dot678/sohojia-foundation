@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Event Reports - SOHOJIA FOUNDATION</title>
+    <style>
+        /* Global Reset & Body */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+        }
+        body {
+            background: #f0f2f5; /* Consistent background */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: rgb(243,79,76); /* Consistent brand color */
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            color: #fff;
+            font-size: 1.5rem; /* Consistent font size */
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Page Header / Sub-heading */
+        .page-header {
+            padding: 1rem;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 1.5rem; /* Space below header */
+        }
+        .page-header h2 {
+            font-size: 1.25rem; /* Consistent font size */
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* Main Content Area */
+        main {
+            flex: 1;
+            padding: 1rem;
+            width: 100%;
+            max-width: 900px; /* Max width for report content */
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Space between sections */
+        }
+
+        /* Card Styling - reusable for sections */
+        .card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            /* Inherits .card styles */
+        }
+        .filter-section h3 {
+            font-size: 1.3rem; /* Consistent with other section headers */
+            color: #444;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        .filter-grid {
+            display: flex; /* Use flex for filter links */
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 0.8rem; /* Space between links */
+            justify-content: center; /* Center horizontally */
+        }
+        .filter-link {
+            display: inline-block;
+            padding: 0.7rem 1.2rem; /* Consistent button-like padding */
+            background: #e0e0e0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 25px; /* More rounded pills */
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            white-space: nowrap; /* Prevent breaking type names */
+        }
+        .filter-link:hover {
+            background: #ccc;
+            transform: translateY(-2px); /* Subtle lift */
+        }
+        .filter-link.active {
+            background: rgb(243, 79, 76);
+            color: #fff;
+            font-weight: 600; /* Bolder for active */
+            box-shadow: 0 2px 5px rgba(243, 79, 76, 0.3);
+        }
+        .breadcrumb {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            color: #777;
+            text-align: center;
+        }
+        .breadcrumb a {
+            color: rgb(243, 79, 76);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Detail display styles (from event-details-content.njk's inline styles, generalized here) */
+        .detail-card {
+            /* Inherits .card styles */
+            margin-bottom: 0; /* Managed by main's gap */
+        }
+        .detail-card h3 {
+            font-size: 1.8rem; /* Larger event type heading */
+            color: rgb(243,79,76);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #f0f2f5; /* Subtle separator */
+            padding-bottom: 1rem;
+        }
+        /* Styles inside the event-details-content.njk partial will override/complement these */
+        .no-results {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #777;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Footer */
+        footer {
+            background: #333; /* Darker footer */
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            main {
+                padding: 0.75rem;
+                gap: 1rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .page-header h2 {
+                font-size: 1.1rem;
+            }
+            .filter-section h3 {
+                font-size: 1.15rem;
+                margin-bottom: 0.8rem;
+            }
+            .filter-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            .breadcrumb {
+                font-size: 0.85rem;
+            }
+            .detail-card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                padding-bottom: 0.8rem;
+            }
+            .no-results {
+                font-size: 1rem;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.25rem;
+            }
+            .page-header h2 {
+                font-size: 0.95rem;
+            }
+            /* Adjust padding/gap for very small screens if needed here */
+            main {
+                padding: 0.5rem;
+                gap: 0.8rem;
+            }
+            .card {
+                padding: 0.8rem;
+            }
+            .filter-section h3 {
+                font-size: 1.05rem;
+            }
+            .filter-link {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SOHOJIA FOUNDATION</h1>
+    </header>
+    <div class="page-header">
+        <h2>Event Reports</h2>
+    </div>
+
+    <main>
+        {# STATE 1: No event type is selected yet. Show list of types. #}
+        {% if not selectedType %}
+            <div class="filter-section card">
+                <h3>Select an Event Type</h3>
+                <div class="filter-grid">
+                    {% for type in eventTypes %}
+                        <a href="/events/report?type={{ type | urlencode }}" class="filter-link">{{ type }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {# STATE 2 & 3: An event type IS selected. #}
+        {% if selectedType %}
+            <div class="breadcrumb">
+                <a href="/events/report">All Event Types</a> &gt; <strong>{{ selectedType }}</strong>
+            </div>
+
+            <div class="filter-section card">
+                <h3>Select a Time Range</h3>
+                <div class="filter-grid">
+                    <a href="/events/report?type={{ selectedType | urlencode }}&range=1m" class="filter-link {% if selectedRange == '1m' %}active{% endif %}">Past 1 Month</a>
+                    <a href="/events/report?type={{ selectedType | urlencode }}&range=3m" class="filter-link {% if selectedRange == '3m' %}active{% endif %}">Past 3 Months</a>
+                    <a href="/events/report?type={{ selectedType | urlencode }}&range=6m" class="filter-link {% if selectedRange == '6m' %}active{% endif %}">Past 6 Months</a>
+                    <a href="/events/report?type={{ selectedType | urlencode }}&range=1y" class="filter-link {% if selectedRange == '1y' %}active{% endif %}">Past 1 Year</a>
+                    <a href="/events/report?type={{ selectedType | urlencode }}&range=all" class="filter-link {% if selectedRange == 'all' %}active{% endif %}">All Time</a>
+                </div>
+            </div>
+            
+            {# If a range is selected, show the results #}
+            {% if selectedRange %}
+                {% if events and events.length > 0 %}
+                    {# Loop through each found event and display its full details #}
+                    {% for event in events %}
+                        <div class="detail-card card"> {# Added .card class for consistent styling #}
+                            {# This is the full detail display logic copied from event-detail.html #}
+                            {% include "partials/event-details-content.njk" %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-results">No '{{ selectedType }}' events found for the selected time range.</p>
+                {% endif %}
+            {% endif %}
+
+        {% endif %}
+
+    </main>
+
+    <footer>&copy; {{ currentYear }} Sohojia Foundation. All rights reserved.</footer>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin Dashboard - SOHOJIA FOUNDATION</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      color: #333;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgb(243, 79, 76);
+      padding: 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #fff;
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+
+    .dashboard-header {
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .dashboard-header h2 {
+      font-size: 24px;
+      color: rgb(51,51,51);
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .admin-info {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+
+    .admin-info h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: rgb(243,79,76);
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: #fafafa;
+      padding: 16px;
+      border-radius: 6px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .stat-card h4 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    @media(min-width: 600px) {
+      .stats {
+        flex-direction: row;
+      }
+    }
+
+    .foundation-list h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: rgb(243,79,76);
+      text-align: center;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media(min-width: 600px){
+      .cards {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      }
+    }
+
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .card h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .view-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    .view-link:hover {
+      color: rgb(243,79,76);
+      text-decoration: underline;
+    }
+
+    button, .logout-button {
+      width: 100%;
+      max-width: 320px;
+      margin: 12px auto;
+      padding: 16px;
+      background: rgb(243, 79, 76);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      text-align: center;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background 0.3s ease;
+    }
+
+    button:hover, .logout-button:hover {
+      background: rgb(220, 65, 62);
+    }
+
+    footer {
+      background: #fff;
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+
+</head>
+<body>
+  <header>
+    <h1>SOHOJIA FOUNDATION</h1>
+  </header>
+  <div class="dashboard-header">
+    <h2>Admin Dashboard</h2>
+  </div>
+  <main>
+    <section class="admin-info">
+      <h3>Welcome, {{ admin.name }}</h3>
+      <div class="stats">
+        <div class="stat-card">
+          <h4>{{ totalVolunteers }}</h4>
+          <p>Total Volunteers</p>
+        </div>
+        <div class="stat-card">
+          <h4>{{ totalStudents }}</h4>
+          <p>Total Students</p>
+        </div>
+      </div>
+    </section>
+    <button onclick="window.location.href='/addition/add-district'">
+          Add Districts
+        </button>
+    <button onclick="window.location.href='/addition/add-foundation'">
+          Add Centre
+        </button>
+    <button onclick="window.location.href='/addition/add-director'">
+          Add Center Program Director
+        </button>
+    <button onclick="window.location.href='/addition/add-coordinator'">
+          Add Center Program Coordinator
+        </button>
+    <button onclick="window.location.href='/addition/add-volunteer'">
+          Add Volunteer
+        </button>
+    <button onclick="window.location.href='/addition/add-event-manager'">
+          Add Event Manager
+        </button>
+    <button onclick="window.location.href='/addition/add-schedule'">
+          Add Schedule
+        </button>
+    <button onclick="window.location.href='/admin/schedule-management'">
+          Manage Schedule
+        </button>
+    <button onclick="window.location.href='/admin/holidays'">
+          Manage Holidays
+        </button>
+    <section class="foundation-list">
+      <h3>Districts</h3>
+      <div class="cards">
+        {% for district in districts %}
+        <div class="card">
+          <h4>{{ district.name }}</h4>
+          <a href="/districts/{{ district.name }}" class="view-link">View Foundations &gt;</a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+  <button onclick="location.href='/logout'" class="logout-button">Logout</button>
+  <footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+</body>
+</html>

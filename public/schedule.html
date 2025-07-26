@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: Arial, sans-serif; font-size: 16px; }
+    body {
+      background: #f3f3f3;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: rgb(243,79,76);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #fff;
+      font-size: 1.25rem;
+      text-transform: uppercase;
+    }
+
+    .schedule {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8dcdc;
+      color: #333;
+      font-weight: bold;
+    }
+
+    td {
+      background: #fff;
+    }
+
+    .shift-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .shift-info span {
+      font-size: 0.75rem;
+      color: #444;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .back-link a {
+      font-size: 0.875rem;
+      color: #555;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media(max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead tr {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+
+      td {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #000;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>{{ volunteer.name }}’s Schedule</h1>
+    </header>
+    <div class="schedule">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Morning Shift</th>
+            <th>Afternoon Shift</th>
+            <th>Evening Shift</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set days = [
+            'Monday','Tuesday','Wednesday',
+            'Thursday','Friday','Saturday','Sunday'
+          ] %}
+          {% for day in days %}
+          <tr>
+            <td data-label="Day">{{ day }}</td>
+            {% for shift in ['Morning','Afternoon','Evening'] %}
+            {% set entry = schedule[day][shift] %}
+            <td data-label="{{ shift }} Shift">
+              {% if entry %}
+              <div class="shift-info">
+                <strong>{{ entry.start_time }} – {{ entry.end_time }}</strong>
+                <span>Class: {{ entry.class }}</span>
+                <span>Subject: {{ entry.subject }}</span>
+                <span>Role: {{ entry.role }}</span>
+              </div>
+              {% else %}
+              <em>—</em>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="back-link">
+      {% if userRole == 'admin' %}
+        <a href="/volunteer/{{ volunteer.volunteer_id }}">
+          ← Back to Volunteer Dashboard
+        </a>
+      {% else %}
+        <a href="/volunteer-dashboard/{{ volunteer.volunteer_id }}/dashboard">
+          ← Back to Volunteer Dashboard
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

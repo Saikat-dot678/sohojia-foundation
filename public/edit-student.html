@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Details - SOHOJIA FOUNDATION</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; font-family: Arial, sans-serif; }
+        body { display: flex; flex-direction: column; background: #f3f3f3; color: #333; }
+        header { background: rgb(243,79,76); padding: 16px; text-align: center; }
+        header h1 { color: #fff; font-size: 20px; text-transform: uppercase; }
+        main { flex: 1; overflow-y: auto; padding: 16px; }
+        .form-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .form-container h2 { text-align: center; color: rgb(243,79,76); margin-bottom: 24px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        textarea { resize: vertical; min-height: 80px; }
+        .profile-photo-edit { text-align: center; margin-bottom: 20px; }
+        .profile-photo-edit img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #eee; }
+        .form-actions { margin-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none; text-align: center; }
+        .btn-primary { background: rgb(243,79,76); color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .form-note { font-size: 12px; color: #777; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <header><h1>SOHOJIA FOUNDATION</h1></header>
+    <main>
+        <div class="form-container">
+            <h2>Edit Your Details</h2>
+            <form action="/student-edit/{{ student.student_id }}/edit" method="POST" enctype="multipart/form-data">
+                
+                <div class="profile-photo-edit">
+                    <img src="{{ student.photo_url or 'https://placehold.co/100x100/EFEFEF/333333?text=Photo' }}" alt="Current Profile Photo">
+                    <div class="form-group">
+                        <label for="photo">Update Profile Photo</label>
+                        <input type="file" id="photo" name="photo" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="class">Class</label>
+                    <input type="text" id="class" name="class" value="{{ student.class }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="roll_no">Roll Number</label>
+                    <input type="number" id="roll_no" name="roll_no" value="{{ student.roll_no }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" required>{{ student.address }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="father_name">Father's Name</label>
+                    <input type="text" id="father_name" name="father_name" value="{{ student.father_name }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="mother_name">Mother's Name</label>
+                    <input type="text" id="mother_name" name="mother_name" value="{{ student.mother_name }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardian_contact">Guardian's Contact</label>
+                    <input type="text" id="guardian_contact" name="guardian_contact" value="{{ student.guardian_contact }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardian_email">Guardian's Email</label>
+                    <input type="email" id="guardian_email" name="guardian_email" value="{{ student.guardian_email }}">
+                </div>
+                <div class="form-group">
+                    <label for="hobby">Hobby</label>
+                    <input type="text" id="hobby" name="hobby" value="{{ student.hobby }}">
+                </div>
+                
+                <hr style="margin: 24px 0;">
+                
+                <div class="form-group">
+                    <label for="current_password">Confirm Current Password to Save</label>
+                    <input type="password" id="current_password" name="current_password" required>
+                    <p class="form-note">For security, you must enter your current password to save changes.</p>
+                </div>
+                <div class="form-actions">
+                    <a href="/student/{{ student.student_id }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Choose Event Type - SOHOJIA FOUNDATION</title>
+<style>
+    /* Global Reset & Body */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    html {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333;
+    }
+    body {
+        background: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+        background: rgb(243,79,76);
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 {
+        color: #fff;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    /* Page Header / Sub-heading */
+    .page-header {
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-header h2 {
+        font-size: 1.25rem;
+        color: #555;
+        font-weight: normal;
+    }
+
+    /* Main Content Area */
+    main {
+        flex: 1;
+        padding: 1rem;
+        width: 100%;
+        max-width: 700px; /* Overall max-width for content */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center form container */
+    }
+
+    /* Card Styling (for form container) */
+    .card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 500px; /* More controlled max-width for the form card */
+    }
+
+    /* Form Container */
+    .form-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: rgb(243, 79, 76);
+        text-align: center;
+        font-weight: 600;
+    }
+
+    /* Radio Button Group - Refined Grid Layout for PC */
+    .radio-group {
+        display: grid;
+        /* PC Layout: Two columns, but with fixed size for common items,
+           and allowing longer items (like 'Weekly Science Workshop') to take more space if needed */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Specific adjustment for when there's an odd number of items on PC
+       This will make the last item span 2 columns and center it */
+    .radio-group > label:nth-last-child(1):nth-child(odd) {
+        grid-column: span 2;
+        justify-self: center; /* Center the spanning item within its grid area */
+        max-width: 400px; /* Constrain the width of the spanning item */
+    }
+
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #555;
+        background-color: #f9f9f9;
+        position: relative;
+        text-align: left; /* Ensure text aligns left within the label box */
+    }
+    .radio-group label:hover {
+        border-color: rgb(243, 79, 76);
+        background-color: #ffebe9;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .radio-group input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Custom Radio Button Indicator */
+    .radio-group label::before {
+        content: '';
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #999;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        transition: all 0.2s ease-in-out;
+        flex-shrink: 0;
+    }
+    .radio-group input[type="radio"]:checked + label::before {
+        background-color: rgb(243, 79, 76);
+        border-color: rgb(243, 79, 76);
+        box-shadow: inset 0 0 0 4px #fff;
+    }
+    .radio-group input[type="radio"]:checked + label {
+        border-color: rgb(243, 79, 76);
+        background-color: #fff0ef;
+        color: rgb(243, 79, 76);
+    }
+
+    /* Submit Button */
+    .button-submit {
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.9rem 1.2rem;
+        background: rgb(243, 79, 76);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+        font-weight: 500;
+    }
+    .button-submit:hover {
+        background: #c73c39;
+        transform: translateY(-2px);
+    }
+    .button-submit:active {
+        transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+        background: #333;
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #aaa;
+        margin-top: auto;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) { /* Tablets and larger phones */
+        main {
+            padding: 0.75rem;
+        }
+        .card {
+            padding: 1rem;
+            max-width: 100%; /* Allow card to fill width on smaller screens */
+        }
+        .form-container h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .radio-group {
+            grid-template-columns: 1fr; /* Stack choices vertically on smaller screens */
+            gap: 0.8rem;
+        }
+        /* Remove specific odd item span on mobile */
+        .radio-group > label:nth-last-child(1):nth-child(odd) {
+            grid-column: auto;
+            justify-self: unset;
+            max-width: unset;
+        }
+        .radio-group label {
+            padding: 0.8rem;
+            font-size: 0.95rem;
+        }
+        .radio-group label::before {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.6rem;
+        }
+        .radio-group input[type="radio"]:checked + label::before {
+            box-shadow: inset 0 0 0 3px #fff;
+        }
+        .button-submit {
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) { /* Small phones */
+        header h1 {
+            font-size: 1.25rem;
+        }
+        .page-header h2 {
+            font-size: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>SOHOJIA FOUNDATION</h1>
+</header>
+<div class="page-header">
+    <h2>Choose Event Type</h2>
+</div>
+<main>
+    <section class="form-container card">
+    <h3>Select Event Type</h3>
+    <form id="eventChoiceForm">
+        <div class="radio-group">
+            <input type="radio" id="karate" name="eventType" value="Karate" required>
+            <label for="karate">Karate</label>
+
+            <input type="radio" id="painting" name="eventType" value="Painting">
+            <label for="painting">Painting</label>
+
+            <input type="radio" id="recitation" name="eventType" value="Recitation">
+            <label for="recitation">Recitation</label>
+
+            <input type="radio" id="weeklyScience" name="eventType" value="Weekly Science Workshop">
+            <label for="weeklyScience">Weekly Science Workshop</label>
+
+            <input type="radio" id="scienceFair" name="eventType" value="Science Fair">
+            <label for="scienceFair">Science Fair</label>
+        </div>
+        <button type="submit" class="button-submit">Proceed to Form</button>
+    </form>
+    </section>
+</main>
+<footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+
+<script>
+document.getElementById('eventChoiceForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const selectedEventType = document.querySelector('input[name="eventType"]:checked').value;
+    window.location.href = `/event/{{ managerId }}/add-event-form?type=${encodeURIComponent(selectedEventType)}`;
+});
+
+// Optional: Add a visual feedback for selected radio button (CSS handles most of it, but this can ensure instant feedback)
+document.querySelectorAll('input[name="eventType"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        document.querySelectorAll('.radio-group label').forEach(label => {
+            if (label.htmlFor === e.target.id) {
+                label.classList.add('selected'); // This class is not strictly needed with the current CSS,
+                                                // but good for potential future styling or JS logic.
+            } else {
+                label.classList.remove('selected');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

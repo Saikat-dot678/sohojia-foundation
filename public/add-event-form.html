@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Add Event Data - SOHOJIA FOUNDATION</title>
+<style>
+    /* Base styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    html, body {
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background: #f3f3f3;
+        color: #333;
+    }
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        text-align: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+    }
+    .dashboard-header {
+        background: #fff;
+        padding: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .dashboard-header h2 {
+        font-size: 24px;
+        color: #333;
+    }
+    main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+    }
+    .form-container {
+        background: #fff;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .form-container h3 {
+        margin-bottom: 16px;
+        font-size: 22px;
+        color: rgb(243, 79, 76);
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-top: 16px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: #fcfcfc;
+    }
+    .data-block-section {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+    }
+    .data-block-section h3 {
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    .class-data-block, .school-data-block, .winner-data-block, .painting-data-block, .workshop-exp-block {
+        border: 1px solid #eee;
+        padding: 15px;
+        margin-top: 20px;
+        background: #f9f9f9;
+        border-radius: 5px;
+        position: relative;
+    }
+    .class-data-block h4, .school-data-block h4, .winner-data-block h4, .painting-data-block h4, .workshop-exp-block h4 {
+        margin-bottom: 10px;
+        color: #444;
+        padding-right: 80px; /* Make space for remove button */
+    }
+    .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8em;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    .add-more-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 15px;
+        display: inline-block;
+    }
+    button[type="submit"] {
+        display: block;
+        width: 100%;
+        margin-top: 24px;
+        padding: 12px 20px;
+        background: rgb(243, 79, 76);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button[type="submit"]:hover {
+        background: rgb(200, 60, 57);
+    }
+    footer {
+        background: #fff;
+        padding: 12px;
+        text-align: center;
+        font-size: 12px;
+        color: #777;
+    }
+    .experiment-input-block {
+        border: 1px dashed #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        margin-left: 20px;
+        background: #fff;
+        position: relative;
+    }
+    .experiment-input-block h5 {
+        color: #555;
+        margin-bottom: 10px;
+        font-size: 1em;
+        padding-right: 80px; /* Space for remove button */
+    }
+    .experiment-input-block .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container { padding: 15px; margin: 10px; max-width: calc(100% - 20px); }
+        main { padding: 10px; }
+        header h1, .dashboard-header h2, .form-container h3 { font-size: 18px; }
+        label { margin-top: 12px; font-size: 14px; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea, select, input[type="file"] { padding: 8px; font-size: 13px; }
+        button[type="submit"], .add-more-btn { padding: 10px 15px; font-size: 14px; }
+        .remove-btn { padding: 4px 8px; font-size: 0.7em; top: 10px; right: 10px; }
+        .class-data-block, .school-data-block, .winner-data-block, .painting-data-block, .workshop-exp-block { padding: 10px; margin-top: 15px; }
+        .experiment-input-block { margin-left: 10px; }
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>SOHOJIA FOUNDATION</h1>
+</header>
+<div class="dashboard-header">
+    <h2 id="pageTitle">Add Event Data</h2>
+</div>
+<main>
+    <section class="form-container">
+    <h3 id="formTitle"></h3>
+    <form id="eventDataForm" action="/event/{{ managerId }}/api/add-event-data" method="POST" enctype="multipart/form-data">
+        
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+        <input type="hidden" id="eventType" name="event_type">
+
+        <label for="eventDate">Date:</label>
+        <input type="date" id="eventDate" name="date" required>
+
+        <label for="eventTime">Time:</label>
+        <input type="time" id="eventTime" name="time" required>
+        
+        <div id="commonInfo" style="display: none;">
+            <label for="totalStudentsPresent">Total Students Present:</label>
+            <input type="number" id="totalStudentsPresent" name="total_students_present" min="0">
+            <label for="totalBoysPresent">Total Boys Present:</label>
+            <input type="number" id="totalBoysPresent" name="total_boys_present" min="0">
+            <label for="totalGirlsPresent">Total Girls Present:</label>
+            <input type="number" id="totalGirlsPresent" name="total_girls_present" min="0">
+            <label for="teacherName">Teacher/Instructor Name:</label>
+            <input type="text" id="teacherName" name="teacher_name" placeholder="Enter name of the main teacher">
+        </div>
+
+        <div id="scienceFairLocationField" style="display: none;">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" placeholder="e.g., Town Hall Auditorium">
+        </div>
+        <div id="scienceFairStudentCounts" style="display: none;">
+            <label for="sfTotalStudentsPresent">Total Students Present (Science Fair):</label>
+            <input type="number" id="sfTotalStudentsPresent" name="sf_total_students_present" min="0">
+            <label for="sfTotalBoysPresent">Total Boys Present (Science Fair):</label>
+            <input type="number" id="sfTotalBoysPresent" name="sf_total_boys_present" min="0">
+            <label for="sfTotalGirlsPresent">Total Girls Present (Science Fair):</label>
+            <input type="number" id="sfTotalGirlsPresent" name="sf_total_girls_present" min="0">
+        </div>
+
+        <label for="generalDescription">General Description:</label>
+        <textarea id="generalDescription" name="description" rows="4"></textarea>
+
+        <label for="generalPhotos">General Photos (select one or more files):</label>
+        <input type="file" id="generalPhotos" name="general_photos" accept="image/*" multiple>
+
+        <div id="dynamicFieldsContainer"></div>
+
+        <button type="submit">Submit Event Data</button>
+    </form>
+    </section>
+</main>
+<footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventType = urlParams.get('type');
+    const dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
+    const commonInfoDiv = document.getElementById('commonInfo');
+    const scienceFairLocationDiv = document.getElementById('scienceFairLocationField');
+    const scienceFairStudentCountsDiv = document.getElementById('scienceFairStudentCounts');
+
+    if (!eventType) {
+        alert('Event type not specified. Redirecting to event choice.');
+        window.location.href = '/event/{{ managerId }}/add-event';
+        return;
+    }
+
+    document.getElementById('eventType').value = eventType;
+    document.getElementById('pageTitle').textContent = `Add ${eventType} Data`;
+    document.getElementById('formTitle').textContent = `Enter ${eventType} Details`;
+
+    // --- TEMPLATE FUNCTIONS ---
+
+    function createClassDataBlock(index) {
+    const div = document.createElement('div');
+    div.classList.add('class-data-block');
+    div.innerHTML = `
+    <h4>
+        Class Data #${index + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.class-data-block').remove()">Remove</button>
+    </h4>
+    <label for="classStandard${index}">Class Standard (1–12):</label>
+    <input
+        type="number"
+        id="classStandard${index}"
+        name="class_data[${index}][class_standard]"
+        min="1"
+        max="12"
+    >
+    <label for="classBoysPresent${index}">Boys Present:</label>
+    <input
+        type="number"
+        id="classBoysPresent${index}"
+        name="class_data[${index}][class_boys_present]"
+        min="0"
+    >
+    <label for="classGirlsPresent${index}">Girls Present:</label>
+    <input
+        type="number"
+        id="classGirlsPresent${index}"
+        name="class_data[${index}][class_girls_present]"
+        min="0"
+    >
+    <label for="classTeacherName${index}">Teacher Name:</label>
+    <input
+        type="text"
+        id="classTeacherName${index}"
+        name="class_data[${index}][teacher_name]"
+    >
+    <label for="classDescription${index}">Class Description:</label>
+    <textarea
+        id="classDescription${index}"
+        name="class_data[${index}][class_description]"
+        rows="2"
+    ></textarea>
+    <label for="classPhoto${index}">Class Photo:</label>
+    <input
+        type="file"
+        id="classPhoto${index}"
+        name="class_photos_${index}"
+        accept="image/*"
+    >
+    `;
+    return div;
+}
+
+function createPaintingBlock(index) {
+    const div = document.createElement('div');
+    div.classList.add('painting-data-block');
+    div.innerHTML = `
+    <h4>
+        Painting Submission #${index + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.painting-data-block').remove()">Remove</button>
+    </h4>
+    <label for="paintingStudentName${index}">Student Name:</label>
+    <input
+        type="text"
+        id="paintingStudentName${index}"
+        name="paintings[${index}][student_name]"
+    >
+    <label for="paintingStudentClass${index}">Student Class:</label>
+    <input
+        type="text"
+        id="paintingStudentClass${index}"
+        name="paintings[${index}][student_class]"
+    >
+    <label for="paintingImage${index}">Upload Painting:</label>
+    <input
+        type="file"
+        id="paintingImage${index}"
+        name="painting_image_${index}"
+        accept="image/*"
+    >
+    `;
+    return div;
+}
+
+function createWorkshopExperimentBlock(index) {
+    const div = document.createElement('div');
+    div.classList.add('workshop-exp-block');
+    div.innerHTML = `
+    <h4>
+        Experiment Data #${index + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.workshop-exp-block').remove()">Remove</button>
+    </h4>
+    <label for="wsExpName${index}">Experiment Name:</label>
+    <input
+        type="text"
+        id="wsExpName${index}"
+        name="workshop_experiments[${index}][exp_name]"
+    >
+    <label for="wsTeacherName${index}">Teacher/Instructor Name:</label>
+    <input
+        type="text"
+        id="wsTeacherName${index}"
+        name="workshop_experiments[${index}][teacher_name]"
+    >
+    <label for="wsClassName${index}">Class:</label>
+    <input
+        type="text"
+        id="wsClassName${index}"
+        name="workshop_experiments[${index}][class_name]"
+    >
+    <label for="wsExpDesc${index}">Experiment Description:</label>
+    <textarea
+        id="wsExpDesc${index}"
+        name="workshop_experiments[${index}][description]"
+        rows="2"
+    ></textarea>
+    <label for="wsExpPhoto${index}">Experiment Photo:</label>
+    <input
+        type="file"
+        id="wsExpPhoto${index}"
+        name="workshop_photo_${index}"
+        accept="image/*"
+    >
+    `;
+    return div;
+}
+
+function createExperimentInputBlock(schoolIndex, experimentIndex) {
+    const div = document.createElement('div');
+    div.classList.add('experiment-input-block');
+    div.innerHTML = `
+    <h5>
+        Experiment #${experimentIndex + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.experiment-input-block').remove()">Remove</button>
+    </h5>
+    <label for="expName_${schoolIndex}_${experimentIndex}">Experiment Name:</label>
+    <input
+        type="text"
+        id="expName_${schoolIndex}_${experimentIndex}"
+        name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][name]"
+    >
+    <label for="expDesc_${schoolIndex}_${experimentIndex}">One‑line Description:</label>
+    <input
+        type="text"
+        id="expDesc_${schoolIndex}_${experimentIndex}"
+        name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][description]"
+    >
+    <label for="expStudents_${schoolIndex}_${experimentIndex}">Student Names (comma‑separated):</label>
+    <input
+        type="text"
+        id="expStudents_${schoolIndex}_${experimentIndex}"
+        name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][student_names]"
+        placeholder="e.g., Priya, Amit"
+    >
+    `;
+    return div;
+}
+
+function createScienceFairSchoolBlock(index) {
+    const div = document.createElement('div');
+    div.classList.add('school-data-block');
+    div.innerHTML = `
+    <h4>
+        Participating School #${index + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.school-data-block').remove()">Remove</button>
+    </h4>
+    <label for="schoolName${index}">School Name:</label>
+    <input
+        type="text"
+        id="schoolName${index}"
+        name="participating_schools[${index}][school_name]"
+    >
+    <div class="experiments-container"></div>
+    <button type="button" class="add-more-btn" onclick="addExperimentToSchool(this, ${index})">
+        Add Experiment
+    </button>
+    `;
+    div.querySelector('.experiments-container').appendChild(createExperimentInputBlock(index, 0));
+    return div;
+}
+
+function createScienceFairWinnerBlock(index) {
+    const div = document.createElement('div');
+    div.classList.add('winner-data-block');
+    div.innerHTML = `
+    <h4>
+        Winner #${index + 1}
+        <button type="button" class="remove-btn" onclick="this.closest('.winner-data-block').remove()">Remove</button>
+    </h4>
+    <label for="winnerRank${index}">Rank:</label>
+    <input
+        type="text"
+        id="winnerRank${index}"
+        name="winners[${index}][rank]"
+        placeholder="e.g., 1st, 2nd"
+    >
+    <label for="winnerSchoolName${index}">School Name:</label>
+    <input
+        type="text"
+        id="winnerSchoolName${index}"
+        name="winners[${index}][school_name]"
+    >
+    <label for="winnerStudentNames${index}">Winning Student Names:</label>
+    <input
+        type="text"
+        id="winnerStudentNames${index}"
+        name="winners[${index}][student_names]"
+        placeholder="e.g., Alice, Bob"
+    >
+    <label for="winnerExperimentName${index}">Experiment Name:</label>
+    <input
+        type="text"
+        id="winnerExperimentName${index}"
+        name="winners[${index}][experiment_name]"
+    >
+    <label for="winnerExperimentDesc${index}">Experiment Description:</label>
+    <textarea
+        id="winnerExperimentDesc${index}"
+        name="winners[${index}][experiment_description]"
+        rows="2"
+    ></textarea>
+    <label for="winnerPhoto${index}">Winner’s Photo:</label>
+    <input
+        type="file"
+        id="winnerPhoto${index}"
+        name="winner_photo_${index}"
+        accept="image/*"
+    >
+    `;
+    return div;
+}
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+    let classDataCount = 0;
+    window.addClassDataBlock = () => {
+        const container = dynamicFieldsContainer.querySelector('#classDataSection .blocks-container');
+        if (container) container.appendChild(createClassDataBlock(classDataCount++));
+    };
+    let schoolDataCount = 0;
+    window.addScienceFairSchoolBlock = () => {
+        const container = dynamicFieldsContainer.querySelector('#schoolsSection .blocks-container');
+        if (container) container.appendChild(createScienceFairSchoolBlock(schoolDataCount++));
+    };
+    window.addExperimentToSchool = (button, schoolIndex) => {
+        const experimentsContainer = button.previousElementSibling;
+        const experimentIndex = experimentsContainer.children.length;
+        experimentsContainer.appendChild(createExperimentInputBlock(schoolIndex, experimentIndex));
+    };
+    let winnerDataCount = 0;
+    window.addScienceFairWinnerBlock = () => {
+        const container = dynamicFieldsContainer.querySelector('#winnersSection .blocks-container');
+        if (container) container.appendChild(createScienceFairWinnerBlock(winnerDataCount++));
+    };
+    let paintingCount = 0;
+    window.addPaintingBlock = () => {
+        const container = dynamicFieldsContainer.querySelector('#paintingSection .blocks-container');
+        if (container) container.appendChild(createPaintingBlock(paintingCount++));
+    }
+    let workshopExpCount = 0;
+    window.addWorkshopExperimentBlock = () => {
+        const container = dynamicFieldsContainer.querySelector('#workshopSection .blocks-container');
+        if (container) container.appendChild(createWorkshopExperimentBlock(workshopExpCount++));
+    }
+    
+    // --- RENDER INITIAL FORM STATE ---
+    if (eventType === 'Science Fair') {
+        scienceFairStudentCountsDiv.style.display = 'block';
+        scienceFairStudentCountsDiv.querySelectorAll('input').forEach(input => input.required = true);
+        scienceFairLocationDiv.style.display = 'block';
+        scienceFairLocationDiv.querySelector('input').required = true;
+        dynamicFieldsContainer.innerHTML = `
+            <label for="numberOfTeachers">Number of Teachers Present:</label>
+            <input type="number" id="numberOfTeachers" name="number_of_teachers" min="0">
+            <div id="schoolsSection" class="data-block-section">
+                <h3>Participating Schools (Optional)</h3><div class="blocks-container"></div>
+                <button type="button" class="add-more-btn" onclick="addScienceFairSchoolBlock()">Add Another School</button>
+            </div>
+            <div id="winnersSection" class="data-block-section">
+                <h3>Winners (Optional)</h3><div class="blocks-container"></div>
+                <button type="button" class="add-more-btn" onclick="addScienceFairWinnerBlock()">Add Another Winner</button>
+            </div>`;
+        addScienceFairSchoolBlock();
+        addScienceFairWinnerBlock();
+    } else {
+        commonInfoDiv.style.display = 'block';
+        commonInfoDiv.querySelectorAll('input').forEach(input => input.required = true);
+        if (['Karate', 'Recitation'].includes(eventType)) {
+            let recitationHtml = '';
+            if (eventType === 'Recitation') {
+                recitationHtml = `
+                    <div class="data-block-section">
+                        <h3>Poem / Recitation Names (Optional)</h3>
+                        <label for="recitationNames">Enter all names, separated by a comma:</label>
+                        <textarea id="recitationNames" name="recitation_names" rows="3" placeholder="e.g., The Raven, Daffodils, Ozymandias"></textarea>
+                    </div>
+                `;
+            }
+            dynamicFieldsContainer.innerHTML = `
+                <div id="classDataSection" class="data-block-section">
+                    <h3>Class-wise Attendance Data (Optional)</h3>
+                    <div class="blocks-container"></div>
+                    <button type="button" class="add-more-btn" onclick="addClassDataBlock()">Add More Class Data</button>
+                </div>
+                ${recitationHtml}
+            `;
+            addClassDataBlock();
+        } else if (eventType === 'Painting') {
+            dynamicFieldsContainer.innerHTML = `
+                <div id="paintingSection" class="data-block-section">
+                    <h3>Painting Submissions (Optional)</h3>
+                    <div class="blocks-container"></div>
+                    <button type="button" class="add-more-btn" onclick="addPaintingBlock()">Add Another Painting</button>
+                </div>`;
+            addPaintingBlock();
+        } else if (eventType === 'Weekly Science Workshop') {
+            dynamicFieldsContainer.innerHTML = `
+                <div id="workshopSection" class="data-block-section">
+                    <h3>Experiment Details (Optional)</h3>
+                    <div class="blocks-container"></div>
+                    <button type="button" class="add-more-btn" onclick="addWorkshopExperimentBlock()">Add More Experiments</button>
+                </div>`;
+            addWorkshopExperimentBlock();
+        }
+    }
+
+    // --- FORM SUBMISSION HANDLER ---
+    document.getElementById('eventDataForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const eventType = formData.get('event_type');
+        
+        for (let key of formData.keys()) {
+            if (key.endsWith('_json')) formData.delete(key);
+        }
+
+        if (['Karate', 'Recitation'].includes(eventType)) {
+            const classData = [];
+            document.querySelectorAll('.class-data-block').forEach((block) => {
+                const classStandard = block.querySelector('input[name*="[class_standard]"]').value;
+                if (classStandard) {
+                    classData.push({
+                        class_standard: parseInt(classStandard, 10),
+                        class_boys_present: parseInt(block.querySelector('input[name*="[class_boys_present]"]').value, 10) || 0,
+                        class_girls_present: parseInt(block.querySelector('input[name*="[class_girls_present]"]').value, 10) || 0,
+                        teacher_name: block.querySelector('input[name*="[teacher_name]"]').value,
+                        class_description: block.querySelector('textarea[name*="[class_description]"]').value || null,
+                    });
+                }
+            });
+            if (classData.length > 0) formData.append('class_data_json', JSON.stringify(classData));
+        }
+        
+        if (eventType === 'Painting') {
+            const paintings = [];
+            document.querySelectorAll('.painting-data-block').forEach((block, index) => {
+                const student_name = block.querySelector('input[name*="[student_name]"]').value;
+                if (student_name) paintings.push({ student_name, student_class: block.querySelector('input[name*="[student_class]"]').value, image_key: `painting_image_${index}` });
+            });
+            if (paintings.length > 0) formData.append('paintings_json', JSON.stringify(paintings));
+        }
+
+        if (eventType === 'Weekly Science Workshop') {
+            const workshop_experiments = [];
+            document.querySelectorAll('.workshop-exp-block').forEach((block, index) => {
+                const exp_name = block.querySelector('input[name*="[exp_name]"]').value;
+                if (exp_name) {
+                    workshop_experiments.push({ 
+                        exp_name, 
+                        teacher_name: block.querySelector('input[name*="[teacher_name]"]').value,
+                        class_name: block.querySelector('input[name*="[class_name]"]').value,
+                        description: block.querySelector('textarea[name*="[description]"]').value,
+                        photo_key: `workshop_photo_${index}` 
+                    });
+                }
+            });
+            if (workshop_experiments.length > 0) formData.append('workshop_experiments_json', JSON.stringify(workshop_experiments));
+        }
+
+        if (eventType === 'Science Fair') {
+            const participatingSchools = [];
+            document.querySelectorAll('.school-data-block').forEach((schoolBlock) => {
+                const schoolName = schoolBlock.querySelector('input[name*="[school_name]"]').value;
+                if (schoolName) {
+                    const experiments = [];
+                    schoolBlock.querySelectorAll('.experiment-input-block').forEach((expBlock) => {
+                        const expName = expBlock.querySelector('input[name*="[name]"]').value;
+                        if (expName) {
+                            experiments.push({ 
+                                name: expName, 
+                                description: expBlock.querySelector('input[name*="[description]"]').value,
+                                student_names: expBlock.querySelector('input[name*="[student_names]"]').value.split(',').map(item => item.trim()).filter(Boolean)
+                            });
+                        }
+                    });
+                    participatingSchools.push({ 
+                        school_name: schoolName, 
+                        experiments: experiments 
+                    });
+                }
+            });
+            if (participatingSchools.length > 0) formData.append('participating_schools_json', JSON.stringify(participatingSchools));
+
+            const winners = [];
+            document.querySelectorAll('.winner-data-block').forEach((block, index) => {
+                const rank = block.querySelector('input[name*="[rank]"]').value;
+                if (rank) {
+                    winners.push({ 
+                        rank: rank,
+                        school_name: block.querySelector('input[name*="[school_name]"]').value,
+                        student_names: block.querySelector('input[name*="[student_names]"]').value.split(',').map(item => item.trim()).filter(Boolean),
+                        experiment_name: block.querySelector('input[name*="[experiment_name]"]').value,
+                        experiment_description: block.querySelector('textarea[name*="[experiment_description]"]').value,
+                        photo_key: `winner_photo_${index}` 
+                    });
+                }
+            });
+            if (winners.length > 0) formData.append('winners_json', JSON.stringify(winners));
+        }
+
+        try {
+            const response = await fetch(this.action, { method: 'POST', body: formData, credentials: 'include' });
+            if (response.ok) {
+                alert(`${eventType} event data added successfully!`);
+                const urlParts = this.action.split('/');
+                const managerId = urlParts[urlParts.indexOf('event') + 1];
+                window.location.href = `/event-manager-dashboard/${managerId}/dashboard`;
+            } else {
+                alert(`Error adding event data: ${await response.text()}`);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Failed to connect to the server. Please try again.');
+        }
+    });
+});
+</script>
+</body>
+</html>

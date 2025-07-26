@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin: Manage Volunteer Schedules</title>
+<style>
+    :root { --brand-red: rgb(243, 79, 76); --light-gray: #f0f2f5; --dark-text: #333; --border-color: #ddd; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { font-family: 'Segoe UI', sans-serif; background: var(--light-gray); color: var(--dark-text); }
+    header { background: var(--brand-red); padding: 1rem; text-align: center; color: white; }
+    header h1 { font-size: 1.5rem; text-transform: uppercase; }
+    main { padding: 1rem; max-width: 900px; margin: 1rem auto; }
+    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+    h2, h3 { color: var(--brand-red); text-align: center; margin-bottom: 1rem; }
+    .search-form form { display: flex; gap: 1rem; align-items: center; justify-content: center; }
+    .search-form input { padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+    .search-button, .action-button { background: var(--brand-red); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+    .schedule-entry { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; }
+    .schedule-entry-header { background: #f9f9f9; padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: bold; }
+    .schedule-form { padding: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { margin-bottom: 0.4rem; font-weight: 500; }
+    .form-group input, .form-group select { padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; }
+    .seasonal-fieldset { grid-column: 1 / -1; border: 1px dashed #ccc; padding: 1rem; border-radius: 6px; margin-top: 1rem; }
+    .seasonal-fieldset legend { color: var(--brand-red); font-weight: bold; padding: 0 0.5rem; }
+    .actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+    .delete-button { background: #dc3545; }
+    .message-box { padding: 1rem; border-radius: 6px; text-align: center; margin-bottom: 1rem; }
+    .message-box.success { background: #d4edda; color: #155724; }
+    .message-box.error { background: #f8d7da; color: #721c24; }
+    .back-button { display: inline-block; margin-bottom: 16px; padding: 10px 20px; background: var(--card-bg); border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: var(--text-dark); }
+    @media (max-width: 768px) {
+        .schedule-form, .search-form form { grid-template-columns: 1fr; flex-direction: column; }
+    }
+    @media (max-width: 768px){
+        .back-button {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+        font-size: 16px;
+    }
+    }
+</style>
+</head>
+<body>
+    <header><h1>SOHOJIA FOUNDATION</h1></header>
+    <main>
+        <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
+        <section class="card search-form">
+            <h2>Manage Volunteer Schedules</h2>
+            <form action="/admin/schedule-management/view" method="POST">
+                <label for="volunteerId" class="sr-only">Volunteer ID:</label>
+                <input type="number" id="volunteerId" name="volunteerId" value="{{ searchVolunteerId }}" placeholder="Enter Volunteer ID" required>
+                <button type="submit" class="search-button">View Schedule</button>
+            </form>
+        </section>
+
+        {% if message %}
+            <div class="message-box {{ messageType }}">{{ message }}</div>
+        {% endif %}
+
+        {% if volunteerName %}
+            <h3>Showing Schedules for: {{ volunteerName }} (ID: {{ searchVolunteerId }})</h3>
+        {% endif %}
+
+        {% if schedules and schedules.length > 0 %}
+            {% for entry in schedules %}
+            <div class="schedule-entry">
+                <div class="schedule-entry-header">Schedule ID: {{ entry.id }}</div>
+                <form action="/admin/schedule-management/update/{{ entry.id }}" method="POST" class="schedule-form">
+                    <input type="hidden" name="volunteer_id" value="{{ entry.volunteer_id }}">
+                    <div class="form-group">
+                        <label>Day of Week</label>
+                        <select name="day_of_week" required>
+                            <option {% if entry.day_of_week == 'Monday' %}selected{% endif %}>Monday</option>
+                            <option {% if entry.day_of_week == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                            <option {% if entry.day_of_week == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                            <option {% if entry.day_of_week == 'Thursday' %}selected{% endif %}>Thursday</option>
+                            <option {% if entry.day_of_week == 'Friday' %}selected{% endif %}>Friday</option>
+                            <option {% if entry.day_of_week == 'Saturday' %}selected{% endif %}>Saturday</option>
+                            <option {% if entry.day_of_week == 'Sunday' %}selected{% endif %}>Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Shift</label>
+                        <select name="shift" required>
+                            <option {% if entry.shift == 'Morning' %}selected{% endif %}>Morning</option>
+                            <option {% if entry.shift == 'Afternoon' %}selected{% endif %}>Afternoon</option>
+                            <option {% if entry.shift == 'Evening' %}selected{% endif %}>Evening</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="time" name="start_time" value="{{ entry.start_time | formatTimeForInput }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="time" name="end_time" value="{{ entry.end_time | formatTimeForInput }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Class Standard</label>
+                        <input type="text" name="class_standard" value="{{ entry.class_standard }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Subject(s)</label>
+                        <input type="text" name="subject" value="{{ entry.subject }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Latitude</label>
+                        <input type="text" name="latitude" value="{{ entry.latitude }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Longitude</label>
+                        <input type="text" name="longitude" value="{{ entry.longitude }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" name="role" value="{{ entry.role }}" required>
+                    </div>
+
+                    {% if entry.seasonalRule %}
+                    <fieldset class="seasonal-fieldset">
+                        <legend>Seasonal Timings (Rule ID: {{ entry.seasonalRule._id }})</legend>
+                        <input type="hidden" name="seasonal_rule_id" value="{{ entry.seasonalRule._id }}">
+                        <div class="form-group">
+                            <label>Summer (MM-DD)</label>
+                            <input type="text" name="summer_start_date" placeholder="Start" value="{{ entry.seasonalRule.summer.start_date }}">
+                            <input type="text" name="summer_end_date" placeholder="End" value="{{ entry.seasonalRule.summer.end_date }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Summer Times</label>
+                            <input type="time" name="summer_start_time" value="{{ entry.seasonalRule.summer.start_time }}">
+                            <input type="time" name="summer_end_time" value="{{ entry.seasonalRule.summer.end_time }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Winter (MM-DD)</label>
+                            <input type="text" name="winter_start_date" placeholder="Start" value="{{ entry.seasonalRule.winter.start_date }}">
+                            <input type="text" name="winter_end_date" placeholder="End" value="{{ entry.seasonalRule.winter.end_date }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Winter Times</label>
+                            <input type="time" name="winter_start_time" value="{{ entry.seasonalRule.winter.start_time }}">
+                            <input type="time" name="winter_end_time" value="{{ entry.seasonalRule.winter.end_time }}">
+                        </div>
+                    </fieldset>
+                    {% endif %}
+
+                    <div class="actions">
+                        <button type="submit" class="action-button">Update</button>
+                    </div>
+                </form>
+                <form action="/admin/schedule-management/delete/{{ entry.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete schedule ID {{ entry.id }}? This cannot be undone.')" style="padding: 0 1rem 1rem 1rem;">
+                    <input type="hidden" name="volunteer_id" value="{{ entry.volunteer_id }}">
+                    {% if entry.seasonalRule %}
+                    <input type="hidden" name="seasonal_rule_id" value="{{ entry.seasonalRule._id }}">
+                    {% endif %}
+                    <button type="submit" class="action-button delete-button" style="width:100%;">Delete This Schedule Entry</button>
+                </form>
+            </div>
+            {% endfor %}
+        {% elif searchVolunteerId %}
+            <div class="card">No schedules found for Volunteer ID {{ searchVolunteerId }}.</div>
+        {% endif %}
+    </main>
+</body>
+</html>

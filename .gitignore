@@ -1,0 +1,8 @@
+# .gitignore
+
+node_modules
+.env
+
+# Ignore Google Cloud secret key
+config/gcs-service-account-key.json
+config/ca.pem

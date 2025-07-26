@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mark Attendance – SOHOJIA FOUNDATION</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 420px;
+    margin: 2rem auto;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background-color: #fdfdfd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    color: #333;
+}
+h2 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+p {
+    margin-bottom: 1rem;
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+.button {
+    padding: 0.9rem 1.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: #f34f4c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    touch-action: manipulation;
+    margin-top: 0.5rem;
+    min-width: 150px;
+}
+.button:disabled {
+    background-color: #bbb;
+    cursor: not-allowed;
+}
+video {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin: 1rem auto;
+    max-width: 100%;
+    height: auto;
+    display: none;
+}
+canvas {
+    display: none;
+}
+#location-info {
+    margin-top: 1.5rem;
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: left;
+    background: #fff6f6;
+    border: 1px solid #f34f4c;
+    padding: 12px 15px;
+    border-radius: 8px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+    user-select: text;
+}
+#venue-status {
+    font-weight: 600;
+    margin-top: 8px;
+    color: #f34f4c; /* default red for outside */
+}
+#processing-message {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #007bff; /* A blue color for processing */
+    font-weight: 500;
+    display: none; /* Initially hidden */
+}
+#attendance-success-message {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #28a745; /* Green color for success */
+    font-weight: 600;
+    display: none; /* Initially hidden */
+    padding: 10px;
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    background-color: #e6ffe6;
+}
+#status-message { /* New style for general status messages */
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #555;
+    font-weight: 500;
+    display: none;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
+@media (max-width: 450px) {
+    body {
+    margin: 1rem;
+    padding: 1rem;
+    max-width: 100%;
+    }
+    .button {
+    width: 100%;
+    min-width: auto;
+    font-size: 1.05rem;
+    padding: 0.9rem 0;
+    }
+    #location-info {
+    max-width: 100%;
+    font-size: 0.9rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<h2>Mark Your Attendance</h2>
+<p>Please verify your attendance using face or fingerprint along with location.</p>
+
+<div id="action-buttons">
+<button id="face-btn" class="button" disabled>Verify with Face</button>
+<button id="fingerprint-btn" class="button" disabled>Verify with Fingerprint</button>
+</div>
+
+<video id="video" width="320" height="240" autoplay playsinline></video>
+<button id="snap-btn" class="button" style="display:none; margin-top: 1rem;">Snap Photo & Submit</button>
+<div id="processing-message" style="display: none;">Processing...</div>
+<div id="attendance-success-message" style="display: none;">Attendance Marked Successfully! Redirecting...</div>
+<div id="status-message" style="display: none;"></div> <canvas id="canvas" width="320" height="240"></canvas>
+
+<div id="location-info" style="display:none;">
+<p><strong>Your Location:</strong> <span id="user-coords"></span></p>
+<p><strong>Session Location:</strong> <span id="session-coords"></span></p>
+<p><strong>Distance to Venue:</strong> <span id="distance-to-venue"></span> meters</p>
+<p id="venue-status"></p>
+</div>
+
+<script>
+    const VID = window.location.pathname.split('/')[2]; // "100000"
+    window.VID = VID; // keep globally accessible
+
+
+    // Grab DOM elements
+    const faceBtn                 = document.getElementById('face-btn');
+    const fingerprintBtn          = document.getElementById('fingerprint-btn');
+    const video                   = document.getElementById('video');
+    const canvas                  = document.getElementById('canvas');
+    const snapBtn                 = document.getElementById('snap-btn');
+    const processingMessage       = document.getElementById('processing-message');
+    const attendanceSuccessMessage= document.getElementById('attendance-success-message');
+    const statusMessage           = document.getElementById('status-message');
+    const locationInfo            = document.getElementById('location-info');
+    const userCoords              = document.getElementById('user-coords');
+    const sessionCoords           = document.getElementById('session-coords');
+    const distanceToVenue         = document.getElementById('distance-to-venue');
+    const venueStatus             = document.getElementById('venue-status');
+
+    let currentSessionDetails = null;
+    let attendanceMarked      = false;
+    function b64urlToB64(b64url) {
+    let b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+    // pad with “=” until length is a multiple of 4
+    while (b64.length % 4) b64 += '=';
+    return b64;
+    }
+
+    function decodeBase64Url(b64url) {
+    // convert into valid base64, then into raw bytes
+    const b64 = b64urlToB64(b64url);
+    const binary = window.atob(b64);
+    return Uint8Array.from(binary, c => c.charCodeAt(0));
+    }
+    // Redirect helper
+    function redirectToDashboard() {
+    setTimeout(() => {
+        window.location.href = `/volunteer-dashboard/${window.VID}/dashboard`;
+    }, 2000);
+    }
+
+    // Show status messages
+    function showStatusMessage(msg, type = 'info') {
+    statusMessage.textContent = msg;
+    statusMessage.style.display = 'block';
+    if (type === 'error') {
+        statusMessage.style.color = '#f34f4c';
+        statusMessage.style.borderColor = '#f34f4c';
+        statusMessage.style.backgroundColor = '#fff6f6';
+    } else if (type === 'success') {
+        statusMessage.style.color = '#28a745';
+        statusMessage.style.borderColor = '#28a745';
+        statusMessage.style.backgroundColor = '#e6ffe6';
+    } else {
+        statusMessage.style.color = '#555';
+        statusMessage.style.borderColor = '#ccc';
+        statusMessage.style.backgroundColor = '#f0f0f0';
+    }
+    }
+
+    // UI helpers
+    function hideAllExtraUI() {
+    video.style.display             = 'none';
+    snapBtn.style.display           = 'none';
+    processingMessage.style.display = 'none';
+    attendanceSuccessMessage.style.display = 'none';
+    faceBtn.style.display           = 'inline-block';
+    fingerprintBtn.style.display    = 'inline-block';
+    }
+
+    function disableAllButtons() {
+    faceBtn.disabled        = true;
+    fingerprintBtn.disabled = true;
+    snapBtn.disabled        = true;
+    }
+
+    function resetUI() {
+    hideAllExtraUI();
+    disableAllButtons();
+    if (!attendanceMarked) updateUIStatus();
+    }
+
+    // Haversine formula
+    function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const toRad = d => d * Math.PI / 180;
+    const φ1 = toRad(lat1), φ2 = toRad(lat2);
+    const Δφ = toRad(lat2 - lat1), Δλ = toRad(lon2 - lon1);
+    const a = Math.sin(Δφ/2)**2 +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // Update UI based on session & location
+    async function updateUIStatus() {
+    hideAllExtraUI();
+    statusMessage.style.display = 'none';
+
+    const VID = window.VID;
+    try {
+        const resp = await fetch(`/api/volunteer/${VID}/attendance-button-status`);
+        if (!resp.ok) throw new Error('Fetch error');
+        const st = await resp.json();
+
+        if (!st.sessionActive) {
+        showStatusMessage("No active session at the moment.", 'info');
+        disableAllButtons();
+        return;
+        }
+        currentSessionDetails = st.sessionDetails;
+
+        if (st.attendanceMarked) {
+        attendanceMarked = true;
+        faceBtn.style.display        = 'none';
+        fingerprintBtn.style.display = 'none';
+        showStatusMessage("✅ Your attendance is already marked.", 'success');
+        return;
+        }
+
+        if (!navigator.geolocation) {
+        showStatusMessage("Geolocation not supported.", 'error');
+        disableAllButtons();
+        return;
+        }
+
+        navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude: lat, longitude: lng, accuracy: acc } = pos.coords;
+        const slat = parseFloat(currentSessionDetails.location_lat);
+        const slng = parseFloat(currentSessionDetails.location_long);
+        const dist = getDistance(lat, lng, slat, slng);
+
+        userCoords.textContent      = `${lat.toFixed(5)}, ${lng.toFixed(5)} (±${acc.toFixed(1)}m)`;
+        sessionCoords.textContent   = `${slat.toFixed(5)}, ${slng.toFixed(5)}`;
+        distanceToVenue.textContent  = dist.toFixed(2);
+        locationInfo.style.display   = 'block';
+
+        if (dist > 100) {
+            venueStatus.textContent = "You are outside the allowed attendance zone.";
+            showStatusMessage("You are outside the allowed attendance zone.", 'error');
+            disableAllButtons();
+        } else {
+            venueStatus.textContent = "You are within the attendance zone.";
+            showStatusMessage("Proceed with Face or Fingerprint verification.");
+            faceBtn.disabled        = false;
+            fingerprintBtn.disabled = false;
+        }
+        }, err => {
+        showStatusMessage("Location access denied.", 'error');
+        disableAllButtons();
+        }, {
+        enableHighAccuracy: true,
+        timeout: 10000
+        });
+
+    } catch (e) {
+        showStatusMessage("Error loading session status.", 'error');
+        disableAllButtons();
+    }
+    }
+
+    // Start camera for face verification
+    async function startCamera() {
+    hideAllExtraUI();
+    statusMessage.style.display = 'none';
+    processingMessage.textContent = 'Activating camera...';
+    processingMessage.style.display = 'block';
+    disableAllButtons();
+
+    try {
+        // 1) Set up a promise that resolves on loadedmetadata
+        const metadataPromise = new Promise((resolve, reject) => {
+        // timeout in case metadata never arrives
+        const timer = setTimeout(() => {
+            reject(new Error('Video metadata load timed out'));
+        }, 5000);
+
+        function handler() {
+            clearTimeout(timer);
+            video.removeEventListener('loadedmetadata', handler);
+            resolve();
+        }
+        video.addEventListener('loadedmetadata', handler);
+        });
+
+        // 2) Grab the camera
+        const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' }
+        });
+
+        // 3) Hook up the stream and play
+        video.srcObject = stream;
+        video.style.display = 'block';
+        await video.play();
+
+        // 4) Wait for metadata (size, etc.) to be ready
+        await metadataPromise;
+
+        // 5) Now hide the “Activating camera…” message and show the snap button
+        processingMessage.style.display = 'none';
+        snapBtn.style.display = 'inline-block';
+        snapBtn.disabled = false;
+    } catch (err) {
+        console.error('Camera setup failed:', err);
+        alert("Could not access camera: " + err.message);
+        resetUI();
+    }
+    }
+
+
+    // Stop camera
+    function stopCamera() {
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(t => t.stop());
+        video.srcObject = null;
+    }
+    video.style.display   = 'none';
+    snapBtn.style.display = 'none';
+    }
+
+    // Capture photo
+    function capturePhoto() {
+    if (video.readyState < 2) {
+        alert("Video not ready.");
+        return null;
+    }
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    return dataUrl.split(',')[1];
+    }
+
+    // Face attendance
+    async function verifyFaceAttendance() {
+    disableAllButtons();
+    processingMessage.textContent = 'Verifying face...';
+    processingMessage.style.display = 'block';
+    statusMessage.style.display = 'none';
+
+    const base64Image = capturePhoto();
+    if (!base64Image) { resetUI(); return; }
+
+    const bytes = atob(base64Image);
+    const arr = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+    const blob = new Blob([arr], { type: 'image/jpeg' });
+
+    navigator.geolocation.getCurrentPosition(async pos => {
+        try {
+        const form = new FormData();
+        form.append('face', blob, 'photo.jpg');
+        form.append('latitude', pos.coords.latitude);
+        form.append('longitude', pos.coords.longitude);
+        form.append('accuracy', pos.coords.accuracy);
+
+        const res = await fetch(`/volunteer-dashboard/${window.VID}/face/verify`, {
+            method: 'POST',
+            body: form
+        });
+        const data = await res.json();
+        if (res.ok) {
+            processingMessage.style.display = 'none';
+            attendanceSuccessMessage.style.display = 'block';
+            stopCamera();
+            attendanceMarked = true;
+            faceBtn.style.display = 'none';
+            fingerprintBtn.style.display = 'none';
+            redirectToDashboard();
+        } else {
+            alert(data.error || "Face verification failed.");
+            resetUI();
+        }
+        } catch (err) {
+        alert("Error during face verification: " + err.message);
+        resetUI();
+        }
+    }, err => {
+        alert("Location access required.");
+        resetUI();
+    }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+
+    // Fingerprint attendance
+    async function verifyFingerprintAttendance() {
+    disableAllButtons();
+    processingMessage.textContent = 'Verifying fingerprint...';
+    processingMessage.style.display = 'block';
+    statusMessage.style.display = 'none';
+
+    navigator.geolocation.getCurrentPosition(async pos => {
+        try {
+        const body = {
+            volunteer_id: window.VID,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+        };
+        // 1. Fetch assertion options
+        const challengeRes = await fetch(
+        `/volunteer-dashboard/${window.VID}/fingerprint/assertion-options`
+        );
+        if (!challengeRes.ok) {
+        const err = await challengeRes.text();
+        throw new Error(`Failed to load assertion options: ${err}`);
+        }
+        const { publicKey: options } = await challengeRes.json();
+
+        // 2. Transform both challenge & credential IDs
+        const publicKey = {
+        challenge: decodeBase64Url(options.challenge),
+        allowCredentials: options.allowCredentials.map(cred => ({
+            id:          decodeBase64Url(cred.id),
+            type:        cred.type,
+            transports:  cred.transports
+        })),
+        timeout:           options.timeout,
+        userVerification:  options.userVerification
+        };
+
+        // 3. Call WebAuthn
+        const assertion = await navigator.credentials.get({ publicKey });
+        // …then POST it to `/fingerprint/verify` as you already do
+
+
+        // 3. Send result to backend for verification
+        const res = await fetch(`/volunteer-dashboard/${window.VID}/fingerprint/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            id: assertion.id,
+            rawId: btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))),
+            type: assertion.type,
+            response: {
+            authenticatorData: btoa(String.fromCharCode(...new Uint8Array(assertion.response.authenticatorData))),
+            clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(assertion.response.clientDataJSON))),
+            signature: btoa(String.fromCharCode(...new Uint8Array(assertion.response.signature))),
+            userHandle: assertion.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(assertion.response.userHandle))) : null
+            },
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+        })
+        });
+
+        let data;
+        try {
+            data = await res.json();
+        } catch (e) {
+            const text = await res.text();  // Fallback to plain text
+            alert(`Error during fingerprint verification: ${text}`);
+            resetUI();
+            return;
+        }
+
+        if (res.ok && data.success) {
+            processingMessage.style.display = 'none';
+            attendanceSuccessMessage.style.display = 'block';
+            attendanceMarked = true;
+            faceBtn.style.display = 'none';
+            fingerprintBtn.style.display = 'none';
+            redirectToDashboard();
+        } else {
+            alert(data.message || "Fingerprint verification failed.");
+            resetUI();
+        }
+
+        } catch (err) {
+        alert("Error during fingerprint verification: " + err.message);
+        resetUI();
+        }
+    }, err => {
+        alert("Location access required.");
+        resetUI();
+    }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+
+    // Event listeners
+    faceBtn.addEventListener('click', async () => {
+    hideAllExtraUI();
+    statusMessage.style.display = 'none';
+    fingerprintBtn.style.display = 'none';
+    await startCamera();
+    });
+
+    snapBtn.addEventListener('click', async () => {
+    await verifyFaceAttendance();
+    });
+
+    fingerprintBtn.addEventListener('click', async () => {
+    hideAllExtraUI();
+    statusMessage.style.display = 'none';
+    faceBtn.style.display = 'none';
+    stopCamera();
+    await verifyFingerprintAttendance();
+    });
+
+    window.addEventListener('load', updateUIStatus);
+
+
+</script>
+
+
+
+</body>
+</html>

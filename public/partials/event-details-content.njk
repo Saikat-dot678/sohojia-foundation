@@ -1,0 +1,665 @@
+<style>
+    /* Consistent font and base colors */
+    body {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: #333;
+    }
+
+    /* Card/Panel Styling - General event container (defined in event-report.html .detail-card) */
+    /* .event-card styles are primarily defined in the main event-report.html */
+
+    /* Section Headers */
+    .event-card h3 {
+        font-size: 1.8rem; /* Larger event type heading */
+        color: rgb(243,79,76);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        border-bottom: 2px solid #f0f2f5; /* Subtle separator */
+        padding-bottom: 1rem;
+    }
+    .event-card h4 {
+        font-size: 1.3rem;
+        color: #444;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    .event-card h5 { /* For nested blocks */
+        font-size: 1.1rem;
+        color: rgb(243,79,76);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    /* Info Grid for Key-Value Pairs */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive 2-column on wider screens */
+        gap: 1rem; /* Space between items */
+        margin-bottom: 1rem;
+    }
+    .info-item {
+        background: #f9f9f9;
+        padding: 0.8rem;
+        border-radius: 6px;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+    }
+    .info-item strong {
+        color: #555;
+        font-size: 0.9em;
+        margin-bottom: 0.2rem;
+    }
+    .info-item span {
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* Description Text */
+    .description-text {
+        font-style: italic;
+        color: #666;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        background: #fdfdfd;
+        padding: 1rem;
+        border-left: 4px solid rgb(243,79,76);
+        border-radius: 4px;
+    }
+
+    /* Horizontal Rule for sections */
+    .section-divider {
+        border:0;
+        border-top: 1px solid #eee;
+        margin: 2rem 0; /* More vertical space */
+    }
+
+    /* Data Table Styling (for Class Data, Painting Submissions) */
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        font-size: 0.95rem;
+        background: #fff;
+        border-radius: 8px; /* Rounded corners for the whole table */
+        overflow: hidden; /* Ensures rounded corners apply to content */
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* Subtle shadow */
+    }
+    .data-table th, .data-table td {
+        border: 1px solid #eee; /* Light borders */
+        padding: 0.8rem;
+        text-align: left;
+    }
+    .data-table th {
+        background-color: #f0f2f5;
+        color: #555;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85em;
+    }
+    .data-table tbody tr:nth-child(even) {
+        background-color: #fcfcfc;
+    }
+    .data-table img {
+        max-width: 80px; /* Smaller images in tables */
+        max-height: 80px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+    .data-table a {
+        color: rgb(243,79,76);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .data-table a:hover {
+        text-decoration: underline;
+    }
+    .description-cell {
+        max-width: 200px; /* Limit width of description cells */
+        white-space: normal; /* Allow text to wrap */
+        word-break: break-word; /* Break long words */
+    }
+
+    /* Nested Block Styling (for Experiments, Schools) */
+    .nested-block {
+        background: #fcfcfc;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 1rem;
+        position: relative; /* For potential future styling */
+    }
+    .nested-block ul {
+        list-style: none; /* Remove default list style */
+        padding-left: 1rem; /* Indent for readability */
+        margin-top: 0.5rem;
+    }
+    .nested-block li {
+        margin-bottom: 0.5rem;
+    }
+    .nested-block p {
+        font-size: 0.9em;
+        color: #555;
+        margin-left: 1.5rem; /* Indent participant text */
+        margin-top: 0.3rem;
+    }
+
+    /* Photo Gallery FIX - Improved aspect ratio and scaling */
+    .photo-gallery {
+        display: grid;
+        /* Default PC: 3 columns, adjust minmax for visual balance */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 15px;
+        margin-top: 1.5rem;
+        justify-content: center;
+    }
+    /* Larger screens can have more columns */
+    @media (min-width: 1024px) {
+        .photo-gallery {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+    }
+
+    .photo-gallery .gallery-item {
+        width: 100%;
+        /* Control aspect ratio precisely: 16:9 for wider photos, common for landscape */
+        padding-bottom: calc(9 / 16 * 100%); /* Maintain 16:9 aspect ratio */
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px; /* Slightly more rounded for aesthetics */
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .photo-gallery .gallery-item:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .photo-gallery .gallery-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Cover the area, cropping if necessary */
+        display: block;
+    }
+
+    /* Science Fair Winners - Card Layout (Reworked for better alignment) */
+    .winner-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 1-2 columns for winners on PC */
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        justify-content: center;
+    }
+    .winner-card-item {
+        background: #fcfcfc;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.2rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center content horizontally */
+        text-align: center;
+    }
+    .winner-card-item img { /* Actual winner photo */
+        width: 100px;
+        height: 100px;
+        border-radius: 50%; /* Circular photo */
+        object-fit: cover;
+        border: 3px solid rgb(243,79,76);
+        margin-bottom: 0.8rem;
+    }
+    /* Placeholder for winners if no photo (NEW STYLES) */
+    .winner-card-item-no-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        color: #aaa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-align: center;
+        line-height: 1.2; /* Adjust for text vertical centering */
+        border: 1px solid #ccc;
+        flex-shrink: 0; /* Prevent it from shrinking */
+        margin-bottom: 0.8rem; /* Consistent spacing with photo */
+        padding: 0.5rem; /* Ensure text fits */
+    }
+
+
+    .winner-card-item .winner-rank {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: rgb(243,79,76);
+        margin-bottom: 0.5rem;
+    }
+    .winner-card-item .winner-detail-list { /* Container for all key-value pairs */
+        display: flex;
+        flex-direction: column;
+        width: 100%; /* Occupy full width for consistent alignment */
+        gap: 0.2rem; /* Small vertical gap between detail rows */
+        margin-bottom: 0.8rem; /* Space before description */
+    }
+    .winner-card-item .winner-detail { /* Each key-value pair row */
+        /* Using flexbox for label-value alignment */
+        display: flex; 
+        justify-content: space-between; /* Pushes label left, value right */
+        font-size: 0.95rem;
+        color: #555;
+        padding: 0 0.5rem; /* Small horizontal padding for details */
+        align-items: flex-start; /* Align to top if multi-line text */
+        text-align: left; /* Ensure text starts from left */
+    }
+    .winner-card-item .winner-detail strong {
+        color: #333;
+        flex-shrink: 0; /* Prevent label from shrinking */
+        margin-right: 0.5rem; /* Space between label and value */
+        text-align: left; /* Ensure label aligns left within its flex item */
+    }
+    .winner-card-item .winner-detail span {
+        text-align: right; /* Align value to the right */
+        word-break: break-word; /* Ensure long values wrap */
+        flex-grow: 1; /* Allow value to take remaining space */
+        min-width: 0; /* Allow text to shrink/wrap within flex */
+    }
+
+    .winner-card-item .winner-description {
+        font-style: italic;
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem; /* Space from details */
+        line-height: 1.4;
+        width: 100%;
+        padding: 0 0.5rem;
+    }
+
+
+    /* Class-wise Data Table FIX (Mobile-first transformation) */
+    /* Wrapper for table, handles showing/hiding */
+    .data-table-wrapper { 
+        display: block; /* Default for PC */
+        overflow-x: auto; /* Allow horizontal scroll on PC if content is wide */
+        -webkit-overflow-scrolling: touch;
+        margin-top: 1rem;
+    }
+    .data-table-wrapper table.data-table {
+        display: table; /* Ensure table is shown on PC */
+    }
+
+    /* NEW grid for mobile table items (Class-wise data) */
+    .class-data-grid { 
+        display: none; /* Hidden by default on PC, activated on mobile */
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .class-data-item { /* New card for each class entry on mobile */
+        background: #fcfcfc;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 1rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .class-data-item .detail-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: #555;
+    }
+    .class-data-item .detail-row strong {
+        flex-shrink: 0;
+        color: #333;
+    }
+    .class-data-item .detail-row span {
+        text-align: right;
+        word-break: break-word;
+    }
+    .class-data-item img {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 4px;
+        object-fit: cover;
+        margin-top: 0.5rem;
+        align-self: center; /* Center photo if alone */
+    }
+    .class-data-item .description-text-small {
+        font-size: 0.85rem;
+        font-style: italic;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .event-card {
+            padding: 1rem;
+        }
+        .event-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+        }
+        .event-card h4 {
+            font-size: 1.15rem;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        .info-grid {
+            grid-template-columns: 1fr; /* Stack info items on small screens */
+            gap: 0.8rem;
+        }
+        .info-item {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        .info-item span {
+            font-size: 1rem;
+        }
+        .description-text {
+            font-size: 0.95rem;
+            margin-top: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .section-divider {
+            margin: 1.5rem 0;
+        }
+        
+        /* Class Data Table: Hide traditional table on mobile, show grid/cards */
+        .data-table-wrapper {
+            display: none; /* Hide traditional table on mobile */
+        }
+        .class-data-grid {
+            display: grid; /* Show grid of cards on mobile */
+            grid-template-columns: 1fr; /* Stack cards vertically */
+            gap: 1rem;
+        }
+        .class-data-item {
+            padding: 0.8rem;
+        }
+        .class-data-item img {
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+
+        .nested-block {
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+        }
+        .nested-block h5 {
+            font-size: 1rem;
+        }
+        .nested-block p {
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .photo-gallery {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjust for smaller screens */
+            gap: 8px;
+        }
+        .photo-gallery .gallery-item {
+            padding-top: 100%; /* Make square on mobile to prevent extreme stretching */
+        }
+        .winner-cards-grid {
+            grid-template-columns: 1fr; /* Stack winners vertically on mobile */
+            gap: 1rem;
+        }
+        .winner-card-item img {
+            width: 80px;
+            height: 80px;
+        }
+        /* No Photo Placeholder mobile adjustment */
+        .winner-card-item-no-photo {
+            width: 80px;
+            height: 80px;
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem; /* Adjust spacing */
+            line-height: 1; /* Tighter line height for mobile */
+        }
+        .winner-card-item .winner-rank {
+            font-size: 1.2rem;
+        }
+        .winner-card-item .winner-detail, .winner-card-item .winner-description {
+            font-size: 0.85rem;
+            padding: 0 0.2rem; /* Reduce horizontal padding */
+        }
+        .winner-card-item .winner-description {
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 1.25rem;
+        }
+        .page-header h2 {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+
+<div class="event-card">
+    <h3>{{ event.event_type }} on {{ formatDateHelper(event.date) }}</h3>
+
+    <div class="info-grid">
+        <div class="info-item"><strong>Date</strong><span>{{ formatDateHelper(event.date) }}</span></div>
+        <div class="info-item"><strong>Time</strong><span>{{ event.time | default('N/A') }}</span></div>
+        {# Science Fair specific: Location #}
+        {% if event.event_type === 'Science Fair' %}
+            <div class="info-item"><strong>Location</strong><span>{{ event.location | default('N/A') }}</span></div>
+        {% endif %}
+    </div>
+    {% if event.description %}
+        <p class="description-text">{{ event.description }}</p>
+    {% endif %}
+
+    {# General Stats Section #}
+    {# These fields are common to ALL event types #}
+    {% if event.total_students_present is defined %}
+        <hr class="section-divider">
+        <h4>Attendance Summary</h4>
+        <div class="info-grid">
+            <div class="info-item"><strong>Total Students</strong><span>{{ event.total_students_present | default(0) }}</span></div>
+            <div class="info-item"><strong>Total Boys</strong><span>{{ event.total_boys_present | default(0) }}</span></div>
+            <div class="info-item"><strong>Total Girls</strong><span>{{ event.total_girls_present | default(0) }}</span></div>
+            {# Non-Science Fair specific: Lead Teacher #}
+            {% if event.event_type !== 'Science Fair' and event.teacher_name %}
+                <div class="info-item"><strong>Lead Teacher</strong><span>{{ event.teacher_name | default('N/A') }}</span></div>
+            {% endif %}
+            {# Science Fair specific: Number of Teachers #}
+            {% if event.event_type === 'Science Fair' and event.number_of_teachers is defined %}
+                <div class="info-item"><strong>Teachers Present</strong><span>{{ event.number_of_teachers | default(0) }}</span></div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {# Recitation Names Section #}
+    {% set recitationNames = (event.recitation_names or []) %} {# Ensure it's an array #}
+    {% if event.event_type === 'Recitation' and recitationNames is iterable and recitationNames.length > 0 %}
+        <hr class="section-divider">
+        <h4>Poems / Recitations</h4>
+        <ul>
+            {% for name in recitationNames %}
+                <li>{{ name | default('N/A') }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# Class Data Section (Karate and Recitation) - NOW WITH MOBILE CARD DISPLAY #}
+    {% set classData = (event.class_data or []) %} {# Ensure it's an array #}
+    {% if (event.event_type === 'Karate' or event.event_type === 'Recitation') and classData is iterable and classData.length > 0 %}
+        <hr class="section-divider">
+        <h4>Class-wise Data</h4>
+        <div class="data-table-wrapper"> {# Contains the traditional table for desktop #}
+            <table class="data-table">
+                <thead><tr><th>Class</th><th>Teacher</th><th>Boys</th><th>Girls</th><th>Photo</th><th>Description</th></tr></thead>
+                <tbody>
+                    {% for data in classData %}
+                        <tr>
+                            <td data-label="Class">{{ data.class_standard | default('N/A') }}</td>
+                            <td data-label="Teacher">{{ data.teacher_name | default('N/A') }}</td>
+                            <td data-label="Boys">{{ data.class_boys_present | default(0) }}</td>
+                            <td data-label="Girls">{{ data.class_girls_present | default(0) }}</td>
+                            <td data-label="Photo">
+                                {% if data.class_photo_url %}
+                                    <a href="{{ data.class_photo_url }}" target="_blank"><img src="{{ data.class_photo_url }}" alt="Class {{ data.class_standard }}"></a>
+                                {% else %}
+                                    No Photo
+                                {% endif %}
+                            </td>
+                            <td data-label="Description" class="description-cell">{{ data.class_description | default('N/A') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {# NEW: Mobile-specific card display for Class Data #}
+        <div class="class-data-grid">
+            {% for data in classData %}
+                <div class="class-data-item">
+                    <div class="detail-row"><strong>Class:</strong><span>{{ data.class_standard | default('N/A') }}</span></div>
+                    <div class="detail-row"><strong>Teacher:</strong><span>{{ data.teacher_name | default('N/A') }}</span></div>
+                    <div class="detail-row"><strong>Boys:</strong><span>{{ data.class_boys_present | default(0) }}</span></div>
+                    <div class="detail-row"><strong>Girls:</strong><span>{{ data.class_girls_present | default(0) }}</span></div>
+                    {% if data.class_photo_url %}
+                        <img src="{{ data.class_photo_url }}" alt="Class {{ data.class_standard }}">
+                    {% endif %}
+                    {% if data.class_description %}
+                        <p class="description-text-small">{{ data.class_description }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Painting Submissions Section #}
+    {% set paintingsData = (event.paintings or []) %} {# Ensure it's an array #}
+    {% if event.event_type === 'Painting' and paintingsData is iterable and paintingsData.length > 0 %}
+        <hr class="section-divider">
+        <h4>Painting Submissions</h4>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead><tr><th>Painting</th><th>Student Name</th><th>Class</th></tr></thead>
+                <tbody>
+                    {% for painting in paintingsData %}
+                        <tr>
+                            <td data-label="Painting">
+                                {% if painting.image_url %}
+                                    <a href="{{ painting.image_url }}" target="_blank"><img src="{{ painting.image_url }}" alt="Painting by {{ painting.student_name }}"></a>
+                                {% else %}
+                                    No Image
+                                {% endif %}
+                            </td>
+                            <td data-label="Student">{{ painting.student_name | default('N/A') }}</td>
+                            <td data-label="Class">{{ painting.student_class | default('N/A') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {# Workshop Experiments Section #}
+    {% set workshopExperimentsData = (event.workshop_experiments or []) %} {# Ensure it's an array #}
+    {% if event.event_type === 'Weekly Science Workshop' and workshopExperimentsData is iterable and workshopExperimentsData.length > 0 %}
+        <hr class="section-divider">
+        <h4>Workshop Experiments</h4>
+        {% for exp in workshopExperimentsData %}
+            <div class="nested-block">
+                <h5>{{ exp.exp_name | default('N/A') }}</h5>
+                <div class="info-grid">
+                    <div class="info-item"><strong>Teacher</strong><span>{{ exp.teacher_name | default('N/A') }}</span></div>
+                    <div class="info-item"><strong>Class</strong><span>{{ exp.class_name | default('N/A') }}</span></div>
+                </div>
+                {% if exp.description %}<p class="description-text">{{ exp.description }}</p>{% endif %}
+                {% if exp.photo_url %}<a href="{{ exp.photo_url }}" target="_blank"><img src="{{ exp.photo_url }}" style="max-width:200px; margin-top:10px; border-radius:5px; object-fit: cover; height: 120px;"></a>{% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {# Science Fair - Participating Schools #}
+    {% set participatingSchoolsData = (event.participating_schools or []) %}
+    {% if event.event_type === 'Science Fair' and participatingSchoolsData is iterable and participatingSchoolsData.length > 0 %}
+        <hr class="section-divider">
+        <h4>Participating Schools</h4>
+        {% for school in participatingSchoolsData %}
+            <div class="nested-block">
+                <h5>{{ school.school_name | default('N/A') }}</h5>
+                {% set schoolExperiments = (school.experiments or []) %}
+                {% if schoolExperiments is iterable and schoolExperiments.length > 0 %}
+                    <strong>Experiments:</strong>
+                    <ul>
+                        {% for exp in schoolExperiments %}
+                            <li>
+                                <strong>{{ exp.name | default('N/A') }}:</strong> {{ exp.description | default('N/A') }}
+                                {% set studentNames = (exp.student_names or []) %}
+                                {% if studentNames is iterable and studentNames.length > 0 %}
+                                    <p style="font-size: 0.9em; color: #555; margin-left: 20px; margin-top: 5px;">
+                                        <strong>Participants:</strong> {{ studentNames | safeJoin(', ') }} {# Apply safeJoin #}
+                                    </p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="font-size: 0.9em; color: #777; font-style: italic;">No experiments listed for this school.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {# Science Fair - Winners (NOW A CARD LAYOUT) #}
+    {% set winnersData = (event.winners or []) %}
+    {% if event.event_type === 'Science Fair' and winnersData is iterable and winnersData.length > 0 %}
+        <hr class="section-divider">
+        <h4>Winners</h4>
+        <div class="winner-cards-grid"> {# Use a grid for cards instead of table #}
+            {% for winner in winnersData %}
+                <div class="winner-card-item">
+                    {% if winner.winner_photo_url %}
+                        <img src="{{ winner.winner_photo_url }}" alt="Winner Photo">
+                    {% else %}
+                        <div class="winner-card-item-no-photo">No Photo</div> {# Use a div for placeholder #}
+                    {% endif %}
+                    <p class="winner-rank">Rank: {{ winner.rank | default('N/A') }}</p>
+                    <div class="winner-detail-list"> {# Use flex column for details #}
+                        <p class="winner-detail"><strong>School:</strong><span>{{ winner.school_name | default('N/A') }}</span></p>
+                        <p class="winner-detail"><strong>Students:</strong><span>{{ (winner.student_names or []) | safeJoin(', ') }}</span></p>
+                        <p class="winner-detail"><strong>Experiment:</strong><span>{{ winner.experiment_name | default('N/A') }}</span></p>
+                    </div>
+                    {% if winner.experiment_description %}
+                        <p class="winner-description">{{ winner.experiment_description }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# General Photo Gallery #}
+    {% set eventPhotos = (event.photos or []) %}
+    {% if eventPhotos is iterable and eventPhotos.length > 0 %}
+        <hr class="section-divider">
+        <h4>Event Photo Gallery</h4>
+        <div class="photo-gallery">
+            {% for photoUrl in eventPhotos %}
+                <a href="{{ photoUrl }}" target="_blank" class="gallery-item">
+                    <img src="{{ photoUrl }}" alt="Event Photo">
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

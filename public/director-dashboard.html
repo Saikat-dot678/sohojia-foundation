@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+            user-scalable=no, viewport-fit=cover">
+<title>Director Dashboard – SOHOJIA FOUNDATION</title>
+<meta name="theme-color" content="#f34f4c">
+<link rel="apple-touch-icon" href="logo.png">
+<style>
+    /* Styles are identical to event-manager.html */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333; }
+    body { background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background: rgb(243,79,76); padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    header h1 { color: #fff; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .page-header { padding: 1rem; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); text-align: center; margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.25rem; color: #555; font-weight: normal; }
+    main { flex: 1; padding: 1rem; width: 100%; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .profile { text-align: center; }
+    .profile img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; border: 4px solid rgb(243,79,76); }
+    .profile h3 { font-size: 1.6rem; margin-bottom: 0.5rem; color: rgb(243,79,76); font-weight: 600; }
+    .profile p { font-size: 0.95rem; color: #666; margin-bottom: 0.4rem; text-align: left; padding-left: 1rem; padding-right: 1rem; }
+    .profile p strong { color: #444; }
+    .button-panel { text-align: center; }
+    .button-panel h4 { font-size: 1.3rem; margin-bottom: 1rem; color: #333; text-align: center; }
+    .button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; justify-content: center; }
+    .button { display: block; width: 100%; padding: 0.9rem 1.2rem; background: rgb(243,79,76); color: #fff; border: none; border-radius: 6px; text-decoration: none; font-size: 1rem; cursor: pointer; transition: background 0.2s ease, transform 0.1s ease; font-weight: 500; }
+    .button:hover { background: #c73c39; transform: translateY(-2px); }
+    .button:active { transform: translateY(0); }
+    .button.btn-logout { background: #dc3545; margin-top: 1.5rem; }
+    .button.btn-logout:hover { background: #c82333; }
+    footer { background: #333; padding: 1rem; text-align: center; font-size: 0.85rem; color: #aaa; margin-top: auto; }
+</style>
+</head>
+<body>
+<header><h1>SOHOJIA FOUNDATION</h1></header>
+<div class="page-header"><h2>Director Dashboard</h2></div>
+
+<main>
+    <section class="profile card">
+        <img src="{{ director.photo_url if director.photo_url else 'https://via.placeholder.com/120?text=No+Photo' }}" alt="{{ director.name }}">
+        <h3>{{ director.name }}</h3>
+        <p><strong>Director ID:</strong> {{ director.director_id }}</p>
+        <p><strong>Foundation:</strong> {{ director.foundation_name }} (ID: {{ director.foundation_id }})</p>
+        <p><strong>Status:</strong> {{ director.status | capitalize }}</p>
+        <p><strong>Education:</strong> {{ director.education }}</p>
+        <p><strong>Education Description:</strong> {{ director.education_description }}</p>
+        <p><strong>Reimbursement:</strong> ₹{{ director.reimbursement }}</p>
+        <p><strong>Aadhar No:</strong> {{ director.aadhar_number }}</p>
+        <p><strong>Email:</strong> {{ director.email }}</p>
+        <p><strong>Phone:</strong> {{ director.phone }}</p>
+        <p><strong>Alternative Phone:</strong> {{ director.alt_phone }}</p>
+        <p><strong>Address:</strong> {{ director.address }}</p>
+        <p><strong>Bank A/C:</strong> {{ director.bank_acc_no }}</p>
+        <p><strong>IFSC:</strong> {{ director.bank_ifsc }}</p>
+    </section>
+
+    {% if currentUser and currentUser.role == 'center-program-director' and currentUser.id == director.director_id %}
+    <section class="button-panel card">
+        <h4>Director Actions</h4>
+        <div class="button-grid">
+            <a href="/foundation/{{ director.foundation_id }}" class="button">
+                View Center Details
+            </a>
+            <a href="/director-dashboard/{{ director.director_id }}/change-password" class="button">
+                Change Password
+            </a>
+            <a href="/director-dashboard/{{ director.director_id }}/edit-details" class="button">
+                Edit Details
+            </a>
+            <a href="/logout" class="button btn-logout" >
+                Logout
+            </a>
+        </div>
+    </section>
+    {% endif %}
+
+</main>
+
+<footer>&copy; {{ currentYear }} SoHoJia Foundation. All rights reserved.</footer>
+
+</body>
+</html>

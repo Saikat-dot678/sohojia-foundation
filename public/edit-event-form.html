@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Edit Event Data - SOHOJIA FOUNDATION</title>
+<style>
+    /* Global Reset & Body */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    html {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333;
+    }
+    body {
+        background: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+        background: rgb(243,79,76);
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 {
+        color: #fff;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    /* Page Header / Sub-heading */
+    .page-header {
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-header h2 {
+        font-size: 1.25rem;
+        color: #555;
+        font-weight: normal;
+    }
+
+    /* Main Content Area */
+    main {
+        flex: 1;
+        padding: 1rem;
+        width: 100%;
+        max-width: 900px; /* Increased max-width for forms with many fields */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center form container */
+    }
+
+    /* Card Styling (for form container) */
+    .card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 100%; /* Ensure it takes full width within max-width */
+        max-width: 750px; /* Adjusted max-width for the form card itself */
+    }
+
+    /* Form Container */
+    .form-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: rgb(243, 79, 76);
+        text-align: center;
+        font-weight: 600;
+    }
+
+    /* Form Row for potential two-column layout */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap; /* Allow items to wrap to next line */
+        gap: 1rem; /* Space between columns */
+        margin-bottom: 0.5rem; /* Space below rows */
+    }
+    .form-group {
+        flex: 1; /* Allow form groups to grow */
+        min-width: 280px; /* Minimum width for each column */
+        display: flex;
+        flex-direction: column; /* Stack label and input */
+    }
+
+    /* Input/Select/Textarea general styling */
+    label {
+        display: block;
+        margin-bottom: 0.4rem; /* Space between label and input */
+        font-weight: 500;
+        color: #444;
+        font-size: 0.95rem;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="time"],
+    input[type="date"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    input[type="time"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: rgb(243, 79, 76);
+        box-shadow: 0 0 0 3px rgba(243, 79, 76, 0.2);
+    }
+    textarea {
+        resize: vertical;
+    }
+
+    /* File Input Styling */
+    .file-input {
+        padding: 0.75rem;
+        background-color: #f9f9f9;
+        border: 1px dashed #ccc;
+        color: #555;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .file-input:hover {
+        background-color: #eaeaea;
+    }
+
+    /* General Photos Section */
+    #general-photos-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    .current-photo-container {
+        display: flex; /* Use flex to layout photos horizontally */
+        flex-wrap: wrap;
+        gap: 10px; /* Space between photos */
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    .current-photo-wrapper {
+        position: relative;
+        width: 100px; /* Fixed size for current photos */
+        height: 100px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .current-photo-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .current-photo-wrapper .remove-photo-btn {
+        background: rgba(220, 53, 69, 0.8);
+        color: white;
+        border: none;
+        padding: 3px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.7em;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1; /* For vertical centering of 'X' */
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .current-photo-wrapper:hover .remove-photo-btn {
+        opacity: 1;
+    }
+
+
+    /* Section for Event Type Specific Fields */
+    .event-type-section {
+        border-top: 1px solid #eee;
+        padding-top: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .event-type-section h4 {
+        font-size: 1.25rem;
+        color: rgb(243, 79, 76);
+        margin-bottom: 1rem;
+    }
+
+    /* Nested/Repeater Field Styling */
+    .nested-field-group {
+        border: 1px solid #e0e0e0;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        background-color: #fcfcfc;
+        position: relative; /* For remove button positioning */
+    }
+    .nested-field-group .remove-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.4rem 0.7rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8em;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        transition: background 0.2s ease;
+    }
+    .nested-field-group .remove-btn:hover {
+        background: #c82333;
+    }
+
+    /* Sub-block for nested items like Science Fair Experiments */
+    .sub-block {
+        border: 1px dashed #ccc;
+        background-color: #f5f5f5;
+        padding: 0.8rem;
+        margin-top: 0.8rem;
+        margin-left: 1rem; /* Indent sub-blocks */
+    }
+    .sub-block .remove-btn {
+        top: 5px;
+        right: 5px;
+        font-size: 0.7em;
+    }
+
+
+    .add-more-btn {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+        transition: background 0.2s ease;
+    }
+    .add-more-btn:hover {
+        background: #218838;
+    }
+
+    /* Submit/Delete Buttons */
+    .button-submit {
+        display: block;
+        width: 100%;
+        margin-top: 2rem;
+        padding: 0.9rem 1.2rem;
+        background: rgb(243, 79, 76);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+        font-weight: 500;
+    }
+    .button-submit:hover {
+        background: #c73c39;
+        transform: translateY(-2px);
+    }
+    .button-submit:active {
+        transform: translateY(0);
+    }
+    .delete-event-btn {
+        background: #c82333; /* Darker red for delete */
+        margin-top: 1rem;
+        font-size: 1rem;
+        padding: 0.8rem 1.2rem;
+    }
+    .delete-event-btn:hover {
+        background: #a71d2a;
+    }
+
+
+    /* Footer */
+    footer {
+        background: #333;
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #aaa;
+        margin-top: auto;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        main {
+            padding: 0.75rem;
+        }
+        .card {
+            padding: 1rem;
+            max-width: 100%;
+        }
+        .form-container h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+        .form-group {
+            min-width: unset;
+            width: 100%;
+            margin-bottom: 0.8rem;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="time"],
+        input[type="date"],
+        textarea,
+        select {
+            padding: 0.7rem;
+            font-size: 0.9rem;
+        }
+        .file-input {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        .button-submit, .delete-event-btn {
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+        }
+        .event-type-section {
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .event-type-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+        .nested-field-group {
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .nested-field-group .remove-btn {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.7em;
+            top: 5px;
+            right: 5px;
+        }
+        .add-more-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        .current-photo-wrapper {
+            width: 80px;
+            height: 80px;
+        }
+        .sub-block {
+            padding: 0.6rem;
+            margin-left: 0.5rem;
+            margin-top: 0.6rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 1.25rem;
+        }
+        .page-header h2 {
+            font-size: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+<header><h1>SOHOJIA FOUNDATION</h1></header>
+<div class="dashboard-header"><h2>Edit: {{ event.event_type }}</h2></div>
+<main>
+    <section class="form-container card">
+        <h3>Update Event Details</h3>
+        <form id="eventDataForm" action="/edit-event/{{ managerId }}/update/{{ collectionType }}/{{ event._id }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="event_id" value="{{ event._id }}"> {# Ensure event ID is passed for backend #}
+            <input type="hidden" name="event_type" value="{{ event.event_type }}"> {# Ensure event type is passed #}
+            <input type="hidden" name="manager_id" value="{{ managerId }}">
+            <input type="hidden" name="foundation_id" value="{{ event.foundation_id | default('') }}"> {# Pass foundation_id if it's consistent #}
+
+            {# Common Event Fields #}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="eventDate">Date:</label>
+                    <input type="date" id="eventDate" name="date" value="{{ formatDate(event.date) }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Time:</label>
+                    <input type="time" id="eventTime" name="time" value="{{ event.time | default('') }}" required>
+                </div>
+            </div>
+
+            <label for="generalDescription">General Description:</label>
+            <textarea id="generalDescription" name="description" rows="3">{{ event.description | default('') }}</textarea>
+
+            <div id="general-photos-section">
+                <label>Current General Photos:</label>
+                <div class="current-photo-container" id="existing-photos-container">
+                    {# Existing photos will be rendered here by JS #}
+                </div>
+                <label for="generalPhotos">Add More General Photos (optional):</label>
+                <input type="file" id="generalPhotos" name="general_photos" accept="image/*" class="file-input" multiple>
+            </div>
+
+            {# Conditional Top-Level Fields based on Event Type #}
+            <div id="topLevelFieldsContainer">
+                {# These are not dynamic blocks, they are directly conditional HTML rendered by Nunjucks #}
+                {% if event.event_type === 'Science Fair' %}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Location:</label>
+                            <input type="text" id="location" name="location" value="{{ event.location | default('') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="number_of_teachers">Number of Teachers:</label>
+                            <input type="number" id="number_of_teachers" name="number_of_teachers" value="{{ event.number_of_teachers | default(0) }}" min="0">
+                        </div>
+                    </div>
+                {% else %}
+                    {# These fields are common to Karate, Painting, Recitation, Weekly Science Workshop #}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="total_students_present">Total Students Present:</label>
+                            <input type="number" id="total_students_present" name="total_students_present" value="{{ event.total_students_present | default(0) }}" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher_name">Teacher Name:</label>
+                            <input type="text" id="teacher_name" name="teacher_name" value="{{ event.teacher_name | default('') }}" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="total_boys_present">Total Boys Present:</label>
+                            <input type="number" id="total_boys_present" name="total_boys_present" value="{{ event.total_boys_present | default(0) }}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="total_girls_present">Total Girls Present:</label>
+                            <input type="number" id="total_girls_present" name="total_girls_present" value="{{ event.total_girls_present | default(0) }}" min="0">
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Recitation specific top-level field (always shown if event type is Recitation, regardless of other top-level fields) #}
+                {% if event.event_type === 'Recitation' %}
+                    <label for="recitation_names_top">Poem Names (comma-separated):</label>
+                    <textarea id="recitation_names_top" name="recitation_names_top_level" rows="3">{{ (event.recitation_names | default([])).join(', ') }}</textarea>
+                {% endif %}
+            </div>
+
+            {# Dynamic Sections based on Event Type (for repeater fields) #}
+            <div id="dynamicFieldsContainer">
+                {# Karate/Recitation Class Data #}
+                {% if event.event_type === 'Karate' or event.event_type === 'Recitation' %}
+                    <div id="classDataSection" class="event-type-section">
+                        <h4>Class Data</h4>
+                        <div id="classDataContainer">
+                            {# Existing class data will be rendered here by JS #}
+                        </div>
+                        <button type="button" class="add-more-btn" id="addClassBtn" data-type="class">Add Class</button>
+                    </div>
+                {% endif %}
+
+                {# Painting Specific Section #}
+                {% if event.event_type === 'Painting' %}
+                    <div id="paintingsSection" class="event-type-section">
+                        <h4>Paintings</h4>
+                        <div id="paintingsContainer">
+                            {# Existing paintings will be rendered here by JS #}
+                        </div>
+                        <button type="button" class="add-more-btn" id="addPaintingBtn" data-type="painting">Add Painting</button>
+                    </div>
+                {% endif %}
+
+                {# Weekly Science Workshop Specific Section #}
+                {% if event.event_type === 'Weekly Science Workshop' %}
+                    <div id="workshopExperimentsSection" class="event-type-section">
+                        <h4>Workshop Experiments</h4>
+                        <div id="workshopExperimentsContainer">
+                            {# Existing workshop experiment fields will go here by JS #}
+                        </div>
+                        <button type="button" class="add-more-btn" id="addWorkshopExperimentBtn" data-type="workshop">Add Experiment</button>
+                    </div>
+                {% endif %}
+
+                {# Science Fair Specific Section #}
+                {% if event.event_type === 'Science Fair' %}
+                    <div id="scienceFairSection" class="event-type-section">
+                        <h4>Science Fair Specifics</h4>
+                        {# Participating Schools #}
+                        <div class="nested-field-group">
+                            <h4>Participating Schools</h4>
+                            <div id="participatingSchoolsContainer">
+                                {# Existing schools will be rendered here by JS #}
+                            </div>
+                            <button type="button" class="add-more-btn" id="addSchoolBtn" data-type="school">Add School</button>
+                        </div>
+
+                        {# Winners #}
+                        <div class="nested-field-group">
+                            <h4>Winners</h4>
+                            <div id="winnersContainer">
+                                {# Existing winners will be rendered here by JS #}
+                            </div>
+                            <button type="button" class="add-more-btn" id="addWinnerBtn" data-type="winner">Add Winner</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="button-submit">Save All Changes</button>
+        </form>
+
+        <form id="deleteEventForm" action="/edit-event/{{ managerId }}/delete/{{ collectionType }}/{{ event._id }}" method="POST" onsubmit="return confirm('DANGER: Are you sure you want to permanently delete this entire event and all its photos? This action cannot be undone.');">
+            <button type="submit" class="button-submit delete-event-btn">Delete Entire Event</button>
+        </form>
+    </section>
+</main>
+<footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
+
+<script>
+    // Ensure event data is correctly passed from the server as a JSON string
+    const event = JSON.parse('{{ eventJSON | safe }}');
+    const existingPhotosContainer = document.getElementById('existing-photos-container');
+
+    // Store removed photo URLs to send back to the server
+    const removedGeneralPhotoUrls = [];
+    const removedNestedPhotoUrls = {}; // e.g., { 'class_data': [], 'paintings': [] }
+
+    // Helper to create a hidden input
+    function createHiddenInput(name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
+    }
+
+    // Helper to create a photo preview with a remove button
+    function createPhotoPreview(url, arrayType = null, index = null) {
+        if (!url) return null; // Return null if no URL
+        const wrapper = document.createElement('div');
+        wrapper.className = 'current-photo-wrapper';
+        wrapper.innerHTML = `<img src="${url}" alt="Photo">
+                             <button type="button" class="remove-photo-btn">X</button>`;
+        const removeBtn = wrapper.querySelector('.remove-photo-btn');
+        removeBtn.addEventListener('click', () => {
+            wrapper.remove();
+            // Store the URL of the removed photo to send to backend for deletion
+            if (arrayType && index !== null) {
+                if (!removedNestedPhotoUrls[arrayType]) {
+                    removedNestedPhotoUrls[arrayType] = [];
+                }
+                removedNestedPhotoUrls[arrayType].push(url); // Just push the URL, index might not be needed for deletion
+            } else {
+                removedGeneralPhotoUrls.push(url);
+            }
+        });
+        return wrapper;
+    }
+
+
+    // --- TEMPLATE FUNCTIONS FOR DYNAMIC BLOCKS ---
+
+    // Function to generate a unique index for newly added items
+    let nextClassDataIndex = 0;
+    let nextPaintingIndex = 0;
+    let nextRecitationNameIndex = 0;
+    let nextWorkshopExperimentIndex = 0;
+    let nextSchoolIndex = 0;
+    let nextWinnerIndex = 0;
+
+    // Initialize indices based on existing data count
+    function initializeIndices() {
+        nextClassDataIndex = (event.class_data || []).length;
+        nextPaintingIndex = (event.paintings || []).length;
+        nextRecitationNameIndex = (event.recitation_names || []).length; // This refers to the array, not top-level
+        nextWorkshopExperimentIndex = (event.workshop_experiments || []).length;
+        nextSchoolIndex = (event.participating_schools || []).length;
+        nextWinnerIndex = (event.winners || []).length;
+    }
+
+
+    function createClassDataBlock(index, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group';
+        div.innerHTML = `
+            <button type="button" class="remove-btn">Remove Class</button>
+            <h4>Class Data ${index + 1}</h4>
+            <input type="hidden" name="class_data[${index}][original_id]" value="${data._id || ''}">
+            <input type="hidden" name="class_data[${index}][class_photo_url_existing]" value="${data.class_photo_url || ''}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="class_standard_${index}">Class Standard:</label>
+                    <input type="number" id="class_standard_${index}" name="class_data[${index}][class_standard]" value="${data.class_standard || ''}" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="class_boys_present_${index}">Boys Present:</label>
+                    <input type="number" id="class_boys_present_${index}" name="class_data[${index}][class_boys_present]" value="${data.class_boys_present || 0}" min="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="class_girls_present_${index}">Girls Present:</label>
+                    <input type="number" id="class_girls_present_${index}" name="class_data[${index}][class_girls_present]" value="${data.class_girls_present || 0}" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="class_teacher_name_${index}">Teacher Name:</label>
+                    <input type="text" id="class_teacher_name_${index}" name="class_data[${index}][teacher_name]" value="${data.teacher_name || ''}" required>
+                </div>
+            </div>
+            <label for="class_description_${index}">Description:</label>
+            <textarea id="class_description_${index}" name="class_data[${index}][class_description]" rows="2">${data.class_description || ''}</textarea>
+
+            <label for="class_photo_file_${index}">Replace Photo:</label>
+            <input type="file" id="class_photo_file_${index}" name="class_data_photo_file[${index}]" accept="image/*" class="file-input">
+            <div class="current-photo-container" id="class_photo_preview_${index}"></div>
+        `;
+        // Append photo preview after creation
+        const photoPreview = createPhotoPreview(data.class_photo_url, 'class_data', index);
+        if (photoPreview) {
+            div.querySelector(`#class_photo_preview_${index}`).appendChild(photoPreview);
+        }
+        return div;
+    }
+
+
+    function createPaintingBlock(index, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group';
+        div.innerHTML = `
+            <button type="button" class="remove-btn">Remove Painting</button>
+            <h4>Painting ${index + 1}</h4>
+            <input type="hidden" name="paintings[${index}][original_id]" value="${data._id || ''}">
+            <input type="hidden" name="paintings[${index}][image_url_existing]" value="${data.image_url || ''}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="painting_student_name_${index}">Student Name:</label>
+                    <input type="text" id="painting_student_name_${index}" name="paintings[${index}][student_name]" value="${data.student_name || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label for="painting_student_class_${index}">Student Class:</label>
+                    <input type="text" id="painting_student_class_${index}" name="paintings[${index}][student_class]" value="${data.student_class || ''}">
+                </div>
+            </div>
+            <label for="painting_image_file_${index}">Replace Image:</label>
+            <input type="file" id="painting_image_file_${index}" name="paintings_image_file[${index}]" accept="image/*" class="file-input">
+            <div class="current-photo-container" id="painting_image_preview_${index}"></div>
+        `;
+        const photoPreview = createPhotoPreview(data.image_url, 'paintings', index);
+        if (photoPreview) {
+            div.querySelector(`#painting_image_preview_${index}`).appendChild(photoPreview);
+        }
+        return div;
+    }
+
+    function createWorkshopExperimentBlock(index, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group';
+        div.innerHTML = `
+            <button type="button" class="remove-btn">Remove Experiment</button>
+            <h4>Experiment ${index + 1}</h4>
+            <input type="hidden" name="workshop_experiments[${index}][original_id]" value="${data._id || ''}">
+            <input type="hidden" name="workshop_experiments[${index}][photo_url_existing]" value="${data.photo_url || ''}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="exp_name_${index}">Experiment Name:</label>
+                    <input type="text" id="exp_name_${index}" name="workshop_experiments[${index}][exp_name]" value="${data.exp_name || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label for="exp_teacher_name_${index}">Teacher Name:</label>
+                    <input type="text" id="exp_teacher_name_${index}" name="workshop_experiments[${index}][teacher_name]" value="${data.teacher_name || ''}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="exp_class_name_${index}">Class Name:</label>
+                    <input type="text" id="exp_class_name_${index}" name="workshop_experiments[${index}][class_name]" value="${data.class_name || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="exp_description_${index}">Description:</label>
+                    <textarea id="exp_description_${index}" name="workshop_experiments[${index}][description]" rows="2">${data.description || ''}</textarea>
+                </div>
+            </div>
+            <label for="workshop_photo_file_${index}">Replace Photo:</label>
+            <input type="file" id="workshop_photo_file_${index}" name="workshop_experiments_photo_file[${index}]" accept="image/*" class="file-input">
+            <div class="current-photo-container" id="workshop_photo_preview_${index}"></div>
+        `;
+        const photoPreview = createPhotoPreview(data.photo_url, 'workshop_experiments', index);
+        if (photoPreview) {
+            div.querySelector(`#workshop_photo_preview_${index}`).appendChild(photoPreview);
+        }
+        return div;
+    }
+
+    // Science Fair Nested Templates (complex)
+    function createScienceFairExperimentInputBlock(schoolIndex, experimentIndex, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group sub-block';
+        div.innerHTML = `
+            <h5>Experiment ${experimentIndex + 1} <button type="button" class="remove-btn">Remove</button></h5>
+            <input type="hidden" name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][original_id]" value="${data._id || ''}">
+            <label for="exp_name_school_${schoolIndex}_${experimentIndex}">Name:</label>
+            <input type="text" id="exp_name_school_${schoolIndex}_${experimentIndex}" name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][name]" value="${data.name || ''}" required>
+            <label for="exp_desc_school_${schoolIndex}_${experimentIndex}">Description:</label>
+            <textarea id="exp_desc_school_${schoolIndex}_${experimentIndex}" name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][description]" rows="2">${data.description || ''}</textarea>
+            <label for="student_names_school_${schoolIndex}_${experimentIndex}">Student Names (comma-separated):</label>
+            <input type="text" id="student_names_school_${schoolIndex}_${experimentIndex}" name="participating_schools[${schoolIndex}][experiments][${experimentIndex}][student_names]" value="${(data.student_names || []).join(', ')}">
+        `;
+        return div;
+    }
+
+    function createScienceFairSchoolBlock(index, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group';
+        div.innerHTML = `
+            <button type="button" class="remove-btn">Remove School</button>
+            <h4>Participating School ${index + 1}</h4>
+            <input type="hidden" name="participating_schools[${index}][original_id]" value="${data._id || ''}">
+            <label for="school_name_${index}">School Name:</label>
+            <input type="text" id="school_name_${index}" name="participating_schools[${index}][school_name]" value="${data.school_name || ''}" required>
+            <div class="experiments-container" id="experiments-container-${index}"></div>
+            <button type="button" class="add-more-btn add-school-experiment-btn" data-school-index="${index}" data-type="schoolExperiment">Add Experiment for this School</button>
+        `;
+        const experimentsContainer = div.querySelector(`#experiments-container-${index}`);
+        // For existing school experiments, we need to re-initialize next index specific to this school
+        let nextSchoolExperimentIndex = (data.experiments || []).length;
+        (data.experiments || []).forEach((exp, i) => {
+            experimentsContainer.appendChild(createScienceFairExperimentInputBlock(index, i, exp));
+        });
+        // Store this index on the button itself or the container for new adds
+        div.querySelector('.add-school-experiment-btn').dataset.nextIndex = nextSchoolExperimentIndex;
+        return div;
+    }
+
+    function createScienceFairWinnerBlock(index, data = {}) {
+        const div = document.createElement('div');
+        div.className = 'nested-field-group';
+        div.innerHTML = `
+            <button type="button" class="remove-btn">Remove Winner</button>
+            <h4>Winner ${index + 1}</h4>
+            <input type="hidden" name="winners[${index}][original_id]" value="${data._id || ''}">
+            <input type="hidden" name="winners[${index}][winner_photo_url_existing]" value="${data.winner_photo_url || ''}">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="winner_rank_${index}">Rank:</label>
+                    <input type="text" id="winner_rank_${index}" name="winners[${index}][rank]" value="${data.rank || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="winner_school_name_${index}">School Name:</label>
+                    <input type="text" id="winner_school_name_${index}" name="winners[${index}][school_name]" value="${data.school_name || ''}">
+                </div>
+            </div>
+            <label for="winner_student_names_${index}">Student Names (comma-separated):</label>
+            <input type="text" id="winner_student_names_${index}" name="winners[${index}][student_names]" value="${(data.student_names || []).join(', ')}">
+            <label for="winner_experiment_name_${index}">Experiment Name:</label>
+            <input type="text" id="winner_experiment_name_${index}" name="winners[${index}][experiment_name]" value="${data.experiment_name || ''}">
+            <label for="winner_experiment_description_${index}">Description:</label>
+            <textarea id="winner_experiment_description_${index}" name="winners[${index}][experiment_description]" rows="2">${data.experiment_description || ''}</textarea>
+
+            <label for="winner_photo_file_${index}">Replace Photo:</label>
+            <input type="file" id="winner_photo_file_${index}" name="winners_photo_file[${index}]" accept="image/*" class="file-input">
+            <div class="current-photo-container" id="winner_photo_preview_${index}"></div>
+        `;
+        const photoPreview = createPhotoPreview(data.winner_photo_url, 'winners', index);
+        if (photoPreview) {
+            div.querySelector(`#winner_photo_preview_${index}`).appendChild(photoPreview);
+        }
+        return div;
+    }
+
+
+    // --- RENDER EXISTING DATA ---
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeIndices(); // Initialize global counters based on existing data
+
+        // Render existing general photos
+        (event.photos || []).forEach((url, i) => {
+            const photoWrapper = createPhotoPreview(url);
+            if (photoWrapper) { // Ensure wrapper is created before appending
+                // Add a hidden input to keep track of existing photos (if not removed)
+                photoWrapper.appendChild(createHiddenInput(`existing_general_photos[${i}]`, url));
+                existingPhotosContainer.appendChild(photoWrapper);
+            }
+        });
+
+        // Render dynamic blocks based on event type
+        switch (event.event_type) {
+            case 'Karate':
+            case 'Recitation': // Both use class_data
+                (event.class_data || []).forEach((item, i) => {
+                    document.getElementById('classDataContainer').appendChild(createClassDataBlock(i, item));
+                });
+                break;
+            case 'Painting':
+                (event.paintings || []).forEach((item, i) => {
+                    document.getElementById('paintingsContainer').appendChild(createPaintingBlock(i, item));
+                });
+                break;
+            case 'Weekly Science Workshop':
+                (event.workshop_experiments || []).forEach((item, i) => {
+                    document.getElementById('workshopExperimentsContainer').appendChild(createWorkshopExperimentBlock(i, item));
+                });
+                break;
+            case 'Science Fair':
+                (event.participating_schools || []).forEach((item, i) => {
+                    document.getElementById('participatingSchoolsContainer').appendChild(createScienceFairSchoolBlock(i, item));
+                });
+                (event.winners || []).forEach((item, i) => {
+                    document.getElementById('winnersContainer').appendChild(createScienceFairWinnerBlock(i, item));
+                });
+                break;
+        }
+    });
+
+
+    // --- ADD NEW BLOCKS DYNAMICALLY ---
+    // Universal event listener for "Add More" buttons
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('.add-more-btn')) {
+            const blockType = e.target.dataset.type;
+            let container;
+            let newIndex;
+            let newItem;
+
+            if (blockType === 'class') {
+                container = document.getElementById('classDataContainer');
+                newIndex = nextClassDataIndex++;
+                newItem = createClassDataBlock(newIndex);
+            } else if (blockType === 'painting') {
+                container = document.getElementById('paintingsContainer');
+                newIndex = nextPaintingIndex++;
+                newItem = createPaintingBlock(newIndex);
+            } else if (blockType === 'recitation_name') {
+                 // Current design uses one textarea for comma-separated names for recitation
+                 console.warn("Recitation name individual add button clicked, but current design uses a single textarea.");
+                 return;
+            } else if (blockType === 'workshop') {
+                container = document.getElementById('workshopExperimentsContainer');
+                newIndex = nextWorkshopExperimentIndex++;
+                newItem = createWorkshopExperimentBlock(newIndex);
+            } else if (blockType === 'school') {
+                container = document.getElementById('participatingSchoolsContainer');
+                newIndex = nextSchoolIndex++;
+                newItem = createScienceFairSchoolBlock(newIndex);
+            } else if (blockType === 'winner') {
+                container = document.getElementById('winnersContainer');
+                newIndex = nextWinnerIndex++;
+                newItem = createScienceFairWinnerBlock(newIndex);
+            } else if (blockType === 'schoolExperiment') { // Nested add for Science Fair Experiments
+                const schoolIndex = e.target.dataset.schoolIndex;
+                const schoolBlock = e.target.closest('.nested-field-group'); // Find the parent school block
+                container = schoolBlock.querySelector('.experiments-container');
+                // Get the next index for experiments within THIS school from the button's dataset
+                let currentExpCount = parseInt(e.target.dataset.nextIndex || '0');
+                newItem = createScienceFairExperimentInputBlock(schoolIndex, currentExpCount);
+                e.target.dataset.nextIndex = currentExpCount + 1; // Update next index for this button
+            } else {
+                return; // Not a recognized add button
+            }
+
+            if (newItem && container) {
+                container.appendChild(newItem);
+                const removeBtn = newItem.querySelector('.remove-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        newItem.remove();
+                    });
+                }
+            }
+        }
+    });
+
+    // --- FORM SUBMISSION HANDLING ---
+    document.getElementById('eventDataForm').addEventListener('submit', function(e) {
+        // Append hidden inputs for removed photo URLs
+        const form = e.target;
+
+        removedGeneralPhotoUrls.forEach((url, i) => {
+            form.appendChild(createHiddenInput(`removed_general_photos[${i}]`, url));
+        });
+
+        for (const arrayType in removedNestedPhotoUrls) {
+            removedNestedPhotoUrls[arrayType].forEach((url, i) => {
+                form.appendChild(createHiddenInput(`removed_nested_photos[${arrayType}][${i}]`, url));
+            });
+        }
+        // The form will now submit all fields, including files and dynamically added/removed hidden inputs.
+        // Your backend will receive these as `req.body` and `req.files` (from multer).
+    });
+</script>
+</body>
+</html>
