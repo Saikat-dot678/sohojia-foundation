@@ -6,7 +6,7 @@ const mongo = require('../config/mongo');
 const { Storage } = require('@google-cloud/storage');
 
 // --- Google Cloud Storage Configuration ---
-const GCS_BUCKET_NAME = process.env.BUCKET2; 
+const GCS_BUCKET_NAME = process.env.BUCKET2;
 const storage = new Storage();
 const bucket = storage.bucket(GCS_BUCKET_NAME);
 
@@ -133,12 +133,13 @@ async function handleMultiRegistration(req, res) {
 }
 
 async function findActiveSession(volunteerId, time, dayName) {
+  // MODIFIED: Added 15-minute grace period for check-out
   const [[session]] = await mysql.query(
     `SELECT * FROM volunteer_schedule
      WHERE volunteer_id = ?
        AND day_of_week = ?
        AND start_time <= ?
-       AND end_time >= ?
+       AND ? <= ADDTIME(end_time, '00:15:00')
      LIMIT 1`,
     [volunteerId, dayName, time, time]
   );
@@ -147,9 +148,6 @@ async function findActiveSession(volunteerId, time, dayName) {
 
 // Verify face on attendance with GCS download
 async function verifyFace(req, res) {
-  console.log('verifyFace called');
-  console.log('Volunteer ID:', req.params.id);
-  console.log('Received file:', req.file);
   const vid = req.params.id;
   const [[record]] = await mysql.query(
     'SELECT embedding_filename FROM volunteer_embeddings WHERE volunteer_id=?', [vid]
@@ -157,22 +155,19 @@ async function verifyFace(req, res) {
   if (!record) return res.status(404).json({ error: 'No face embedding on record' });
   if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
 
-  // Save the single verification image
   const tmpVerificationImagePath = path.join(BASE_DIR, `verify-${Date.now()}.jpg`);
   await fs.promises.rename(req.file.path, tmpVerificationImagePath);
 
-  // Download the embedding file from GCS
   const gcsEmbeddingFileName = record.embedding_filename;
   const localTmpEmbeddingPath = path.join(BASE_DIR, gcsEmbeddingFileName);
   try {
     await bucket.file(gcsEmbeddingFileName).download({ destination: localTmpEmbeddingPath });
   } catch (err) {
     console.error('Failed to download embedding from GCS:', err);
-    fs.unlinkSync(tmpVerificationImagePath); // Clean up uploaded image
+    fs.unlinkSync(tmpVerificationImagePath);
     return res.status(500).json({ error: 'Could not retrieve face embedding.' });
   }
 
-  // Spawn Python script to compare embeddings
   const py = spawn(PYTHON_CMD, [
     path.join(__dirname, '../scripts/verify_embedding.py'),
     tmpVerificationImagePath,
@@ -184,14 +179,12 @@ async function verifyFace(req, res) {
 
   py.on('error', err => {
     console.error('Failed to start Python verify process:', err);
-    // Clean up temporary files
     fs.unlink(tmpVerificationImagePath, () => {});
     fs.unlink(localTmpEmbeddingPath, () => {});
     return res.status(500).json({ error: 'Failed to start verification script' });
   });
 
   py.on('close', async (code) => {
-    // Clean up temporary local files
     fs.unlink(tmpVerificationImagePath, () => {});
     fs.unlink(localTmpEmbeddingPath, () => {});
 
@@ -201,35 +194,52 @@ async function verifyFace(req, res) {
 
     try {
       const db = await mongo;
+      const attendanceCollection = db.collection('Attendance');
       const nowUTC = new Date();
-      const isoDate = nowUTC.toISOString().split('T')[0];
-
       const istDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-      const hourIST = istDate.getHours();
+      const isoDate = istDate.toISOString().split('T')[0];
       const currentDay = istDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
       const nowISTTime = istDate.toTimeString().slice(0, 8);
-
-      let shift = 'evening';
-      if (hourIST < 12) shift = 'morning';
-      else if (hourIST < 17) shift = 'afternoon';
 
       const session = await findActiveSession(Number(vid), nowISTTime, currentDay);
       if (!session) {
         return res.status(400).json({ error: 'No active session found for attendance.' });
       }
 
-      await db.collection('Attendance').insertOne({
+      const existingAttendance = await attendanceCollection.findOne({
         volunteer_id: Number(vid),
-        session_date: isoDate,
-        shift,
         session_id: session.id,
-        status: 'Present',
-        timestamp: nowUTC
+        session_date: isoDate,
+        status: 'Checked-In'
       });
 
-      res.json({ success: true, message: 'Attendance marked.' });
+      if (existingAttendance) {
+        // This is a CHECK-OUT
+        await attendanceCollection.updateOne(
+          { _id: existingAttendance._id },
+          {
+            $set: {
+              status: 'present', // MODIFIED: Final status is Present
+              check_out_time: nowUTC
+            }
+          }
+        );
+        res.json({ success: true, message: 'Check-out successful. Attendance marked as Present.' });
+      } else {
+        // This is a CHECK-IN
+        await attendanceCollection.insertOne({
+          volunteer_id: Number(vid),
+          session_id: session.id,
+          session_date: isoDate,
+          shift: session.shift,
+          status: 'Present',
+          check_in_time: nowUTC,
+          check_out_time: null,
+        });
+        res.json({ success: true, message: 'Check-in successful. Welcome!' });
+      }
     } catch (err) {
-      console.error('MongoDB insert error:', err);
+      console.error('MongoDB insert/update error:', err);
       res.status(500).json({ error: 'Failed to record attendance' });
     }
   });
