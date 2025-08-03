@@ -54,7 +54,7 @@ exports.showRegistrationPage = (req, res) => {
 //    -> receives attestation response from client
 exports.registerFingerprint = async (req, res) => {
   const volunteerId = Number(req.params.id);
-  const attestation = req.body; 
+  const attestation = req.body;
   const expectedChallenge = req.session.fingerprintChallenge;
   if (!attestation || !expectedChallenge) {
     return res.status(400).json({ success: false, message: 'Missing attestation or challenge' });
@@ -133,7 +133,7 @@ exports.getAssertionOptions = async (req, res) => {
 // POST /:id/fingerprint/verify
 exports.verifyFingerprint = async (req, res) => {
   const volunteerId = Number(req.params.id);
-  const assertion   = req.body;  
+  const assertion   = req.body;
   const expectedChallenge = req.session.fingerprintAssertionChallenge;
 
   if (!assertion) {
@@ -150,23 +150,22 @@ exports.verifyFingerprint = async (req, res) => {
     }
 
     // 2) Determine IST date, time, and session
-    //    (Mirror your face.js logic)
     const nowUTC   = new Date();
     const istNow   = new Date(nowUTC.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-    const today    = istNow.toISOString().slice(0, 10);           // YYYY-MM-DD
-    const timeIST  = istNow.toTimeString().slice(0, 8);          // HH:MM:SS
+    const today    = istNow.toISOString().slice(0, 10);
+    const timeIST  = istNow.toTimeString().slice(0, 8);
     const dayName  = istNow.toLocaleDateString('en-US', {
                      weekday: 'long', timeZone: 'Asia/Kolkata'
                    }).toLowerCase();
 
-    // find active session in MySQL for IST
+    // MODIFIED: Added 15-minute grace period for check-out
     const [[ session ]] = await pool.query(
-      `SELECT * 
-         FROM volunteer_schedule 
+      `SELECT *
+         FROM volunteer_schedule
         WHERE volunteer_id = ?
           AND LOWER(day_of_week) = ?
-          AND start_time <= ? 
-          AND end_time >= ?
+          AND start_time <= ?
+          AND ? <= ADDTIME(end_time, '00:15:00')
         LIMIT 1`,
       [volunteerId, dayName, timeIST, timeIST]
     );
@@ -174,17 +173,41 @@ exports.verifyFingerprint = async (req, res) => {
       return res.status(400).json({ success: false, message: 'No active session' });
     }
 
-    // 3) Insert attendance record into MongoDB
-    await db.collection('Attendance').insertOne({
-      volunteer_id: volunteerId,
-      session_id:   session.id,       // link back if you like
-      session_date: today,
-      shift:        session.shift,
-      status: 'Present', 
-      timestamp:    nowUTC            // UTC timestamp
+    // 3) Handle Check-In vs Check-Out
+    const attendanceCollection = db.collection('Attendance');
+    const existingAttendance = await attendanceCollection.findOne({
+        volunteer_id: volunteerId,
+        session_id: session.id,
+        session_date: today,
+        status: 'Checked-In'
     });
 
-    return res.json({ success: true, message: 'Fingerprint verified and attendance marked.' });
+    if (existingAttendance) {
+        // This is a CHECK-OUT
+        await attendanceCollection.updateOne(
+            { _id: existingAttendance._id },
+            {
+                $set: {
+                    status: 'present', // MODIFIED: Final status is Present
+                    check_out_time: nowUTC
+                }
+            }
+        );
+        return res.json({ success: true, message: 'Check-out successful. Attendance marked as Present.' });
+    } else {
+        // This is a CHECK-IN
+        await attendanceCollection.insertOne({
+            volunteer_id: volunteerId,
+            session_id:   session.id,
+            session_date: today,
+            shift:        session.shift,
+            status: 'Present',
+            check_in_time: nowUTC,
+            check_out_time: null,
+            timestamp:    nowUTC
+        });
+        return res.json({ success: true, message: 'Check-in successful.' });
+    }
   } catch (err) {
     console.error('Error in verifyFingerprint:', err);
     return res.status(500).json({ success: false, message: 'Verification/attendance failed' });
