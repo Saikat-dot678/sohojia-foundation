@@ -20,7 +20,9 @@ router.get('/:name', async (req, res) => {
       .findOne({ name: req.params.name });
 
     if (!districtDoc) {
-      return res.status(404).send('District not found');
+      return res.status(404).render('NO-DATA.html', { 
+        message: `District "${req.params.name}" not found.` 
+      });
     }
 
     // 3) Extract foundation IDs array
