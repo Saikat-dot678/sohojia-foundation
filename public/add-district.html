@@ -7,30 +7,54 @@
   <style>
 
   .logout-container {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
 
-.logout-button {
-  padding: 12px 20px;
-  background: #ffffff;
-  color: rgb(243, 79, 76);
-  border: 2px solid #fff;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
+  .logout-button {
+    padding: 12px 20px;
+    background: #ffffff;
+    color: rgb(243, 79, 76);
+    border: 2px solid #fff;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
 
-.logout-button:hover {
-  background: rgb(243, 79, 76);
-  color: #fff;
-  border-color: #fff;
-  box-shadow: 0 6px 14px rgba(243,79,76,0.6);
-}
+  .logout-button:hover {
+    background: rgb(243, 79, 76);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 6px 14px rgba(243,79,76,0.6);
+  }
+
+  /* Home button styling and positioning */
+  #homeButton {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    padding: 12px 20px;
+    background: #fff;
+    color: rgb(243, 79, 76);
+    border: 2px solid #fff;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  #homeButton:hover {
+    background: rgb(243, 79, 76);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 6px 14px rgba(243,79,76,0.6);
+  }
 
     * {
       box-sizing: border-box;
@@ -52,6 +76,7 @@
       background: rgb(243, 79, 76);
       padding: 16px;
       text-align: center;
+      position: relative; /* so logout absolute is relative to header */
     }
     header h1 {
       color: #fff;
@@ -92,7 +117,16 @@
       margin-top: 12px;
       font-weight: bold;
     }
-    .back-button { display: inline-block; margin-bottom: 16px; padding: 10px 20px; background: var(--card-bg); border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: var(--text-dark); }
+    .back-button {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 10px 20px;
+      background: var(--card-bg);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--text-dark);
+    }
     input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -127,20 +161,24 @@
         text-align: center;
         padding: 12px;
         font-size: 16px;
-    }
+      }
     }
   </style>
 </head>
 <body>
+  <button id="homeButton" onclick="location.href='/'">Home</button>
+
   <header>
     <h1>SOHOJIA FOUNDATION</h1>
-     <div class="logout-container">
-    <button onclick="location.href='/logout'" class="logout-button">Logout</button>
-  </div>
+    <div class="logout-container">
+      <button onclick="location.href='/logout'" class="logout-button">Logout</button>
+    </div>
   </header>
+
   <div class="dashboard-header">
     <h2>Add District</h2>
   </div>
+
   <main>
     <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
     <section class="form-container">
@@ -153,6 +191,7 @@
       </form>
     </section>
   </main>
+
   <footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
 </body>
 </html>
