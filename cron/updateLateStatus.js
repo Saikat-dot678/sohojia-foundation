@@ -62,7 +62,6 @@ const updateLateAttendanceStatus = async () => {
       scheduleMap.set(schedule.id, schedule);
     });
 
-    console.log(`Found ${presentLogs.length} present logs and ${scheduleMap.size} matching schedules.`);
 
     // 6. Iterate through logs and check for lateness
     const updatesToPerform = [];
@@ -88,7 +87,6 @@ const updateLateAttendanceStatus = async () => {
     // 7. Execute all updates in parallel
     if (updatesToPerform.length > 0) {
       await Promise.all(updatesToPerform);
-      console.log(`Successfully updated ${updatesToPerform.length} logs to 'late'.`);
     } else {
       console.log('No logs needed to be updated to "late".');
     }
@@ -101,12 +99,11 @@ const updateLateAttendanceStatus = async () => {
 };
 
 
-cron.schedule('*/15 20 * * *', updateLateAttendanceStatus, {
+cron.schedule('15 20 * * *', updateLateAttendanceStatus, {
   scheduled: true,
   timezone: "Asia/Kolkata"
 });
 
-console.log('Late attendance cron job scheduled to run every 15 minutes.');
 
 module.exports = {
     updateLateAttendanceStatus

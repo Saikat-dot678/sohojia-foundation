@@ -21,7 +21,6 @@ const checkAbsence = async () => {
         const nowISTTime = getISTTimeString();     // e.g., "14:30:00"
         const todayDay = getISTDayName();          // e.g., "friday"
 
-        console.log(`[Absence Check] Running for ${todayDate} at ${nowISTTime}`);
 
         // Step 1: Get all volunteer sessions that have ended today
         const [endedSessions] = await pool.query(`
@@ -101,7 +100,7 @@ const checkAbsence = async () => {
                         status: 'Absent',
                         timestamp: new Date()
                     });
-                    console.log(`[Absence Check] Marked volunteer ${session.volunteer_id} as absent for session ${session.id}.`);
+                    
                 }
             }
         }
@@ -111,7 +110,10 @@ const checkAbsence = async () => {
 };
 
 // Schedule the job to run. Every 10 minutes is good for testing.
-cron.schedule('*/60 * * * *', checkAbsence);
+cron.schedule('30 20 * * *', checkAbsence,{
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+});
 
 console.log('Absence check cron job scheduled to run every 10 minutes.');
 

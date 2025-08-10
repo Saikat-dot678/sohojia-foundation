@@ -87,7 +87,6 @@ const switchSeasonalSchedules = async () => {
                                 (currentDbEndTime !== activeSeason.end_time);
 
             if (needsUpdate) {
-                console.log(`CRON: UPDATE TRIGGERED for volunteer ${rule.volunteer_id}. Reason: ${rule.lastUpdatedSeason !== seasonName ? 'Season Changed' : 'Times Mismatch'}. Applying '${seasonName}' schedule.`);
                 
                 // Update the MySQL table with the correct seasonal times
                 await pool.query(
@@ -100,8 +99,6 @@ const switchSeasonalSchedules = async () => {
                     { _id: rule._id },
                     { $set: { lastUpdatedSeason: seasonName } }
                 );
-
-                console.log(`CRON: Successfully updated ${rule.schedule_ids.length} schedules to '${seasonName}' timings.`);
             }
         }
     } catch (error) {
@@ -115,6 +112,5 @@ cron.schedule('45 5 * * *', switchSeasonalSchedules, { // Every 5 minutes for te
     timezone: "Asia/Kolkata"
 });
 
-console.log('Seasonal schedule switching cron job is scheduled.');
 
 module.exports = { switchSeasonalSchedules };
