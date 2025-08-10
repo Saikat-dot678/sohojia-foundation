@@ -28,12 +28,39 @@
       background: rgb(243, 79, 76);
       padding: 16px;
       text-align: center;
+      position: relative;
     }
 
     header h1 {
       color: #fff;
       font-size: 20px;
       text-transform: uppercase;
+    }
+
+    .logout-container {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .logout-button {
+      padding: 12px 20px;
+      background: #ffffff;
+      color: rgb(243, 79, 76);
+      border: 2px solid #fff;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background: rgb(243, 79, 76);
+      color: #fff;
+      border-color: #fff;
+      box-shadow: 0 6px 14px rgba(243,79,76,0.6);
     }
 
     .dashboard-header {
@@ -136,7 +163,7 @@
       text-decoration: underline;
     }
 
-    button, .logout-button {
+    button {
       width: 100%;
       max-width: 320px;
       margin: 12px auto;
@@ -152,7 +179,7 @@
       transition: background 0.3s ease;
     }
 
-    button:hover, .logout-button:hover {
+    button:hover {
       background: rgb(220, 65, 62);
     }
 
@@ -163,16 +190,47 @@
       font-size: 12px;
       color: #777;
     }
-  </style>
+     
+  .logout-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
 
+.logout-button {
+  padding: 12px 20px;
+  background: #ffffff;
+  color: rgb(243, 79, 76);
+  border: 2px solid #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: rgb(243, 79, 76);
+  color: #fff;
+  border-color: #fff;
+  box-shadow: 0 6px 14px rgba(243,79,76,0.6);
+}
+
+  </style>
 </head>
 <body>
   <header>
     <h1>SOHOJIA FOUNDATION</h1>
+    <div class="logout-container">
+      <button onclick="location.href='/logout'" class="logout-button">Logout</button>
+    </div>
   </header>
+
   <div class="dashboard-header">
     <h2>Admin Dashboard</h2>
   </div>
+
   <main>
     <section class="admin-info">
       <h3>Welcome, {{ admin.name }}</h3>
@@ -187,33 +245,17 @@
         </div>
       </div>
     </section>
-    <button onclick="window.location.href='/addition/add-district'">
-          Add Districts
-        </button>
-    <button onclick="window.location.href='/addition/add-foundation'">
-          Add Centre
-        </button>
-    <button onclick="window.location.href='/addition/add-director'">
-          Add Center Program Director
-        </button>
-    <button onclick="window.location.href='/addition/add-coordinator'">
-          Add Center Program Coordinator
-        </button>
-    <button onclick="window.location.href='/addition/add-volunteer'">
-          Add Volunteer
-        </button>
-    <button onclick="window.location.href='/addition/add-event-manager'">
-          Add Event Manager
-        </button>
-    <button onclick="window.location.href='/addition/add-schedule'">
-          Add Schedule
-        </button>
-    <button onclick="window.location.href='/admin/schedule-management'">
-          Manage Schedule
-        </button>
-    <button onclick="window.location.href='/admin/holidays'">
-          Manage Holidays
-        </button>
+
+    <button onclick="window.location.href='/addition/add-district'">Add Districts</button>
+    <button onclick="window.location.href='/addition/add-foundation'">Add Centre</button>
+    <button onclick="window.location.href='/addition/add-director'">Add Center Program Director</button>
+    <button onclick="window.location.href='/addition/add-coordinator'">Add Center Program Coordinator</button>
+    <button onclick="window.location.href='/addition/add-volunteer'">Add Volunteer</button>
+    <button onclick="window.location.href='/addition/add-event-manager'">Add Event Manager</button>
+    <button onclick="window.location.href='/addition/add-schedule'">Add Schedule</button>
+    <button onclick="window.location.href='/admin/schedule-management'">Manage Schedule</button>
+    <button onclick="window.location.href='/admin/holidays'">Manage Holidays</button>
+
     <section class="foundation-list">
       <h3>Districts</h3>
       <div class="cards">
@@ -226,7 +268,7 @@
       </div>
     </section>
   </main>
-  <button onclick="location.href='/logout'" class="logout-button">Logout</button>
+
   <footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
 </body>
 </html>

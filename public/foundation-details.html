@@ -54,10 +54,40 @@
     .status-absent { background-color: #dc3545; }
     .status-on-time-exit { background-color: #17a2b8; }
     .status-no-exit { background-color: #6c757d; }
+      
+  .logout-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.logout-button {
+  padding: 12px 20px;
+  background: #ffffff;
+  color: rgb(243, 79, 76);
+  border: 2px solid #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: rgb(243, 79, 76);
+  color: #fff;
+  border-color: #fff;
+  box-shadow: 0 6px 14px rgba(243,79,76,0.6);
+}
+
   </style>
 </head>
 <body>
   <header><h1>SOHOJIA FOUNDATION</h1></header>
+   <div class="logout-container">
+    <button onclick="location.href='/logout'" class="logout-button">Logout</button>
+  </div>
   <div class="page-header">
     <h2>{{ foundation.name }}</h2>
     <p><strong>ID:</strong> {{ foundation.foundation_id }}</p>
@@ -116,15 +146,6 @@
                 <input type="date" id="end_date" name="end_date" value="{{ filters.end_date }}">
             </div>
             <div>
-                <label for="shift">Shift</label>
-                <select id="shift" name="shift">
-                    <option value="all" {% if not filters.shift or filters.shift == 'all' %}selected{% endif %}>All</option>
-                    <option value="morning" {% if filters.shift == 'morning' %}selected{% endif %}>Morning</option>
-                    <option value="afternoon" {% if filters.shift == 'afternoon' %}selected{% endif %}>Afternoon</option>
-                    <option value="evening" {% if filters.shift == 'evening' %}selected{% endif %}>Evening</option>
-                </select>
-            </div>
-            <div>
                 <label>&nbsp;</label>
                 <button type="submit">Apply Filter</button>
             </div>
@@ -178,7 +199,7 @@
                         <th>Shift</th>
                         <th>Status</th>
                         <th>Duration</th>
-                        <th>Time (In - Out)</th>
+                        <th>Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,7 +215,7 @@
                             {% endif %}
                         </td>
                         <td>{{ log.duration }}</td>
-                        <td>{{ log.displayTime }}</td>
+                        <td>{{ log.timestamp.toLocaleString('en-IN') }}</td>
                     </tr>
                     {% else %}
                     <tr>
