@@ -102,7 +102,7 @@ async function start() {
                 secure: isProduction, // Set to true in production (HTTPS)
                 httpOnly: true, // Prevent client-side JS access to cookie
                 sameSite: 'lax', // Protect against CSRF attacks. 'lax' is a good default.
-                domain: isProduction ? '.sai678.dev' : undefined, // Set domain ONLY in production
+                domain: isProduction ? process.env.COOKIE_DOMAIN : undefined,  // Set domain ONLY in production
                 maxAge: 24 * 60 * 60 * 1000 // Session max age in milliseconds (24 hours)
             }
         })
