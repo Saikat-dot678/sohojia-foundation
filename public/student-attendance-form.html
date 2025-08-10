@@ -11,14 +11,21 @@
     body { background: var(--light-gray); display: flex; flex-direction: column; min-height: 100vh; }
     header { background: var(--brand-red); padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     header h1 { color: var(--card-bg); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
-    main { flex: 1; padding: 1rem; width: 100%; max-width: 600px; margin: 2rem auto; }
+    main { flex: 1; padding: 1rem; width: 100%; max-width: 700px; margin: 2rem auto; }
     .card { background: var(--card-bg); padding: 1.5rem 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .form-container h2 { margin-bottom: 1.5rem; font-size: 1.6rem; color: var(--brand-red); text-align: center; font-weight: 600; }
     label { display: block; margin-top: 1rem; margin-bottom: 0.4rem; font-weight: 500; color: #444; }
     input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-    .button-submit { display: block; width: 100%; margin-top: 2rem; padding: 0.9rem 1.2rem; background: var(--brand-red); color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; transition: background 0.2s ease; }
+    .button { padding: 0.7rem 1.2rem; background: #6c757d; color: #fff; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s ease; }
+    .button-submit { display: block; width: 100%; margin-top: 2rem; padding: 0.9rem 1.2rem; background: var(--brand-red); color: #fff; font-size: 1.1rem; }
     .button-submit:hover { background: #c73c39; }
     .back-link { display: block; text-align: center; margin-top: 1.5rem; color: #555; text-decoration: none; }
+    
+    /* Styles for multiple attendance blocks */
+    .attendance-block { border: 1px solid #e0e0e0; padding: 1.5rem; margin-top: 1.5rem; border-radius: 8px; position: relative; }
+    .attendance-block .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .remove-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: #dc3545; font-weight: bold; }
+    .add-btn { margin-top: 1.5rem; background: #28a745; display: inline-block; }
 </style>
 </head>
 <body>
@@ -26,33 +33,162 @@
 <main>
     <section class="form-container card">
         <h2>Log Student Attendance</h2>
-        <form action="/student-attendance/{{ managerId }}" method="POST">
+        <form id="attendance-form">
             <label for="attendance_date">Date</label>
             <input type="date" id="attendance_date" name="attendance_date" required>
 
-            <label for="shift">Shift</label>
-            <select id="shift" name="shift" required>
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Evening">Evening</option>
-            </select>
+            <div id="attendance-blocks-container">
+                <div class="attendance-block">
+                    <div class="grid">
+                        <div>
+                            <label for="shift">Shift</label>
+                            <select name="shift" required>
+                                <option value="Morning">Morning</option>
+                                <option value="Afternoon">Afternoon</option>
+                                <option value="Evening">Evening</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="class_name">Class</label>
+                            <input type="text" name="class_name" placeholder="e.g., 5th Grade" required>
+                        </div>
+                        <div>
+                            <label for="boys_present">Boys Present</label>
+                            <input type="number" name="boys_present" min="0" placeholder="0" required>
+                        </div>
+                        <div>
+                            <label for="girls_present">Girls Present</label>
+                            <input type="number" name="girls_present" min="0" placeholder="0" required>
+                        </div>
+                        <div>
+                            <label for="total_absent">Students Absent</label>
+                            <input type="number" name="total_absent" min="0" placeholder="0" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <label for="class_name">Class</label>
-            <input type="text" id="class_name" name="class_name" placeholder="e.g., 5th Grade" required>
-            
-            <label for="boys_present">Number of Boys Present</label>
-            <input type="number" id="boys_present" name="boys_present" min="0" placeholder="0" required>
-
-            <label for="girls_present">Number of Girls Present</label>
-            <input type="number" id="girls_present" name="girls_present" min="0" placeholder="0" required>
-            
-            <label for="total_absent">Number of Students Absent</label>
-            <input type="number" id="total_absent" name="total_absent" min="0" placeholder="0" required>
-
-            <button type="submit" class="button-submit">Submit Attendance</button>
+            <button type="button" id="add-class-btn" class="button add-btn">Add Another Class</button>
+            <button type="submit" class="button button-submit">Submit Attendance</button>
         </form>
         <a href="/event-manager-dashboard/{{ managerId }}/dashboard" class="back-link">&larr; Back to Dashboard</a>
     </section>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('attendance-blocks-container');
+        const addBtn = document.getElementById('add-class-btn');
+        const form = document.getElementById('attendance-form');
+        const managerId = "{{ managerId }}";
+
+        // Function to create a new attendance block
+        const createNewBlock = () => {
+            const newBlock = document.createElement('div');
+            newBlock.className = 'attendance-block';
+            newBlock.innerHTML = `
+                <button type="button" class="button remove-btn">Remove</button>
+                <div class="grid">
+                    <div>
+                        <label>Shift</label>
+                        <select name="shift" required>
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Evening">Evening</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Class</label>
+                        <input type="text" name="class_name" placeholder="e.g., 5th Grade" required>
+                    </div>
+                    <div>
+                        <label>Boys Present</label>
+                        <input type="number" name="boys_present" min="0" placeholder="0" required>
+                    </div>
+                    <div>
+                        <label>Girls Present</label>
+                        <input type="number" name="girls_present" min="0" placeholder="0" required>
+                    </div>
+                    <div>
+                        <label>Students Absent</label>
+                        <input type="number" name="total_absent" min="0" placeholder="0" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newBlock);
+        };
+
+        // Add a new block when the "Add" button is clicked
+        addBtn.addEventListener('click', createNewBlock);
+
+        // Event delegation to handle "Remove" button clicks
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                e.target.closest('.attendance-block').remove();
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent the default form submission
+
+            const attendanceDate = document.getElementById('attendance_date').value;
+            if (!attendanceDate) {
+                alert('Please select a date.');
+                return;
+            }
+
+            const records = [];
+            const blocks = container.querySelectorAll('.attendance-block');
+
+            // Collect data from each block
+            blocks.forEach(block => {
+                const shift = block.querySelector('[name="shift"]').value;
+                const className = block.querySelector('[name="class_name"]').value;
+                const boysPresent = block.querySelector('[name="boys_present"]').value;
+                const girlsPresent = block.querySelector('[name="girls_present"]').value;
+                const totalAbsent = block.querySelector('[name="total_absent"]').value;
+                
+                // Simple validation to ensure all fields in a block are filled
+                if (shift && className && boysPresent !== '' && girlsPresent !== '' && totalAbsent !== '') {
+                    records.push({
+                        shift: shift,
+                        class_name: className,
+                        boys_present: parseInt(boysPresent, 10),
+                        girls_present: parseInt(girlsPresent, 10),
+                        total_absent: parseInt(totalAbsent, 10)
+                    });
+                }
+            });
+
+            if (records.length === 0) {
+                alert('Please fill out at least one attendance record.');
+                return;
+            }
+
+            // Send the collected data to the backend
+            try {
+                const response = await fetch(`/student-attendance/${managerId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        attendance_date: attendanceDate,
+                        records: records
+                    })
+                });
+
+                if (response.ok) {
+                    // Redirect on success
+                    window.location.href = `/event-manager-dashboard/${managerId}/dashboard?success=Student attendance logged successfully!`;
+                } else {
+                    const errorText = await response.text();
+                    alert(`Failed to submit attendance: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+</script>
 </body>
 </html>
