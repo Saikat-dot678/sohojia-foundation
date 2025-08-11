@@ -6,33 +6,6 @@
   <title>Program Coordinators in {{ foundation.name }} – SOHOJIA FOUNDATION</title>
   <style>
     /* Styles are identical to the enhanced event-managers-list.html */
-     
-  .logout-container {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
-.logout-button {
-  padding: 12px 20px;
-  background: #ffffff;
-  color: rgb(243, 79, 76);
-  border: 2px solid #fff;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
-
-.logout-button:hover {
-  background: rgb(243, 79, 76);
-  color: #fff;
-  border-color: #fff;
-  box-shadow: 0 6px 14px rgba(243,79,76,0.6);
-}
-
     :root { --brand-red: rgb(243, 79, 76); --light-gray: #f3f3f3; --card-bg: #fff; --text-dark: #333; --border-color: #eee; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { display: flex; flex-direction: column; background: var(--light-gray); }
@@ -113,10 +86,6 @@
 </head>
 <body>
   <header><h1>SOHOJIA FOUNDATION</h1></header>
-   <div class="logout-container">
-    <button onclick="location.href='/logout'" class="logout-button">Logout</button>
-  </div>
-  
   <div class="page-header">
     <h2>Program Coordinator List for {{ foundation.name }}</h2>
   </div>

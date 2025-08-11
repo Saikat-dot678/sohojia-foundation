@@ -6,10 +6,12 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Volunteer Registration – SOHOJIA FOUNDATION</title>
   <style>
+    /* Reset */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-family: Arial, sans-serif; font-size: 16px; }
     body { background: #f3f3f3; color: #333; display: flex; justify-content: center; padding: 1rem; }
 
+    /* Container */
     .container {
       width: 100%;
       max-width: 400px;
@@ -19,9 +21,11 @@
       overflow: hidden;
     }
 
+    /* Header */
     header { background: rgb(243,79,76); padding: 1rem; text-align: center; }
     header h1 { color: #fff; font-size: 1.25rem; text-transform: uppercase; }
 
+    /* Form */
     form { display: flex; flex-direction: column; padding: 1rem; }
     label { font-size: 0.875rem; margin-bottom: 0.25rem; color: #333; }
     input, select, button {
@@ -42,12 +46,13 @@
     }
     button:hover { background: #c73c39; }
 
+    /* Back Link */
     .back-link { text-align: center; margin-bottom: 1rem; }
     .back-link a { font-size: 0.875rem; color: #555; text-decoration: none; }
     .back-link a:hover { text-decoration: underline; }
     .password-wrapper { position: relative; }
     .toggle-password { position: absolute; top: 11px; right: 10px; cursor: pointer; user-select: none; color: #777; font-style: normal; }
-
+    /* Responsive */
     @media(max-width: 360px) {
       input, select, button { padding: 0.5rem; font-size: 0.875rem; }
       header h1 { font-size: 1rem; }
@@ -59,11 +64,18 @@
     <header>
       <h1>Volunteer Registration</h1>
     </header>
-    <div id="message-display-area" class="message-container"></div>
+    <div id="message-display-area" class="message-container">
+        </div>
 
     <form action="/register-volunteer" method="POST" enctype="multipart/form-data">
-      <label for="volunteer_id">Volunteer ID</label>
-      <input type="number" id="volunteer_id" name="volunteer_id" placeholder="Enter Volunteer ID" required>
+      <!-- Foundation ID (hidden) -->
+        <label for="volunteer_id">Volunteer ID</label>
+        <input
+          type="number"
+          id="volunteer_id"
+          name="volunteer_id"
+          placeholder="Enter Volunteer ID"
+          required >
 
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" placeholder="Enter your full name" required>
@@ -72,9 +84,8 @@
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
       <label for="phone">Phone</label>
-      <input type="text" id="phone" name="phone" placeholder="Enter your phone number"
-             maxlength="10" pattern="\d{10}" title="Phone number must be exactly 10 digits" required>
-
+      <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+      
       <label for="password">Create Password</label>
       <div class="password-wrapper">
         <input type="password" id="password" name="password" placeholder="Enter a secure password" required>
@@ -84,8 +95,7 @@
       <label for="confirm_password">Confirm Password</label>
       <div class="password-wrapper">
         <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
-        <i class="toggle-password">👁️</i>
-      </div>
+      <i class="toggle-password">👁️</i>
 
       <label for="aadhar">Aadhar Number</label>
       <input type="text" id="aadhar" name="aadhar_number" placeholder="Enter 12-digit Aadhar" pattern="\d{12}" required>
@@ -117,34 +127,39 @@
   </div>
 
   <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const messageDisplayArea = document.getElementById('message-display-area');
+
+            let message = '';
+            let messageType = ''; // 'success' or 'danger'
+
+            if (params.has('error')) {
+                message = decodeURIComponent(params.get('error'));
+                messageType = 'danger';
+            } else if (params.has('success')) {
+                message = decodeURIComponent(params.get('success'));
+                messageType = 'success';
+            }
+
+            if (message) {
+                const alertDiv = document.createElement('div');
+                alertDiv.classList.add('alert', `alert-${messageType}`);
+                alertDiv.textContent = message;
+                messageDisplayArea.appendChild(alertDiv);
+
+                // Optional: Clear the URL parameters after displaying
+                // This prevents the message from reappearing on refresh
+                setTimeout(() => {
+                    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                    window.history.replaceState({ path: newUrl }, '', newUrl);
+                }, 100); // Small delay to ensure message is rendered
+            }
+        });
+    </script>
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const messageDisplayArea = document.getElementById('message-display-area');
-
-      let message = '';
-      let messageType = '';
-
-      if (params.has('error')) {
-        message = decodeURIComponent(params.get('error'));
-        messageType = 'danger';
-      } else if (params.has('success')) {
-        message = decodeURIComponent(params.get('success'));
-        messageType = 'success';
-      }
-
-      if (message) {
-        const alertDiv = document.createElement('div');
-        alertDiv.classList.add('alert', `alert-${messageType}`);
-        alertDiv.textContent = message;
-        messageDisplayArea.appendChild(alertDiv);
-
-        setTimeout(() => {
-          const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-          window.history.replaceState({ path: newUrl }, '', newUrl);
-        }, 100);
-      }
-
-      // Toggle password visibility
+      // Password visibility toggles
       document.querySelectorAll('.toggle-password').forEach(toggle => {
         toggle.addEventListener('click', () => {
           const passwordInput = toggle.previousElementSibling;
@@ -158,29 +173,14 @@
         });
       });
 
-      // Enforce 10-digit phone number input
-      const phone = document.getElementById('phone');
-      phone.addEventListener('input', () => {
-        phone.value = phone.value.replace(/\D/g, '').slice(0, 10);
-      });
-
-      // Validate on submit
-      const form = document.querySelector('form');
-      form.addEventListener('submit', (event) => {
+      // Password match validation on form submit
+      document.getElementById('registrationForm').addEventListener('submit', (event) => {
         const password = document.getElementById('password');
         const confirmPassword = document.getElementById('confirm_password');
-
         if (password.value !== confirmPassword.value) {
-          event.preventDefault();
+          event.preventDefault(); // Stop form submission
           alert('Passwords do not match. Please re-enter.');
           confirmPassword.focus();
-          return;
-        }
-
-        if (!/^\d{10}$/.test(phone.value)) {
-          event.preventDefault();
-          alert('Phone number must be exactly 10 digits.');
-          phone.focus();
         }
       });
     });

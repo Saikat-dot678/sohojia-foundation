@@ -1,43 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
   <title>Attendance Overview</title>
   <style>
-    .logout-container {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-    }
-
-    .logout-button {
-      padding: 12px 20px;
-      background: #ffffff;
-      color: rgb(243, 79, 76);
-      border: 2px solid #fff;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
-    }
-
-    .logout-button:hover {
-      background: rgb(243, 79, 76);
-      color: #fff;
-      border-color: #fff;
-      box-shadow: 0 6px 14px rgba(243, 79, 76, 0.6);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-
     html,
     body {
       height: 100%;
@@ -45,7 +20,6 @@
       background: #f3f3f3;
       color: #333;
     }
-
     body {
       display: flex;
       flex-direction: column;
@@ -56,7 +30,6 @@
       padding: 16px;
       text-align: center;
     }
-
     header h1 {
       color: #fff;
       font-size: 20px;
@@ -149,7 +122,6 @@
       text-align: center;
       margin: 16px 0;
     }
-
     .back-link a {
       display: inline-block;
       padding: 10px 20px;
@@ -161,7 +133,6 @@
       font-size: 16px;
       transition: background 0.3s ease;
     }
-
     .back-link a:hover {
       background: #eaeaea;
     }
@@ -200,14 +171,10 @@
     }
   </style>
 </head>
-
 <body>
   <header>
     <h1>Attendance Tracker</h1>
   </header>
-  <div class="logout-container">
-    <button onclick="location.href='/logout'" class="logout-button">Logout</button>
-  </div>
 
   <main>
     <div class="form-card">
@@ -215,21 +182,27 @@
         <label for="month">Month:</label>
         <select name="month" id="month" required>
           {% for m in months %}
-          <option value="{{ m }}" {% if m==currentMonth %}selected{% endif %}>
-            {{ m }}
-          </option>
+            <option value="{{ m }}" {% if m == currentMonth %}selected{% endif %}>
+              {{ m }}
+            </option>
           {% endfor %}
         </select>
 
         <label for="year">Year:</label>
-        <input type="number" name="year" id="year" value="{{ currentYear }}" required />
+        <input
+          type="number"
+          name="year"
+          id="year"
+          value="{{ currentYear }}"
+          required
+        />
 
         <label for="view">View:</label>
         <select name="view" id="view" required>
-          <option value="attended" {% if view=='attended' %}selected{% endif %}>
+          <option value="attended" {% if view == 'attended' %}selected{% endif %}>
             Attended
           </option>
-          <option value="absent" {% if view=='absent' %}selected{% endif %}>
+          <option value="absent" {% if view == 'absent' %}selected{% endif %}>
             Absent
           </option>
         </select>
@@ -240,49 +213,49 @@
 
     <div class="session-list">
       {% if view == 'attended' %}
-      <h2>Attended Sessions</h2>
-      <ul>
-        {% if data.length == 0 %}
-        <li>No attended sessions found.</li>
-        {% else %}
-        {% for session in data %}
-        <li class="session-item">
-          <span>{{ session.session_date }}</span>
-          <span>Session ID: {{ session.session_id }}</span>
-          <span>Time (IST): {{ session.timestamp_ist or 'N/A' }}</span>
-          <span>Status: {{ session.status or 'Present' }}</span>
-        </li>
-        {% endfor %}
-        {% endif %}
-      </ul>
+        <h2>Attended Sessions</h2>
+        <ul>
+          {% if data.length == 0 %}
+            <li>No attended sessions found.</li>
+          {% else %}
+            {% for session in data %}
+              <li class="session-item">
+                <span>{{ session.session_date }}</span>
+                <span>Session ID: {{ session.session_id }}</span>
+                <span>Time (IST): {{ session.timestamp_ist or 'N/A' }}</span>
+                <span>Status: {{ session.status or 'Present' }}</span>
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
       {% elif view == 'absent' %}
-      <h2>Absent Sessions</h2>
-      <ul>
-        {% if data.length == 0 %}
-        <li>No absent sessions found.</li>
-        {% else %}
-        {% for session in data %}
-        <li class="session-item">
-          <span>{{ session.session_date }}</span>
-          <span>Session ID: {{ session.session_id }}</span>
-          <span>Time (IST): {{ session.timestamp_ist or 'N/A' }}</span>
-          <span>Status: {{ session.status or 'Present' }}</span>
-        </li>
-        {% endfor %}
-        {% endif %}
-      </ul>
+        <h2>Absent Sessions</h2>
+        <ul>
+          {% if data.length == 0 %}
+            <li>No absent sessions found.</li>
+          {% else %}
+            {% for session in data %}
+              <li class="session-item">
+                <span>{{ session.session_date }}</span>
+                <span>Session ID: {{ session.session_id }}</span>
+                <span>Time (IST): {{ session.timestamp_ist or 'N/A' }}</span>
+                <span>Status: {{ session.status or 'Present' }}</span>
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
       {% endif %}
     </div>
 
     <div class="back-link">
       {% if userRole == 'admin' %}
-      <a href="/volunteer/{{ volunteerId }}">
-        ← Back to Volunteer Dashboard
-      </a>
+        <a href="/volunteer/{{ volunteerId }}">
+          ← Back to Volunteer Dashboard
+        </a>
       {% else %}
-      <a href="/volunteer-dashboard/{{ volunteerId }}/dashboard">
-        ← Back to Volunteer Dashboard
-      </a>
+        <a href="/volunteer-dashboard/{{ volunteerId }}/dashboard">
+          ← Back to Volunteer Dashboard
+        </a>
       {% endif %}
     </div>
 
@@ -290,5 +263,4 @@
 
   <footer>&copy; {{ currentYear }} Attendance System</footer>
 </body>
-
 </html>

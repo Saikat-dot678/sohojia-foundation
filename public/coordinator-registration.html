@@ -29,8 +29,7 @@
       <h1>Center Program Coordinator Registration</h1>
     </header>
 
-    <!-- ✅ Added id="registrationForm" -->
-    <form id="registrationForm" action="/register-coordinator" method="POST" enctype="multipart/form-data">
+    <form action="/register-coordinator" method="POST" enctype="multipart/form-data">
       <label for="coordinator_id">Coordinator ID</label>
       <input type="number" id="coordinator_id" name="coordinator_id" placeholder="Enter Coordinator ID" required >
 
@@ -41,21 +40,19 @@
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
       <label for="phone">Phone</label>
-      <!-- ✅ Added pattern, title -->
-      <input type="text" id="phone" name="phone" placeholder="Enter your phone number"
-             pattern="\d{10}" title="Phone number must be exactly 10 digits" required>
-
+      <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+      
       <label for="password">Create Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" name="password" placeholder="Enter a secure password" required>
-        <i class="toggle-password">👁️</i>
-      </div>
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="Enter a secure password" required>
+            <i class="toggle-password">👁️</i>
+        </div>
 
-      <label for="confirm_password">Confirm Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
-        <i class="toggle-password">👁️</i>
-      </div>
+        <label for="confirm_password">Confirm Password</label>
+        <div class="password-wrapper">
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+            <i class="toggle-password">👁️</i>
+        </div>
 
       <label for="aadhar_number">Aadhar Number</label>
       <input type="text" id="aadhar_number" name="aadhar_number" placeholder="Enter 12-digit Aadhar" pattern="\d{12}" required>
@@ -85,46 +82,33 @@
       <a href="/login">&larr; Back to Login</a>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Password visibility toggles
-      document.querySelectorAll('.toggle-password').forEach(toggle => {
-        toggle.addEventListener('click', () => {
-          const passwordInput = toggle.previousElementSibling;
-          if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggle.textContent = '🙈';
-          } else {
-            passwordInput.type = 'password';
-            toggle.textContent = '👁️';
-          }
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        // Password visibility toggles
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+            const passwordInput = toggle.previousElementSibling;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggle.textContent = '👁️';
+            }
+            });
         });
-      });
 
-      // Validation on form submit
-      document.getElementById('registrationForm').addEventListener('submit', (event) => {
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirm_password');
-        const phone = document.getElementById('phone');
-
-        // Check if passwords match
-        if (password.value !== confirmPassword.value) {
-          event.preventDefault();
-          alert('Passwords do not match. Please re-enter.');
-          confirmPassword.focus();
-          return;
-        }
-
-        // Check if phone number is exactly 10 digits
-        const phoneValue = phone.value.trim();
-        if (!/^\d{10}$/.test(phoneValue)) {
-          event.preventDefault();
-          alert('Phone number must be exactly 10 digits.');
-          phone.focus();
-        }
-      });
-    });
-  </script>
+        // Password match validation on form submit
+        document.getElementById('registrationForm').addEventListener('submit', (event) => {
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            if (password.value !== confirmPassword.value) {
+            event.preventDefault(); // Stop form submission
+            alert('Passwords do not match. Please re-enter.');
+            confirmPassword.focus();
+            }
+        });
+        });
+    </script>
 </body>
 </html>
