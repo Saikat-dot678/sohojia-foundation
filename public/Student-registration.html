@@ -1,22 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Student Registration - SOHOJIA FOUNDATION</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: Arial, sans-serif; background: #f3f3f3; }
-    .container {
-      max-width: 400px;
-      margin: 40px auto;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
     header {
-      background: rgb(243,79,76);
+      background: rgb(243, 79, 76);
       padding: 16px;
       text-align: center;
     }
@@ -24,24 +14,56 @@
       color: #fff;
       font-size: 20px;
       text-transform: uppercase;
+      margin: 0;
+    }
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 16px;
+      }
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html,
+    body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+    }
+    .container {
+      max-width: 400px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
     }
     form {
       display: flex;
       flex-direction: column;
       padding: 20px;
     }
-    label { margin-bottom: 6px; font-size: 14px; color: #333; }
-    input, select {
+    label {
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+    input,
+    select {
       padding: 10px;
       margin-bottom: 16px;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 16px;
     }
-    .file-input { padding: 6px; }
+    .file-input {
+      padding: 6px;
+    }
     button {
       padding: 12px;
-      background: rgb(243,79,76);
+      background: rgb(243, 79, 76);
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -49,64 +71,92 @@
       cursor: pointer;
       text-align: center;
     }
-    button:hover { background: #c73c39; }
-    .back-link { text-align: center; margin: 12px 0; font-size: 14px; }
-    .back-link a { color: #555; text-decoration: none; }
-    .back-link a:hover { text-decoration: underline; }
-    .password-wrapper { position: relative; }
-    .toggle-password { position: absolute; top: 11px; right: 10px; cursor: pointer; user-select: none; color: #777; font-style: normal; }
+    button:hover {
+      background: #c73c39;
+    }
+    .back-link {
+      text-align: center;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    .back-link a {
+      color: #555;
+      text-decoration: none;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 11px;
+      right: 10px;
+      cursor: pointer;
+      user-select: none;
+      color: #777;
+      font-style: normal;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Student Registration</h1>
+      <h1>SOHOJIA FOUNDATION</h1>
     </header>
-    <form action="/register-student" method="POST" enctype="multipart/form-data">
+
+    <form action="/register-student" method="POST" enctype="multipart/form-data" id="registrationForm">
       <label for="studentId">Foundation ID</label>
-      <input type="text" id="studentId" name="student_id" placeholder="Enter Student ID" required>
+      <input type="text" id="studentId" name="student_id" placeholder="Enter Student ID" required />
 
       <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+      <input type="text" id="name" name="name" placeholder="Enter your full name" required />
 
       <label for="roll">Roll Number</label>
-      <input type="text" id="roll" name="roll_no" placeholder="Enter roll number" required>
+      <input type="text" id="roll" name="roll_no" placeholder="Enter roll number" required />
 
       <label for="class">Class</label>
-      <input type="text" id="class" name="class" placeholder="Enter class (e.g., 5th Grade)" required>
+      <input type="text" id="class" name="class" placeholder="Enter class (e.g., 5th Grade)" required />
 
       <label for="address">Address</label>
-      <input type="text" id="address" name="address" placeholder="Enter your address" required>
+      <input type="text" id="address" name="address" placeholder="Enter your address" required />
 
       <label for="fatherName">Father's Name</label>
-      <input type="text" id="fatherName" name="father_name" placeholder="Enter father's name" required>
+      <input type="text" id="fatherName" name="father_name" placeholder="Enter father's name" required />
 
       <label for="motherName">Mother's Name</label>
-      <input type="text" id="motherName" name="mother_name" placeholder="Enter mother's name" required>
+      <input type="text" id="motherName" name="mother_name" placeholder="Enter mother's name" required />
 
       <label for="parentContact">Guardian Contact</label>
-      <input type="text" id="parentContact" name="guardian_contact" placeholder="Enter guardian's contact" required>
+      <input type="text" id="parentContact" name="guardian_contact" placeholder="Enter guardian's contact" required />
 
       <label for="parentEmail">Guardian Email</label>
-      <input type="email" id="parentEmail" name="guardian_email" placeholder="Enter guardian's email" required>
+      <input type="email" id="parentEmail" name="guardian_email" placeholder="Enter guardian's email" required />
 
       <label for="hobby">Hobby</label>
-      <input type="text" id="hobby" name="hobby" placeholder="Enter hobby (e.g., Painting, Football)">
+      <input type="text" id="hobby" name="hobby" placeholder="Enter hobby (e.g., Painting, Football)" />
 
       <label for="password">Create Password</label>
       <div class="password-wrapper">
-        <input type="password" id="password" name="password" placeholder="Enter a secure password" required>
+        <input type="password" id="password" name="password" placeholder="Enter a secure password" required />
         <i class="toggle-password">👁️</i>
       </div>
 
       <label for="confirm_password">Confirm Password</label>
       <div class="password-wrapper">
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+        <input
+          type="password"
+          id="confirm_password"
+          name="confirm_password"
+          placeholder="Confirm your password"
+          required
+        />
         <i class="toggle-password">👁️</i>
       </div>
 
       <label for="photo">Photo</label>
-      <input type="file" id="photo" name="photo" accept="image/*" class="file-input" required>
+      <input type="file" id="photo" name="photo" accept="image/*" class="file-input" required />
 
       <button type="submit">Register</button>
     </form>
@@ -115,10 +165,11 @@
       <a href="/login">Back to Login</a>
     </div>
   </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Password visibility toggles
-      document.querySelectorAll('.toggle-password').forEach(toggle => {
+      document.querySelectorAll('.toggle-password').forEach((toggle) => {
         toggle.addEventListener('click', () => {
           const passwordInput = toggle.previousElementSibling;
           if (passwordInput.type === 'password') {

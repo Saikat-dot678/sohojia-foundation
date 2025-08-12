@@ -5,11 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Add Center Program Coordinator - SOHOJIA FOUNDATION</title>
 <style>
-    /* Styles are identical to add-eventManager.html */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: Arial, sans-serif; background: #f3f3f3; color: #333; }
-    header { background: rgb(243, 79, 76); padding: 16px; text-align: center; }
-    header h1 { color: #fff; font-size: 20px; text-transform: uppercase; }
+    
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+    }
+    .header-btn:hover {
+        background: #f1f1f1;
+    }
+
     .dashboard-header { background: #fff; padding: 16px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); text-align: center; }
     .dashboard-header h2 { font-size: 24px; color: #333; }
     main { flex: 1; overflow-y: auto; padding: 16px; }
@@ -24,40 +52,51 @@
 
     @media (max-width: 768px){
         .back-button {
-        width: 100%;
-        text-align: center;
-        padding: 12px;
-        font-size: 16px;
-    }
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            font-size: 16px;
+        }
+        header h1 {
+            font-size: 16px;
+        }
+        .header-btn {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
     }
 </style>
 </head>
 <body>
+
 <header>
+    <a href="/home" class="header-btn">Home</a>
     <h1>SOHOJIA FOUNDATION</h1>
+    <a href="/logout" class="header-btn">Logout</a>
 </header>
+    
 <div class="dashboard-header">
     <h2>Add Center Program Coordinator</h2>
 </div>
 <main>
     <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
     <section class="form-container">
-    <h3>Add Center Program Coordinator</h3>
-    <form action="/addition/api/add-coordinator" method="POST">
-        <label for="district">Select District:</label>
-        <select id="district" name="district" required></select>
+        <h3>Add Center Program Coordinator</h3>
+        <form action="/addition/api/add-coordinator" method="POST">
+            <label for="district">Select District:</label>
+            <select id="district" name="district" required></select>
 
-        <label for="foundation_id">Select Foundation:</label>
-        <select id="foundation_id" name="foundation_id" required></select>
+            <label for="foundation_id">Select Foundation:</label>
+            <select id="foundation_id" name="foundation_id" required></select>
 
-        <label for="coordinator_id">Coordinator ID:</label>
-        <input type="number" id="coordinator_id" name="coordinator_id" required>
+            <label for="coordinator_id">Coordinator ID:</label>
+            <input type="number" id="coordinator_id" name="coordinator_id" required>
 
-        <label for="name">Coordinator Name:</label>
-        <input type="text" id="name" name="name" required>
+            <label for="name">Coordinator Name:</label>
+            <input type="text" id="name" name="name" required>
 
-        <button type="submit">Add Coordinator</button>
-    </form>
+            <button type="submit">Add Coordinator</button>
+        </form>
     </section>
 </main>
 <footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>

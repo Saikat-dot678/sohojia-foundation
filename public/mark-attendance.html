@@ -5,6 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mark Attendance – SOHOJIA FOUNDATION</title>
 <style>
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+    }
+    .header-btn:hover {
+        background: #f1f1f1;
+    }
+    
+    @media (max-width: 768px){
+        header h1 {
+            font-size: 16px;
+        }
+        .header-btn {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+    }
+        
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     max-width: 420px;

@@ -5,6 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Student Dashboard - SOHOJIA FOUNDATION</title>
   <style>
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+    }
+    .header-btn:hover {
+        background: #f1f1f1;
+    }
+    
+    @media (max-width: 768px){
+        header h1 {
+            font-size: 16px;
+        }
+        .header-btn {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+    }
+        
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
     body { display: flex; flex-direction: column; background: #f4f7f9; color: #333; }
@@ -92,9 +132,13 @@
   </style>
 </head>
 <body>
-  <header>
+  
+<header>
+    <a href="/home" class="header-btn">Home</a>
     <h1>SOHOJIA FOUNDATION</h1>
-  </header>
+    <a href="/logout" class="header-btn">Logout</a>
+</header>
+    
   <div class="page-header">
     <h2>Student Dashboard</h2>
   </div>

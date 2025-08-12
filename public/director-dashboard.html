@@ -9,6 +9,46 @@
 <meta name="theme-color" content="#f34f4c">
 <link rel="apple-touch-icon" href="logo.png">
 <style>
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+    }
+    .header-btn:hover {
+        background: #f1f1f1;
+    }
+    
+    @media (max-width: 768px){
+        header h1 {
+            font-size: 16px;
+        }
+        .header-btn {
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+    }
+        
     /* Styles are identical to event-manager.html */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333; }
@@ -36,7 +76,13 @@
 </style>
 </head>
 <body>
-<header><h1>SOHOJIA FOUNDATION</h1></header>
+
+<header>
+    <a href="/home" class="header-btn">Home</a>
+    <h1>SOHOJIA FOUNDATION</h1>
+    <a href="/logout" class="header-btn">Logout</a>
+</header>
+    
 <div class="page-header"><h2>Director Dashboard</h2></div>
 
 <main>

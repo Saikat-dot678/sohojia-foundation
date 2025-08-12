@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Coordinator Registration – SOHOJIA FOUNDATION</title>
   <style>
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px){
+        header h1 {
+            font-size: 16px;
+        }
+    }
+        
     /* Styles are identical to director-registration.html */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-family: Arial, sans-serif; font-size: 16px; }
@@ -25,11 +47,13 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Center Program Coordinator Registration</h1>
-    </header>
+    
+<header>
+    <h1>SOHOJIA FOUNDATION</h1>
+</header>
+    
 
-    <form action="/register-coordinator" method="POST" enctype="multipart/form-data">
+    <form action="/register-coordinator" method="POST" enctype="multipart/form-data" id="registrationForm">
       <label for="coordinator_id">Coordinator ID</label>
       <input type="number" id="coordinator_id" name="coordinator_id" placeholder="Enter Coordinator ID" required >
 

@@ -5,6 +5,33 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Register Fingerprint – SOHOJIA FOUNDATION</title>
   <style>
+    header {
+        background: rgb(243, 79, 76);
+        padding: 16px;
+        display: flex;
+        justify-content: center; /* Center the title */
+        align-items: center;
+    }
+    header h1 {
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        margin: 0;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+        display: none; /* Hidden since buttons removed */
+    }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       max-width: 420px; margin: 2rem auto;
@@ -40,6 +67,10 @@
   </style>
 </head>
 <body>
+
+  <header>
+    <h1>SOHOJIA FOUNDATION</h1>
+  </header>
 
   <h2>Register Fingerprint</h2>
   <p>Touch your device’s fingerprint sensor to register for attendance.</p>
@@ -79,20 +110,16 @@
       btn.disabled = true;
 
       try {
-        // 1) Fetch options from server
         const optsResp = await fetch(window.location.pathname + '/options');
         if (!optsResp.ok) throw new Error('Could not fetch options');
         const optsJSON = await optsResp.json();
 
-        // 2) Decode challenge & user.id
         optsJSON.publicKey.challenge = base64urlToBuffer(optsJSON.publicKey.challenge);
         optsJSON.publicKey.user.id   = base64urlToBuffer(optsJSON.publicKey.user.id);
 
-        // 3) Call WebAuthn API
         const cred = await navigator.credentials.create({ publicKey: optsJSON.publicKey });
         if (!cred) throw new Error('No credential created');
 
-        // 4) Prepare attestation response
         const att = cred.response;
         const payload = {
           id: cred.id,
@@ -105,7 +132,6 @@
         };
 
         showStatus('Sending attestation to server...');
-        // 5) POST to your register endpoint
         const regResp = await fetch(window.location.pathname, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -116,7 +142,6 @@
         if (regJSON.success) {
           showStatus('Fingerprint registered successfully!', false);
           setTimeout(() => {
-            // redirect back to dashboard
             const id = window.location.pathname.split('/')[2];
             window.location.href = `/volunteer-dashboard/${id}/dashboard`;
           }, 1500);
