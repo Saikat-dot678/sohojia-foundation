@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin: Manage Volunteer Schedules</title>
 <style>
+    /* styles remain the same */
     header {
         background: rgb(243, 79, 76);
         padding: 16px;
@@ -53,8 +54,8 @@
     main { padding: 1rem; max-width: 900px; margin: 1rem auto; }
     .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
     h2, h3 { color: var(--brand-red); text-align: center; margin-bottom: 1rem; }
-    .search-form form { display: flex; gap: 1rem; align-items: center; justify-content: center; }
-    .search-form input { padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+    .search-form form { display: flex; flex-direction: column; gap: 1rem; }
+    .search-form select { padding: 0.8rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
     .search-button, .action-button { background: var(--brand-red); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 1rem; }
     .schedule-entry { border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; }
     .schedule-entry-header { background: #f9f9f9; padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: bold; }
@@ -71,7 +72,7 @@
     .message-box.error { background: #f8d7da; color: #721c24; }
     .back-button { display: inline-block; margin-bottom: 16px; padding: 10px 20px; background: var(--card-bg); border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: var(--text-dark); }
     @media (max-width: 768px) {
-        .schedule-form, .search-form form { grid-template-columns: 1fr; flex-direction: column; }
+        .schedule-form { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px){
         .back-button {
@@ -92,12 +93,18 @@
 </header>
     
     <main>
-        <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
         <section class="card search-form">
             <h2>Manage Volunteer Schedules</h2>
             <form action="/admin/schedule-management/view" method="POST">
-                <label for="volunteerId" class="sr-only">Volunteer ID:</label>
-                <input type="number" id="volunteerId" name="volunteerId" value="{{ searchVolunteerId }}" placeholder="Enter Volunteer ID" required>
+                <label for="district">Select District:</label>
+                <select id="district" name="district" required></select>
+
+                <label for="foundation_id">Select Foundation:</label>
+                <select id="foundation_id" name="foundation_id" required></select>
+                
+                <label for="volunteerId">Select Volunteer:</label>
+                <select id="volunteerId" name="volunteerId" required></select>
+                
                 <button type="submit" class="search-button">View Schedule</button>
             </form>
         </section>
@@ -209,5 +216,76 @@
             <div class="card">No schedules found for Volunteer ID {{ searchVolunteerId }}.</div>
         {% endif %}
     </main>
+    <script>
+        // This script is identical to the one in add-schedule.html
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const districtSelect = document.getElementById('district');
+                const foundationSelect = document.getElementById('foundation_id');
+                const volunteerSelect = document.getElementById('volunteerId'); // Corrected ID
+
+                const districtRes = await fetch('/addition/api/districts');
+                const districts = await districtRes.json();
+                districts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.name;
+                    opt.textContent = d.name;
+                    districtSelect.appendChild(opt);
+                });
+
+                const fetchVolunteers = async (foundationId) => {
+                    try {
+                        const volunteerRes = await fetch(`/addition/api/volunteers/${foundationId}`);
+                        const volunteers = await volunteerRes.json();
+                        volunteerSelect.innerHTML = '';
+                        if (volunteers.length > 0) {
+                            volunteers.forEach(v => {
+                                const opt = document.createElement('option');
+                                opt.value = v.volunteer_id;
+                                opt.textContent = `${v.volunteer_id} - ${v.name}`;
+                                volunteerSelect.appendChild(opt);
+                            });
+                        } else {
+                            volunteerSelect.innerHTML = '<option value="">No volunteers found</option>';
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch volunteers:", err);
+                    }
+                };
+
+                const fetchFoundations = async (districtName) => {
+                    try {
+                        const foundationRes = await fetch(`/addition/api/foundations/${districtName}`);
+                        const foundations = await foundationRes.json();
+                        foundationSelect.innerHTML = '';
+                        if (foundations.length > 0) {
+                            foundations.forEach(f => {
+                                const opt = document.createElement('option');
+                                opt.value = f.foundation_id;
+                                opt.textContent = `${f.foundation_id} - ${f.name}`;
+                                foundationSelect.appendChild(opt);
+                            });
+                            fetchVolunteers(foundations[0].foundation_id);
+                        } else {
+                            foundationSelect.innerHTML = '<option value="">No foundations found</option>';
+                            volunteerSelect.innerHTML = '<option value="">Select a foundation</option>';
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch foundations:", err);
+                    }
+                };
+
+                districtSelect.addEventListener('change', () => fetchFoundations(districtSelect.value));
+                foundationSelect.addEventListener('change', () => fetchVolunteers(foundationSelect.value));
+
+                if (districts.length > 0) {
+                    fetchFoundations(districts[0].name);
+                }
+
+            } catch (err) {
+                console.error("Failed to initialize forms:", err);
+            }
+        });
+    </script>
 </body>
 </html>

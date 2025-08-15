@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Add Center Program Coordinator - SOHOJIA FOUNDATION</title>
 <style>
+    /* styles remain the same */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: Arial, sans-serif; background: #f3f3f3; color: #333; }
     
@@ -79,9 +80,8 @@
     <h2>Add Center Program Coordinator</h2>
 </div>
 <main>
-    <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
     <section class="form-container">
-        <h3>Add Center Program Coordinator</h3>
+        <h3>Add Coordinator from Volunteer</h3>
         <form action="/addition/api/add-coordinator" method="POST">
             <label for="district">Select District:</label>
             <select id="district" name="district" required></select>
@@ -89,25 +89,25 @@
             <label for="foundation_id">Select Foundation:</label>
             <select id="foundation_id" name="foundation_id" required></select>
 
-            <label for="coordinator_id">Coordinator ID:</label>
-            <input type="number" id="coordinator_id" name="coordinator_id" required>
+            <label for="volunteer_id">Select Volunteer:</label>
+            <select id="volunteer_id" name="volunteer_id" required></select>
 
-            <label for="name">Coordinator Name:</label>
-            <input type="text" id="name" name="name" required>
-
-            <button type="submit">Add Coordinator</button>
+            <button type="submit">Promote to Coordinator</button>
         </form>
     </section>
 </main>
 <footer>&copy; 2025 Sohojia Foundation. All rights reserved.</footer>
 
 <script>
-    // This script is identical to the one in add-director.html
+    // This script is identical to the one in add-eventManager.html
     document.addEventListener('DOMContentLoaded', async () => {
+        // ... (The exact same JavaScript as in the add-eventManager.html file above)
         try {
             const districtSelect = document.getElementById('district');
             const foundationSelect = document.getElementById('foundation_id');
+            const volunteerSelect = document.getElementById('volunteer_id');
 
+            // Load districts
             const districtRes = await fetch('/addition/api/districts');
             const districts = await districtRes.json();
             districts.forEach(d => {
@@ -117,19 +117,40 @@
                 districtSelect.appendChild(opt);
             });
 
-            districtSelect.addEventListener('change', async () => {
-                const selectedDistrict = districtSelect.value;
+            const fetchVolunteers = async (foundationId) => {
                 try {
-                    const foundationRes = await fetch(`/addition/api/foundations/${selectedDistrict}`);
+                    const volunteerRes = await fetch(`/addition/api/volunteers/${foundationId}`);
+                    const volunteers = await volunteerRes.json();
+                    volunteerSelect.innerHTML = '';
+                    if (volunteers.length === 0) {
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.value = '';
+                        defaultOpt.textContent = 'No active volunteers found';
+                        defaultOpt.disabled = true;
+                        defaultOpt.selected = true;
+                        volunteerSelect.appendChild(defaultOpt);
+                    } else {
+                        volunteers.forEach(v => {
+                            const opt = document.createElement('option');
+                            opt.value = v.volunteer_id;
+                            opt.textContent = `${v.volunteer_id} - ${v.name}`;
+                            volunteerSelect.appendChild(opt);
+                        });
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch volunteers:", err);
+                    volunteerSelect.innerHTML = '<option value="">Error loading volunteers</option>';
+                }
+            };
+
+            const fetchFoundations = async (districtName) => {
+                try {
+                    const foundationRes = await fetch(`/addition/api/foundations/${districtName}`);
                     const foundations = await foundationRes.json();
                     foundationSelect.innerHTML = '';
                     if (foundations.length === 0) {
-                        const defaultOpt = document.createElement('option');
-                        defaultOpt.value = '';
-                        defaultOpt.textContent = 'No foundations found';
-                        defaultOpt.disabled = true;
-                        defaultOpt.selected = true;
-                        foundationSelect.appendChild(defaultOpt);
+                        foundationSelect.innerHTML = '<option value="">No foundations found</option>';
+                        volunteerSelect.innerHTML = '<option value="">Select a foundation first</option>';
                     } else {
                         foundations.forEach(f => {
                             const opt = document.createElement('option');
@@ -137,24 +158,34 @@
                             opt.textContent = `${f.foundation_id} - ${f.name}`;
                             foundationSelect.appendChild(opt);
                         });
+                        // Fetch volunteers for the first foundation in the list
+                        if (foundations.length > 0) {
+                            fetchVolunteers(foundations[0].foundation_id);
+                        }
                     }
                 } catch (err) {
                     console.error("Failed to fetch foundations:", err);
                     foundationSelect.innerHTML = '<option value="">Error loading foundations</option>';
                 }
+            };
+
+            districtSelect.addEventListener('change', () => {
+                fetchFoundations(districtSelect.value);
             });
 
+            foundationSelect.addEventListener('change', () => {
+                fetchVolunteers(foundationSelect.value);
+            });
+
+            // Initial load
             if (districts.length > 0) {
-                districtSelect.value = districts[0].name;
-                districtSelect.dispatchEvent(new Event('change'));
+                fetchFoundations(districts[0].name);
             } else {
-                foundationSelect.innerHTML = '<option value="">No districts available</option>';
+                districtSelect.innerHTML = '<option value="">No districts available</option>';
             }
 
         } catch (err) {
-            console.error("Failed to load districts:", err);
-            document.getElementById('district').innerHTML = '<option value="">Error loading districts</option>';
-            document.getElementById('foundation_id').innerHTML = '<option value="">Please select a district</option>';
+            console.error("Failed to load initial data:", err);
         }
     });
 </script>

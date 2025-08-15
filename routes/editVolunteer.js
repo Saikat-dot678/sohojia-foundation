@@ -3,19 +3,15 @@ const router  = express.Router();
 const bcrypt  = require('bcrypt');
 const multer  = require('multer');
 const path    = require('path');
-const { Storage } = require('@google-cloud/storage'); // Import GCS client
+const { Storage } = require('@google-cloud/storage');
 const { authorizeVolunteer } = require('../middleware/authJwt');
+const pool = require('../config/db');
 
 // --- Google Cloud Storage & Multer Configuration ---
-
-// !! IMPORTANT: Make sure this is your actual GCS bucket name !!
 const BUCKET_NAME = process.env.BUCKET1; 
-
-// Instantiate a GCS client
 const gcs = new Storage();
 const bucket = gcs.bucket(BUCKET_NAME);
 
-// Configure Multer to use memory storage to handle the file as a buffer
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
@@ -32,7 +28,7 @@ const upload = multer({
 
 // --- Routes ---
 
-// GET /edit-volunteer/:id -> Renders the edit form (Unchanged from your code)
+// GET /edit-volunteer/:id -> Renders the edit form
 router.get('/:id', authorizeVolunteer, async (req, res) => {
     const volunteerId = parseInt(req.params.id, 10);
     if (isNaN(volunteerId)) {
@@ -59,10 +55,10 @@ router.get('/:id', authorizeVolunteer, async (req, res) => {
 });
 
 
-// POST /edit-volunteer/:id -> Processes form submission with GCS upload
+// POST /edit-volunteer/:id -> Processes form submission
 router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res, next) => {
     const volunteerId = parseInt(req.params.id, 10);
-    let gcsFileName; // To hold the name of a newly uploaded file for potential cleanup
+    let gcsFileName;
 
     try {
         if (isNaN(volunteerId)) {
@@ -79,22 +75,15 @@ router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res,
         }
 
         const sqlPool = req.app.locals.sqlPool;
-
-        // 1. Fetch current user data and verify password
-        const [volRows] = await sqlPool.query(
-            'SELECT password_hash, photo_url FROM volunteers WHERE volunteer_id = ? LIMIT 1',
-            [volunteerId]
-        );
-        if (!volRows.length) {
-            return res.status(404).send('Volunteer not found.');
-        }
+        
+        // 1. Verify password
+        const [volRows] = await sqlPool.query('SELECT password_hash, photo_url FROM volunteers WHERE volunteer_id = ? LIMIT 1', [volunteerId]);
+        if (!volRows.length) return res.status(404).send('Volunteer not found.');
         const volunteer = volRows[0];
         const passwordMatches = await bcrypt.compare(current_password, volunteer.password_hash || '');
-        if (!passwordMatches) {
-            return res.status(403).send('Incorrect current password.');
-        }
+        if (!passwordMatches) return res.status(403).send('Incorrect current password.');
 
-        // 2. Build dynamic SQL update
+        // 2. Build dynamic SQL update fields
         const fields = [];
         const params = [];
         
@@ -115,6 +104,7 @@ router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res,
         maybeAdd('bank_acc_no', bank_acc_no);
         maybeAdd('bank_ifsc', bank_ifsc);
 
+
         if (salary !== undefined && salary !== null && salary !== '') {
             const salNum = parseFloat(salary);
             if (!isNaN(salNum)) {
@@ -123,11 +113,10 @@ router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res,
             }
         }
 
-        // 3. Handle optional photo upload
+        // 3. Handle photo upload
         if (req.file) {
-            // A. Upload the new file to Google Cloud Storage
             const ext = path.extname(req.file.originalname);
-            gcsFileName = `volunteers/vol-${volunteerId}-${Date.now()}${ext}`; // Store for cleanup on error
+            gcsFileName = `volunteers/vol-${volunteerId}-${Date.now()}${ext}`;
             const blob = bucket.file(gcsFileName);
             const blobStream = blob.createWriteStream({ resumable: false });
             
@@ -141,25 +130,33 @@ router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res,
             fields.push('photo_url = ?');
             params.push(newPhotoUrl);
 
-            // B. Delete the old photo from GCS if it exists
             if (volunteer.photo_url) {
                 try {
                     const oldFileName = volunteer.photo_url.split(`${BUCKET_NAME}/`)[1];
-                    if (oldFileName) {
-                        await bucket.file(oldFileName).delete();
-                    }
+                    if (oldFileName) await bucket.file(oldFileName).delete();
                 } catch (delError) {
                     console.error("Non-critical: Failed to delete old profile picture:", delError.message);
                 }
             }
         }
 
-        // 4. Execute the update if there are fields to update
+        // 4. Execute the update on relevant tables
         if (fields.length > 0) {
             fields.push('updated_at = NOW()');
+            const finalParams = [...params, volunteerId];
+
+            // Update Volunteers table
             const updateSql = `UPDATE volunteers SET ${fields.join(', ')} WHERE volunteer_id = ?`;
-            params.push(volunteerId);
-            await sqlPool.query(updateSql, params);
+            await sqlPool.query(updateSql, finalParams);
+            
+            // Sync with other applicable tables
+            const sharedFields = fields.map(f => f.replace('salary', 'reimbursement'));
+            
+            const managerSql = `UPDATE event_managers SET ${sharedFields.join(', ')} WHERE manager_id = ?`;
+            await sqlPool.query(managerSql, finalParams);
+
+            const coordinatorSql = `UPDATE center_program_coordinators SET ${sharedFields.join(', ')} WHERE coordinator_id = ?`;
+            await sqlPool.query(coordinatorSql, finalParams);
         }
 
         // 5. Redirect back to the dashboard
@@ -167,22 +164,17 @@ router.post('/:id', authorizeVolunteer, upload.single('photo'), async (req, res,
 
     } catch (err) {
         console.error('Error in POST /edit-volunteer:', err);
-        // If an error occurs after a new file was uploaded, delete it from GCS
         if (gcsFileName) {
-            try {
-                await bucket.file(gcsFileName).delete();
-            } catch (delError) {
-                console.error("Critical: Failed to delete orphaned GCS file during error cleanup:", delError);
-            }
+            try { await bucket.file(gcsFileName).delete(); }
+            catch (delError) { console.error("Critical: Failed to delete orphaned GCS file:", delError); }
         }
         return res.status(500).send('Server error.');
     }
 });
 
 
-// Change Password routes (Unchanged from your code)
+// Change Password routes
 router.get('/:id/change-password', authorizeVolunteer, async (req, res) => {
-    // This logic is fine, no changes needed
     const volunteerId = parseInt(req.params.id, 10);
     if (isNaN(volunteerId)) return res.status(400).send('Invalid volunteer ID.');
     try {
@@ -197,7 +189,6 @@ router.get('/:id/change-password', authorizeVolunteer, async (req, res) => {
 });
 
 router.post('/:id/change-password', authorizeVolunteer, async (req, res) => {
-    // This logic is fine, no changes needed
     const volunteerId = parseInt(req.params.id, 10);
     if (isNaN(volunteerId)) return res.status(400).send('Invalid volunteer ID.');
     const { current_password, new_password } = req.body;
@@ -206,11 +197,18 @@ router.post('/:id/change-password', authorizeVolunteer, async (req, res) => {
         const sqlPool = req.app.locals.sqlPool;
         const [pwdRows] = await sqlPool.query('SELECT password_hash FROM volunteers WHERE volunteer_id = ? LIMIT 1', [volunteerId]);
         if (!pwdRows.length) return res.status(404).send('Volunteer not found.');
+        
         const storedHash = pwdRows[0].password_hash || '';
         const passwordMatches = await bcrypt.compare(current_password, storedHash);
         if (!passwordMatches) return res.status(403).send('Incorrect current password.');
+        
         const newHash = await bcrypt.hash(new_password, 12);
+        
+        // Update password in all relevant tables
         await sqlPool.query('UPDATE volunteers SET password_hash = ?, updated_at = NOW() WHERE volunteer_id = ?', [newHash, volunteerId]);
+        await sqlPool.query('UPDATE event_managers SET password_hash = ?, updated_at = NOW() WHERE manager_id = ?', [newHash, volunteerId]);
+        await sqlPool.query('UPDATE center_program_coordinators SET password_hash = ?, updated_at = NOW() WHERE coordinator_id = ?', [newHash, volunteerId]);
+
         return res.redirect(`/volunteer-dashboard/${volunteerId}/dashboard`);
     } catch (err) {
         console.error('Error in POST /change-password:', err);

@@ -318,49 +318,80 @@ router.get('/add-event-manager', (req, res) => {
     res.render('add-eventManager.html');
 });
 
-// POST route to handle form submission for adding an event manager
+// POST route to handle form submission for adding an event manager from a volunteer
 router.post('/api/add-event-manager', async (req, res) => {
-    const { manager_id, name, foundation_id } = req.body;
+    const { volunteer_id } = req.body;
 
-    if (!manager_id || !name || !foundation_id) {
-        return res.status(400).send('Missing required fields: manager_id, name, foundation_id');
+    if (!volunteer_id) {
+        return res.status(400).send('Missing required field: volunteer_id');
     }
 
     try {
-        const parsedManagerId = parseInt(manager_id, 10);
-        const parsedFoundationId = parseInt(foundation_id, 10);
-
-        if (isNaN(parsedManagerId) || isNaN(parsedFoundationId)) {
-            return res.status(400).send('Invalid ID format for manager or foundation.');
+        const selectedVolunteerId = parseInt(volunteer_id, 10);
+        if (isNaN(selectedVolunteerId)) {
+            return res.status(400).send('Invalid volunteer ID format.');
         }
 
-        // Check if event manager already exists to prevent duplicates
-        const [existing] = await pool.query(
+        // 1. Check if an event manager with this ID already exists
+        const [existingManager] = await pool.query(
             `SELECT * FROM event_managers WHERE manager_id = ?`,
-            [parsedManagerId]
+            [selectedVolunteerId]
         );
 
-        if (existing.length > 0) {
-            return res.status(409).send('Event Manager ID already exists.');
+        if (existingManager.length > 0) {
+            return res.status(409).send('An Event Manager with this ID already exists.');
         }
 
-        // Insert new event manager record into the 'event_managers' table
-        await pool.query(
-            `INSERT INTO event_managers (manager_id, name, foundation_id, status)
-             VALUES (?, ?, ?, 'inactive')`, // Default status to 'inactive'
-            [parsedManagerId, name, parsedFoundationId]
+        // 2. Fetch all data for the selected volunteer
+        const [volunteerRows] = await pool.query(
+            `SELECT * FROM volunteers WHERE volunteer_id = ?`,
+            [selectedVolunteerId]
         );
 
-        return res.redirect('/dashboard?success=Event Manager added successfully!'); // FIX: Return here
+        if (volunteerRows.length === 0) {
+            return res.status(404).send('Selected volunteer not found.');
+        }
+        const volunteer = volunteerRows[0];
+
+        // 3. Insert the new event manager, copying relevant data
+        // The manager_id will be the same as the volunteer_id
+        await pool.query(
+            `INSERT INTO event_managers (
+                manager_id, name, foundation_id, status, photo_url, password_hash,
+                aadhar_number, email, phone, alt_phone, address, bank_ifsc,
+                bank_acc_no, reimbursement, education, education_description,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+                volunteer.volunteer_id,       // Use volunteer_id as manager_id
+                volunteer.name,
+                volunteer.foundation_id,
+                volunteer.photo_url,
+                volunteer.password_hash,
+                volunteer.aadhar_number,
+                volunteer.email,
+                volunteer.phone,
+                volunteer.alt_phone,
+                volunteer.address,
+                volunteer.bank_ifsc,
+                volunteer.bank_acc_no,
+                volunteer.salary,             // Map 'salary' from volunteer to 'reimbursement' for manager
+                volunteer.education,
+                volunteer.education_description
+            ]
+        );
+
+        return res.redirect('/dashboard?success=Event Manager added successfully!');
 
     } catch (err) {
-        console.error('Error adding event manager:', err);
+        console.error('Error adding event manager from volunteer:', err);
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(409).send('Event Manager with this ID already exists (duplicate entry).');
+            return res.status(409).send('An Event Manager with this ID already exists (duplicate entry).');
         }
         return res.status(500).send('Internal Server Error: Failed to add event manager.');
     }
 });
+
 
 // --- Center Program Director Management Routes (Admin Addition) ---
 // GET route to serve the HTML form for adding a director
@@ -419,49 +450,77 @@ router.get('/add-coordinator', (req, res) => {
     res.render('add-coordinator.html');
 });
 
-// POST route to handle form submission for adding a coordinator
+// POST route to handle form submission for adding a coordinator from a volunteer
 router.post('/api/add-coordinator', async (req, res) => {
-    const { coordinator_id, name, foundation_id } = req.body;
+    const { volunteer_id } = req.body;
 
-    if (!coordinator_id || !name || !foundation_id) {
-        return res.status(400).send('Missing required fields: coordinator_id, name, foundation_id');
+    if (!volunteer_id) {
+        return res.status(400).send('Missing required field: volunteer_id');
     }
 
     try {
-        const parsedCoordinatorId = parseInt(coordinator_id, 10);
-        const parsedFoundationId = parseInt(foundation_id, 10);
-
-        if (isNaN(parsedCoordinatorId) || isNaN(parsedFoundationId)) {
-            return res.status(400).send('Invalid ID format for coordinator or foundation.');
+        const selectedVolunteerId = parseInt(volunteer_id, 10);
+        if (isNaN(selectedVolunteerId)) {
+            return res.status(400).send('Invalid volunteer ID format.');
         }
 
-        // Check if coordinator already exists
-        const [existing] = await pool.query(
+        // 1. Check if a coordinator with this ID already exists
+        const [existingCoordinator] = await pool.query(
             `SELECT * FROM center_program_coordinators WHERE coordinator_id = ?`,
-            [parsedCoordinatorId]
+            [selectedVolunteerId]
         );
 
-        if (existing.length > 0) {
-            return res.status(409).send('Coordinator ID already exists.');
+        if (existingCoordinator.length > 0) {
+            return res.status(409).send('A Coordinator with this ID already exists.');
         }
 
-        // Insert new coordinator record
+        // 2. Fetch all data for the selected volunteer
+        const [volunteerRows] = await pool.query(
+            `SELECT * FROM volunteers WHERE volunteer_id = ?`,
+            [selectedVolunteerId]
+        );
+
+        if (volunteerRows.length === 0) {
+            return res.status(404).send('Selected volunteer not found.');
+        }
+        const volunteer = volunteerRows[0];
+
+        // 3. Insert the new coordinator, copying relevant data
         await pool.query(
-            `INSERT INTO center_program_coordinators (coordinator_id, name, foundation_id, status)
-             VALUES (?, ?, ?, 'inactive')`, // Default status to 'inactive'
-            [parsedCoordinatorId, name, parsedFoundationId]
+            `INSERT INTO center_program_coordinators (
+                coordinator_id, name, foundation_id, status, photo_url, password_hash,
+                aadhar_number, email, phone, alt_phone, address, bank_ifsc,
+                bank_acc_no, reimbursement, education, education_description,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+                volunteer.volunteer_id,       // Use volunteer_id as coordinator_id
+                volunteer.name,
+                volunteer.foundation_id,
+                volunteer.photo_url,
+                volunteer.password_hash,
+                volunteer.aadhar_number,
+                volunteer.email,
+                volunteer.phone,
+                volunteer.alt_phone,
+                volunteer.address,
+                volunteer.bank_ifsc,
+                volunteer.bank_acc_no,
+                volunteer.salary,             // Map 'salary' to 'reimbursement'
+                volunteer.education,
+                volunteer.education_description
+            ]
         );
 
         return res.redirect('/dashboard?success=Coordinator added successfully!');
 
     } catch (err) {
-        console.error('Error adding coordinator:', err);
+        console.error('Error adding coordinator from volunteer:', err);
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.status(409).send('Coordinator with this ID already exists (duplicate entry).');
+            return res.status(409).send('A Coordinator with this ID already exists (duplicate entry).');
         }
         return res.status(500).send('Internal Server Error: Failed to add coordinator.');
     }
 });
-
 
 module.exports = router;

@@ -98,92 +98,187 @@
     
     <div class="dashboard-header"><h2>Add Volunteer Schedule</h2></div>
     <main>
-      <a href="/dashboard" class="back-button">&larr; Back to Dashboard</a>
       <section class="form-container">
         <form id="scheduleForm" action="/addition/api/add-schedule" method="POST">
-          <!-- ... other form fields ... -->
-          <label for="volunteer_id">Volunteer ID:</label>
-          <input type="number" name="volunteer_id" required />
-          <label>Day(s) of Week:</label>
-          <div class="day-selector">
-            <label><input type="checkbox" name="day_of_week" value="Monday"> Monday</label>
-            <label><input type="checkbox" name="day_of_week" value="Tuesday"> Tuesday</label>
-            <label><input type="checkbox" name="day_of_week" value="Wednesday"> Wednesday</label>
-            <label><input type="checkbox" name="day_of_week" value="Thursday"> Thursday</label>
-            <label><input type="checkbox" name="day_of_week" value="Friday"> Friday</label>
-            <label><input type="checkbox" name="day_of_week" value="Saturday"> Saturday</label>
-            <label><input type="checkbox" name="day_of_week" value="Sunday"> Sunday</label>
-          </div>
-          <label for="shift">Shift:</label>
-          <select name="shift" required>
-            <option value="">Select Shift</option>
-            <option>Morning</option>
-            <option>Afternoon</option>
-            <option>Evening</option>
-          </select>
-          <label for="subject">Subject(s) (comma-separated):</label>
-          <input type="text" name="subject" placeholder="e.g., Math, Science, English" />
-          <label for="class_standard">Class Standard:</label>
-          <input type="text" name="class_standard" />
-          <label for="latitude">Latitude:</label>
-          <input type="text" name="latitude" required />
-          <label for="longitude">Longitude:</label>
-          <input type="text" name="longitude" required />
-          <label for="role">Role:</label>
-          <input type="text" name="role" value="teacher" required />
+            <label for="district">Select District:</label>
+            <select id="district" name="district" required></select>
 
-          <fieldset class="seasonal-fieldset">
-            <legend>Seasonal Timings (Optional)</legend>
-            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Use MM-DD format for dates. This schedule will repeat annually.</p>
+            <label for="foundation_id">Select Foundation:</label>
+            <select id="foundation_id" name="foundation_id" required></select>
             
-            <h4>Summer Schedule</h4>
-            <div class="seasonal-row">
-              <div>
-                <label for="summer_start_date">Summer Start Date:</label>
-                <input type="text" name="summer_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
-              </div>
-              <div>
-                <label for="summer_end_date">Summer End Date:</label>
-                <input type="text" name="summer_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
-              </div>
-            </div>
-            <div class="seasonal-row">
-              <div>
-                <label for="summer_start_time">Summer Start Time:</label>
-                <input type="time" name="summer_start_time" />
-              </div>
-              <div>
-                <label for="summer_end_time">Summer End Time:</label>
-                <input type="time" name="summer_end_time" />
-              </div>
-            </div>
+            <label for="volunteer_id">Select Volunteer:</label>
+            <select id="volunteer_id" name="volunteer_id" required></select>
 
-            <h4 style="margin-top: 20px;">Winter Schedule</h4>
-            <div class="seasonal-row">
-              <div>
-                <label for="winter_start_date">Winter Start Date:</label>
-                <input type="text" name="winter_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
-              </div>
-              <div>
-                <label for="winter_end_date">Winter End Date:</label>
-                <input type="text" name="winter_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
-              </div>
+            <label>Day(s) of Week:</label>
+            <div class="day-selector">
+                <label><input type="checkbox" name="day_of_week" value="Monday"> Monday</label>
+                <label><input type="checkbox" name="day_of_week" value="Tuesday"> Tuesday</label>
+                <label><input type="checkbox" name="day_of_week" value="Wednesday"> Wednesday</label>
+                <label><input type="checkbox" name="day_of_week" value="Thursday"> Thursday</label>
+                <label><input type="checkbox" name="day_of_week" value="Friday"> Friday</label>
+                <label><input type="checkbox" name="day_of_week" value="Saturday"> Saturday</label>
+                <label><input type="checkbox" name="day_of_week" value="Sunday"> Sunday</label>
             </div>
-            <div class="seasonal-row">
-              <div>
-                <label for="winter_start_time">Winter Start Time:</label>
-                <input type="time" name="winter_start_time" />
-              </div>
-              <div>
-                <label for="winter_end_time">Winter End Time:</label>
-                <input type="time" name="winter_end_time" />
-              </div>
-            </div>
-          </fieldset>
+            <label for="shift">Shift:</label>
+            <select name="shift" required>
+                <option value="">Select Shift</option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening</option>
+            </select>
+            <label for="subject">Subject(s) (comma-separated):</label>
+            <input type="text" name="subject" placeholder="e.g., Math, Science, English" />
+            <label for="class_standard">Class Standard:</label>
+            <input type="text" name="class_standard" />
+            <label for="latitude">Latitude:</label>
+            <input type="text" name="latitude" required />
+            <label for="longitude">Longitude:</label>
+            <input type="text" name="longitude" required />
+            <label for="role">Role:</label>
+            <input type="text" name="role" value="teacher" required />
 
-          <button type="submit">Submit Schedule</button>
+            <fieldset class="seasonal-fieldset">
+                <legend>Seasonal Timings (Optional)</legend>
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Use MM-DD format for dates. This schedule will repeat annually.</p>
+                
+                <h4>Summer Schedule</h4>
+                <div class="seasonal-row">
+                    <div>
+                        <label for="summer_start_date">Summer Start Date:</label>
+                        <input type="text" name="summer_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+                    </div>
+                    <div>
+                        <label for="summer_end_date">Summer End Date:</label>
+                        <input type="text" name="summer_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+                    </div>
+                </div>
+                <div class="seasonal-row">
+                    <div>
+                        <label for="summer_start_time">Summer Start Time:</label>
+                        <input type="time" name="summer_start_time" />
+                    </div>
+                    <div>
+                        <label for="summer_end_time">Summer End Time:</label>
+                        <input type="time" name="summer_end_time" />
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 20px;">Winter Schedule</h4>
+                <div class="seasonal-row">
+                    <div>
+                        <label for="winter_start_date">Winter Start Date:</label>
+                        <input type="text" name="winter_start_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+                    </div>
+                    <div>
+                        <label for="winter_end_date">Winter End Date:</label>
+                        <input type="text" name="winter_end_date" placeholder="MM-DD" pattern="\d{2}-\d{2}" />
+                    </div>
+                </div>
+                <div class="seasonal-row">
+                    <div>
+                        <label for="winter_start_time">Winter Start Time:</label>
+                        <input type="time" name="winter_start_time" />
+                    </div>
+                    <div>
+                        <label for="winter_end_time">Winter End Time:</label>
+                        <input type="time" name="winter_end_time" />
+                    </div>
+                </div>
+            </fieldset>
+
+            <button type="submit">Submit Schedule</button>
         </form>
       </section>
     </main>
+    <script>
+        // This script is identical to the one in add-eventManager.html
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const districtSelect = document.getElementById('district');
+                const foundationSelect = document.getElementById('foundation_id');
+                const volunteerSelect = document.getElementById('volunteer_id');
+
+                // Load districts
+                const districtRes = await fetch('/addition/api/districts');
+                const districts = await districtRes.json();
+                districts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.name;
+                    opt.textContent = d.name;
+                    districtSelect.appendChild(opt);
+                });
+
+                const fetchVolunteers = async (foundationId) => {
+                    try {
+                        const volunteerRes = await fetch(`/addition/api/volunteers/${foundationId}`);
+                        const volunteers = await volunteerRes.json();
+                        volunteerSelect.innerHTML = '';
+                        if (volunteers.length === 0) {
+                            const defaultOpt = document.createElement('option');
+                            defaultOpt.value = '';
+                            defaultOpt.textContent = 'No active volunteers found';
+                            defaultOpt.disabled = true;
+                            defaultOpt.selected = true;
+                            volunteerSelect.appendChild(defaultOpt);
+                        } else {
+                            volunteers.forEach(v => {
+                                const opt = document.createElement('option');
+                                opt.value = v.volunteer_id;
+                                opt.textContent = `${v.volunteer_id} - ${v.name}`;
+                                volunteerSelect.appendChild(opt);
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch volunteers:", err);
+                        volunteerSelect.innerHTML = '<option value="">Error loading volunteers</option>';
+                    }
+                };
+
+                const fetchFoundations = async (districtName) => {
+                    try {
+                        const foundationRes = await fetch(`/addition/api/foundations/${districtName}`);
+                        const foundations = await foundationRes.json();
+                        foundationSelect.innerHTML = '';
+                        if (foundations.length === 0) {
+                            foundationSelect.innerHTML = '<option value="">No foundations found</option>';
+                            volunteerSelect.innerHTML = '<option value="">Select a foundation first</option>';
+                        } else {
+                            foundations.forEach(f => {
+                                const opt = document.createElement('option');
+                                opt.value = f.foundation_id;
+                                opt.textContent = `${f.foundation_id} - ${f.name}`;
+                                foundationSelect.appendChild(opt);
+                            });
+                            // Fetch volunteers for the first foundation in the list
+                            if (foundations.length > 0) {
+                                fetchVolunteers(foundations[0].foundation_id);
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch foundations:", err);
+                        foundationSelect.innerHTML = '<option value="">Error loading foundations</option>';
+                    }
+                };
+
+                districtSelect.addEventListener('change', () => {
+                    fetchFoundations(districtSelect.value);
+                });
+
+                foundationSelect.addEventListener('change', () => {
+                    fetchVolunteers(foundationSelect.value);
+                });
+
+                // Initial load
+                if (districts.length > 0) {
+                    fetchFoundations(districts[0].name);
+                } else {
+                    districtSelect.innerHTML = '<option value="">No districts available</option>';
+                }
+
+            } catch (err) {
+                console.error("Failed to load initial data:", err);
+            }
+        });
+    </script>
   </body>
 </html>
