@@ -9,46 +9,6 @@
 <meta name="theme-color" content="#f34f4c">
 <link rel="apple-touch-icon" href="logo.png">
 <style>
-    header {
-        background: rgb(243, 79, 76);
-        padding: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    header h1 {
-        color: #fff;
-        font-size: 20px;
-        text-transform: uppercase;
-        margin: 0;
-        flex-grow: 1;
-        text-align: center;
-    }
-    .header-btn {
-        padding: 8px 14px;
-        background: white;
-        color: rgb(243, 79, 76);
-        font-weight: bold;
-        border-radius: 4px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background 0.3s;
-        white-space: nowrap;
-    }
-    .header-btn:hover {
-        background: #f1f1f1;
-    }
-    
-    @media (max-width: 768px){
-        header h1 {
-            font-size: 16px;
-        }
-        .header-btn {
-            padding: 6px 10px;
-            font-size: 14px;
-        }
-    }
-        
     /* Global Reset & Body */
     * {
         box-sizing: border-box;
@@ -66,340 +26,131 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-screen */
+        overflow-x: hidden;
     }
 
     /* Header */
     header {
         background: rgb(243,79,76);
         padding: 1rem;
-        text-align: center;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        position: relative; /* For the menu button positioning */
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
+        position: relative;
     }
     header h1 {
         color: #fff;
-        font-size: 1.5rem;
+        font-size: 1.25rem; /* Default size for desktop */
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        flex-grow: 1; /* Allow title to take available space */
+        letter-spacing: 0.05em;
+        text-align: center;
+        flex-grow: 1;
+        /* Add padding to prevent text from touching buttons */
+        padding: 0 0.5rem;
+    }
+    .header-btn {
+        padding: 8px 14px;
+        background: white;
+        color: rgb(243, 79, 76);
+        font-weight: bold;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .header-btn.logout-btn {
+        margin-left: auto;
+    }
+    .header-btn:hover {
+        background: #f1f1f1;
     }
 
-    /* Kebab Menu Button */
+    /* Menu Button */
     .menu-toggle {
         background: none;
         border: none;
         cursor: pointer;
         padding: 0.5rem;
-        font-size: 2rem; /* Larger dots */
+        font-size: 2rem;
         color: #fff;
-        position: absolute; /* Position relative to header */
-        left: 1rem; /* Place on the left */
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1001; /* Above other content */
-        display: none; /* Hidden by default on PC */
+        z-index: 1001;
+        display: none; /* Hidden on desktop */
     }
-    .menu-toggle:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-    }
-    /* Styles for the three dots */
     .menu-toggle::before {
-        content: '\22EE'; /* Unicode for vertical ellipsis (three dots) */
-        /* Or you could use a hamburger icon: content: '\2261'; */
+        content: '\22EE';
     }
 
-    /* Overlay for Sidebar */
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-        z-index: 999; /* Below sidebar, above content */
-        opacity: 0;
-        visibility: hidden; /* Hide by default */
-        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-    }
-    .overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
+    /* Other styles... */
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; }
+    .overlay.active { opacity: 1; visibility: visible; }
+    .page-header { padding: 1rem; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); text-align: center; margin-bottom: 1.5rem; }
+    .page-header h2 { font-size: 1.25rem; color: #555; font-weight: normal; }
+    .main-wrapper { flex: 1; display: flex; max-width: 1200px; margin: 0 auto; padding: 1rem; gap: 1.5rem; }
+    .sidebar { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+    .sidebar h4 { font-size: 1.3rem; margin-bottom: 0.8rem; color: #333; text-align: center; }
+    .sidebar .button { display: block; width: 100%; margin: 0; }
+    .sidebar .btn-logout { margin-top: auto; }
+    .content-area { flex-grow: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .button { padding: 0.9rem 1.2rem; background: rgb(243,79,76); color: #fff; border: none; border-radius: 6px; text-decoration: none; font-size: 1rem; cursor: pointer; transition: background 0.2s ease, transform 0.1s ease; font-weight: 500; }
+    .button:hover { background: #c73c39; transform: translateY(-2px); }
+    .button:active { transform: translateY(0); }
+    .button:disabled { opacity: 0.6; cursor: not-allowed; background: #ccc; transform: none; }
+    .button.btn-logout { background: #dc3545; }
+    .button.btn-logout:hover { background: #c82333; }
+    .profile { text-align: center; }
+    .profile img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; border: 4px solid rgb(243,79,76); }
+    .profile h3 { font-size: 1.6rem; margin-bottom: 0.5rem; color: rgb(243,79,76); font-weight: 600; }
+    .profile p { font-size: 0.95rem; color: #666; margin-bottom: 0.4rem; text-align: left; padding-left: 1rem; padding-right: 1rem; }
+    .profile p strong { color: #444; }
+    .list-section h4 { font-size: 1.3rem; margin-bottom: 1rem; color: #333; }
+    .list { list-style: none; padding: 0; }
+    .list li { padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+    .list li:last-child { border-bottom: none; }
+    .list li a { font-size: 1rem; color: #333; text-decoration: none; display: block; transition: color 0.2s ease; }
+    .list li a:hover { color: rgb(243,79,76); }
+    .list p { font-style: italic; color: #777; text-align: center; padding: 1rem; }
+    footer { background: #333; padding: 1rem; text-align: center; font-size: 0.85rem; color: #aaa; margin-top: auto; }
 
-    /* Page Header / Sub-heading */
-    .page-header {
-        padding: 1rem;
-        background: #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        text-align: center;
-        margin-bottom: 1.5rem;
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 992px) {
+        .main-wrapper { flex-direction: column; padding: 0; }
+        .menu-toggle { display: block; }
+        .sidebar { position: fixed; top: 0; left: -250px; height: 100vh; z-index: 1000; transition: left 0.3s ease-in-out; padding-top: 5rem; border-radius: 0; box-shadow: 2px 0 8px rgba(0,0,0,0.2); }
+        .sidebar.active { left: 0; }
+        .sidebar h4 { margin-bottom: 1.5rem; }
+        .sidebar .button { margin-bottom: 0.8rem; }
+        .sidebar .btn-logout { margin-top: auto; }
+        .content-area { flex-grow: 1; padding: 1rem; }
     }
-    .page-header h2 {
-        font-size: 1.25rem;
-        color: #555;
-        font-weight: normal;
-    }
-
-    /* Main Content Wrapper - FLEXBOX for sidebar and content */
-    .main-wrapper {
-        flex: 1;
-        display: flex;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1rem;
-        gap: 1.5rem;
-    }
-
-    /* Sidebar */
-    .sidebar {
-        background: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        width: 250px;
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-    .sidebar h4 {
-        font-size: 1.3rem;
-        margin-bottom: 0.8rem;
-        color: #333;
-        text-align: center;
-    }
-    .sidebar .button {
-        display: block;
-        width: 100%;
-        margin: 0;
-    }
-    .sidebar .btn-logout {
-        margin-top: auto; /* Push logout button to the bottom of the sidebar */
-    }
-
-    /* Main Content Area (right side) */
-    .content-area {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    /* Card Styling (for profile, lists) */
-    .card {
-        background: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* Buttons (common styles) */
-    .button {
-        padding: 0.9rem 1.2rem;
-        background: rgb(243,79,76);
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.2s ease, transform 0.1s ease;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        font-weight: 500;
-    }
-    .button:hover {
-        background: #c73c39;
-        transform: translateY(-2px);
-    }
-    .button:active {
-        transform: translateY(0);
-    }
-    .button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        background: #ccc;
-        transform: none;
-    }
-    .button.btn-logout {
-        background: #dc3545;
-    }
-    .button.btn-logout:hover {
-        background: #c82333;
-    }
-
-    /* Profile Section */
-    .profile {
-        text-align: center;
-    }
-    .profile img {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 1rem;
-        border: 4px solid rgb(243,79,76);
-    }
-    .profile h3 {
-        font-size: 1.6rem;
-        margin-bottom: 0.5rem;
-        color: rgb(243,79,76);
-        font-weight: 600;
-    }
-    .profile p {
-        font-size: 0.95rem;
-        color: #666;
-        margin-bottom: 0.4rem;
-        text-align: left;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    .profile p strong {
-        color: #444;
-    }
-
-    /* List Section */
-    .list-section h4 {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-        color: #333;
-    }
-    .list {
-        list-style: none;
-        padding: 0;
-    }
-    .list li {
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #eee;
-    }
-    .list li:last-child {
-        border-bottom: none;
-    }
-    .list li a {
-        font-size: 1rem;
-        color: #333;
-        text-decoration: none;
-        display: block;
-        transition: color 0.2s ease;
-    }
-    .list li a:hover {
-        color: rgb(243,79,76);
-    }
-    .list p {
-        font-style: italic;
-        color: #777;
-        text-align: center;
-        padding: 1rem;
-    }
-
-    /* Footer */
-    footer {
-        background: #333;
-        padding: 1rem;
-        text-align: center;
-        font-size: 0.85rem;
-        color: #aaa;
-        margin-top: auto;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 992px) { /* Tablets and smaller laptops */
-        .main-wrapper {
-            flex-direction: column; /* Stack sidebar and content */
-            padding: 0; /* Remove side padding as sidebar is fixed */
+    
+    /* --- FIX for Mobile Header --- */
+    @media (max-width: 480px) {
+        header {
+            padding: 0.75rem; /* Reduce header padding */
         }
-
-        .menu-toggle {
-            display: block; /* Show menu button on smaller screens */
-        }
-
-        .sidebar {
-            position: fixed; /* Fix sidebar position */
-            top: 0;
-            left: -250px; /* Initially off-screen to the left */
-            height: 100vh; /* Full height */
-            z-index: 1000; /* Ensure it's on top of content */
-            transition: left 0.3s ease-in-out; /* Smooth slide animation */
-            padding-top: 5rem; /* Space for header */
-            border-radius: 0; /* No rounded corners when full height */
-            box-shadow: 2px 0 8px rgba(0,0,0,0.2); /* Shadow on the right edge */
-        }
-        .sidebar.active {
-            left: 0; /* Slide into view */
-        }
-        .sidebar h4 {
-            margin-bottom: 1.5rem; /* More space below heading */
-        }
-        .sidebar .button {
-            margin-bottom: 0.8rem; /* Space between vertical buttons */
-        }
-        .sidebar .btn-logout {
-            margin-top: auto; /* Push logout to bottom */
-        }
-
-        .content-area {
-            flex-grow: 1; /* Allow content area to take remaining space */
-            padding: 1rem; /* Add padding to content area */
-        }
-    }
-
-    @media (max-width: 768px) { /* Smaller tablets / larger phones */
-        .card {
-            padding: 1rem;
-        }
-        .button {
-            padding: 0.8rem 1rem;
-            font-size: 0.95rem;
-        }
-        .profile h3 {
-            font-size: 1.4rem;
-        }
-        .profile p {
-            font-size: 0.85rem;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-        .list-section h4 {
-            font-size: 1.15rem;
-        }
-        .list li a {
-            font-size: 0.95rem;
-        }
-    }
-
-    @media (max-width: 480px) { /* Small phones */
         header h1 {
-            font-size: 1.25rem;
+            font-size: 1rem; /* Reduce title font size */
         }
-        .page-header h2 {
-            font-size: 1rem;
+        .header-btn {
+            padding: 6px 10px; /* Make button smaller */
+            font-size: 14px;
         }
-        /* Buttons in sidebar will stack vertically by default flex-direction: column */
-        .button {
-            padding: 0.7rem 0.8rem;
-            font-size: 0.9rem;
-        }
-        .profile img {
-            width: 100px;
-            height: 100px;
-        }
-        /* Adjust header button position */
         .menu-toggle {
             font-size: 1.8rem;
-            left: 0.5rem;
+            padding: 0.4rem;
         }
     }
+
 </style>
 </head>
 <body>
 
 <header>
-    <a href="/home" class="header-btn">Home</a>
+    <button class="menu-toggle" id="menuToggle"></button>
     <h1>SOHOJIA FOUNDATION</h1>
     <a href="/logout" class="header-btn">Logout</a>
 </header>
@@ -453,9 +204,9 @@
             Change Password
         </button>
 
-        <button class="button btn-logout" onclick="window.location.href='/logout'">
+        <!-- <button class="button btn-logout" onclick="window.location.href='/logout'">
             Logout
-        </button>
+        </button> -->
     </aside>
 
     <main class="content-area">
@@ -513,54 +264,70 @@
     menuToggle.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar); // Close sidebar when overlay is clicked
 
-    // Attendance Button Logic (unchanged)
+    // --- MODIFIED: Attendance Button Logic ---
     async function updateAttendanceButtonStatus() {
         markBtn.disabled = true;
-        markBtn.textContent = 'Loading...';
+        markBtn.textContent = 'Loading Status...';
 
         try {
-            const res = await fetch(`/api/volunteer/${VID}/attendance-button-status`);
+            // Corrected API endpoint URL to match backend routes
+            const res = await fetch(`/volunteer-dashboard/${VID}/attendance-status`);
             if (!res.ok) {
-                throw new Error(`API returned status ${res.status}`);
+                throw new Error(`API error: ${res.statusText}`);
             }
             const data = await res.json();
 
-            if (!data.success || !data.sessionActive) {
+            if (!data.sessionActive) {
+                markBtn.textContent = 'No Active Session';
                 markBtn.disabled = true;
-                markBtn.textContent = 'No active session';
                 return;
             }
 
-            if (data.attendanceMarked) {
-                markBtn.disabled = true;
-                markBtn.textContent = 'Attendance already marked';
-                return;
+            // Use a switch statement for clarity on the attendance state
+            switch (data.attendanceState) {
+                case 'None':
+                    // Can check-in
+                    markBtn.textContent = 'Mark Attendance (Check-In)';
+                    markBtn.disabled = false;
+                    break;
+                case 'CheckedIn':
+                    // Can check-out
+                    markBtn.textContent = 'Mark Attendance (Check-Out)';
+                    markBtn.disabled = false;
+                    break;
+                case 'Completed':
+                    // Attendance is done for the day
+                    markBtn.textContent = 'Attendance Complete';
+                    markBtn.disabled = true;
+                    break;
+                default:
+                    markBtn.textContent = 'Status Unknown';
+                    markBtn.disabled = true;
             }
-
-            // If session is active and attendance not marked
-            markBtn.disabled = false;
-            markBtn.textContent = 'Mark Attendance';
 
         } catch (error) {
             console.error('Error updating attendance button status:', error);
             markBtn.disabled = true;
-            markBtn.textContent = `Error loading status: ${error.message}`;
+            markBtn.textContent = 'Error Loading Status';
         }
     }
 
     // Call this function when the page loads
-    updateAttendanceButtonStatus();
+    window.addEventListener('load', updateAttendanceButtonStatus);
 
-    // Attach click event for marking attendance
-    document.getElementById("attend-btn").onclick = () => {
-        window.location.href = `/volunteers-mark/${VID}/mark-attendance`;
+    // MODIFIED: Corrected URL to point to the attendance marking page
+    markBtn.onclick = () => {
+        window.location.href = `/volunteer-dashboard/${VID}/attendance`;
     };
 
-    // Close sidebar if a sidebar button is clicked (optional, but good UX)
+    // Close sidebar if a sidebar button is clicked
     sidebar.addEventListener('click', (event) => {
         if (event.target.classList.contains('button') || event.target.tagName === 'A') {
-            // Give a slight delay to allow navigation to start before closing
-            setTimeout(toggleSidebar, 150);
+            setTimeout(() => {
+                if (sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            }, 150);
         }
     });
 

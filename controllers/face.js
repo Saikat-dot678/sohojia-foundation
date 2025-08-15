@@ -210,7 +210,7 @@ async function verifyFace(req, res) {
         volunteer_id: Number(vid),
         session_id: session.id,
         session_date: isoDate,
-        status: 'Checked-In'
+        status: 'Present'
       });
 
       if (existingAttendance) {

@@ -179,7 +179,7 @@ exports.verifyFingerprint = async (req, res) => {
         volunteer_id: volunteerId,
         session_id: session.id,
         session_date: today,
-        status: 'Checked-In'
+        status: 'Present'
     });
 
     if (existingAttendance) {

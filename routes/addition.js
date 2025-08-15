@@ -291,6 +291,26 @@ router.get('/api/foundations/:district_name', async (req, res) => {
     }
 });
 
+// --- Volunteers API Endpoint for Dropdown ---
+router.get('/api/volunteers/:foundation_id', async (req, res) => {
+    const { foundation_id } = req.params;
+
+    if (!foundation_id) {
+        return res.status(400).json({ error: 'Foundation ID is required' });
+    }
+
+    try {
+        const [volunteers] = await pool.query(
+            `SELECT volunteer_id, name FROM volunteers WHERE foundation_id = ? AND status = 'active'`,
+            [foundation_id]
+        );
+        return res.json(volunteers);
+    } catch (err) {
+        console.error('Error fetching volunteers:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // --- Event Manager Management Routes (Admin Addition) ---
 // GET route to serve the HTML form for adding an event manager
 router.get('/add-event-manager', (req, res) => {
