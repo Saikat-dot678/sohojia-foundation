@@ -94,6 +94,59 @@
     .status-absent { background-color: #dc3545; }
     .status-on-time-exit { background-color: #17a2b8; }
     .status-no-exit { background-color: #6c757d; }
+
+    /* --------- Mobile: table -> card conversion --------- */
+    @media (max-width: 600px) {
+      /* show each row as a card */
+      .attendance-table, .attendance-table thead { display: block; width: 100%; }
+      .attendance-table tbody { display: block; width: 100%; }
+      .attendance-table th { display: none; } /* hide headers */
+      .attendance-table tr { 
+        display: block; 
+        margin-bottom: 12px; 
+        background: var(--card-bg); 
+        padding: 12px; 
+        border-radius: 8px; 
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06); 
+        border: 1px solid #eee;
+      }
+      .attendance-table td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        padding: 8px 4px;
+        border-bottom: none;
+      }
+      /* show the header label using the data-label attribute */
+      .attendance-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-light);
+        margin-right: 8px;
+        flex: 0 0 48%;
+        text-align: left;
+      }
+      .attendance-table td > .status-badge {
+        margin-left: 8px;
+      }
+      /* small screens: make long values wrap nicely */
+      .attendance-table td span, .attendance-table td p { white-space: normal; }
+    }
+    /* make "no data" rows occupy full width and remove the data-label */
+    .attendance-table tr.no-data td {
+    display: block;         /* override flex */
+    text-align: center;
+    justify-content: center;
+    padding: 20px;          /* keep the spacing you had inline before */
+    background: transparent;/* optional: keep card look consistent */
+    border: none;
+    }
+
+    /* hide the pseudo label for no-data cells */
+    .attendance-table tr.no-data td:before {
+    display: none;
+    }
+
   </style>
 </head>
 <body>
@@ -109,13 +162,6 @@
     <p><strong>ID:</strong> {{ foundation.foundation_id }}</p>
   </div>
   <main>
-   {% if currentUser.role == 'center-program-director' %}
-      <a href="/director-dashboard/{{ currentUser.id }}/dashboard" class="back-button">&larr; Back to My Dashboard</a>
-    {% elif currentUser.role == 'center-program-coordinator' %}
-      <a href="/coordinator-dashboard/{{ currentUser.id }}/dashboard" class="back-button">&larr; Back to My Dashboard</a>
-    {% else %}
-      <a href="/dashboard" class="back-button">&larr; Back to Admin Dashboard</a>
-    {% endif %}
     
     <div class="nav-cards">
       <a href="/students?foundation_id={{ foundation.foundation_id }}" class="nav-card">
@@ -199,15 +245,15 @@
                 <tbody>
                     {% for item in summary %}
                     <tr>
-                        <td>{{ item.volunteer_id }}</td>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.stats.present }}</td>
-                        <td>{{ item.stats.late }}</td>
-                        <td>{{ item.stats.absent }}</td>
+                        <td data-label="Volunteer ID">{{ item.volunteer_id }}</td>
+                        <td data-label="Name">{{ item.name }}</td>
+                        <td data-label="Present">{{ item.stats.present }}</td>
+                        <td data-label="Late">{{ item.stats.late }}</td>
+                        <td data-label="Absent">{{ item.stats.absent }}</td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px;">No volunteer data to summarize.</td>
+                    <tr class="no-data">
+                        <td colspan="5">No volunteer data to summarize.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -230,21 +276,21 @@
                 <tbody>
                     {% for log in logs %}
                     <tr>
-                        <td>{{ log.volunteer_id }}</td>
-                        <td>{{ log.session_date }}</td>
-                        <td>{{ log.shift }}</td>
-                        <td>
+                        <td data-label="Volunteer ID">{{ log.volunteer_id }}</td>
+                        <td data-label="Date">{{ log.session_date }}</td>
+                        <td data-label="Shift">{{ log.shift }}</td>
+                        <td data-label="Status">
                             <span class="status-badge status-{{ log.status }}">{{ log.status | capitalize }}</span>
                             {% if log.exit_status %}
                                 <span class="status-badge status-{{ log.exit_status | lower | replace(' ', '-') }}">{{ log.exit_status }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ log.duration }}</td>
-                        <td>{{ log.displayTime }}</td>
+                        <td data-label="Duration">{{ log.duration }}</td>
+                        <td data-label="Time (In - Out)">{{ log.displayTime }}</td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">No attendance logs found for the selected criteria.</td>
+                    <tr class="no-data">
+                        <td colspan="6">No attendance logs found for the selected criteria.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -285,18 +331,18 @@
                 <tbody>
                     {% for log in studentAttendanceLogs %}
                     <tr>
-                        <td>{{ log.date }}</td>
-                        <td>{{ log.shift }}</td>
-                        <td>{{ log.class }}</td>
-                        <td>{{ log.total_students_present }}</td>
-                        <td>{{ log.boys_present }}</td>
-                        <td>{{ log.girls_present }}</td>
-                        <td>{{ log.students_absent }}</td>
-                        <td>{{ log.manager_id }}</td>
+                        <td data-label="Date">{{ log.date }}</td>
+                        <td data-label="Shift">{{ log.shift }}</td>
+                        <td data-label="Class">{{ log.class }}</td>
+                        <td data-label="Total Present">{{ log.total_students_present }}</td>
+                        <td data-label="Boys Present">{{ log.boys_present }}</td>
+                        <td data-label="Girls Present">{{ log.girls_present }}</td>
+                        <td data-label="Absent">{{ log.students_absent }}</td>
+                        <td data-label="Logged By (Manager ID)">{{ log.manager_id }}</td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px;">No student attendance logs found for the selected criteria.</td>
+                    <tr class="no-data">
+                        <td colspan="8">No student attendance logs found for the selected criteria.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -304,6 +350,6 @@
         </div>
     </div>
 
-  </main>
+    </main>
 </body>
 </html>
