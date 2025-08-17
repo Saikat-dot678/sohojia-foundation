@@ -1,151 +1,164 @@
-Sohojia Foundation Monitoring System
+🚀 Sohojia Foundation Monitoring System
+<p align="center">
+<img src="https://www.sohojia.org/static/media/sohojia.27a716b5.png" alt="Sohojia Foundation Logo" width="150">
+</p>
 
-A comprehensive, web-based monitoring system designed to support the Sohojia Foundation's mission of providing education and extracurricular activities to students in rural communities. The platform automates volunteer management, attendance tracking, and activity reporting, enabling the foundation to operate more efficiently and focus its resources on its educational goals.
+<p align="center">
+A web-based volunteer and activity monitoring system designed to support the <strong>Sohojia Foundation's</strong> mission of providing education and extracurricular activities to rural students.
+</p>
 
----
+📖 Table of Contents
+About the Project
 
-# Table of Contents
+Key Features
 
-1. About the Project
-2. Key Features
-3. Architecture Overview
-4. Tech Stack
-5. Getting Started
-   - Prerequisites
-   - Installation & Setup
-   - Environment configuration (.env)
-   - Run the application
-6. Deployment & Nginx Configuration
-7. Security & Privacy
-8. Development Notes
-9. Troubleshooting & FAQs
-10. License
-11. Acknowledgments & Contributors
+Architecture Overview
 
----
+Tech Stack
 
-# About the Project
+Getting Started
 
-The **Sohojia Foundation Monitoring System** is a web-based volunteer and activity monitoring system built for the Sohojia Foundation — a non-profit organization dedicated to empowering students in village communities (primarily in remote areas of West Bengal, India) through education, arts (painting, recitation), martial arts (karate), and science (weekly workshops and fairs).
+Deployment & Nginx Configuration
+
+Security & Privacy
+
+Development Notes
+
+Troubleshooting & FAQs
+
+License
+
+Acknowledgments & Contributors
+
+📖 About The Project
+The Sohojia Foundation Monitoring System is a web-based volunteer and activity monitoring system built for the Sohojia Foundation — a non-profit organization dedicated to empowering students in village communities (primarily in remote areas of West Bengal, India) through education, arts (painting, recitation), martial arts (karate), and science (weekly workshops and fairs).
 
 Managing volunteers across multiple centers and rural locations is costly and time-consuming. This project replaces manual oversight with modern automation: location-aware schedules, biometric verification, role-based access control, automated reporting, and media management — all tailored to the Foundation's workflows.
 
-**Vision:** Bring scientific thinking, quality education, and a creative perspective to under-served rural communities, using structured programs to uplift local living conditions.
+🎯 Vision: Bring scientific thinking, quality education, and a creative perspective to under-served rural communities, using structured programs to uplift local living conditions.
 
-**Mission:** Provide reliable monitoring and tools so the Foundation can scale quality education and extracurricular activities while keeping operational overheads low.
+🤝 Mission: Provide reliable monitoring and tools so the Foundation can scale quality education and extracurricular activities while keeping operational overheads low.
 
 Key active chapters and programs include:
-- **Amader Pathshala (Sirjan Chapter)** — Barshi village, Bankura. Offers structured education and runs the Bigyanusandhan Kendra (Science Center) for hands-on training.
-- **Sokaler Pathshala (Bandwan Chapter)** — Launched in 2023; morning study sessions now serving 60+ students with 7 volunteers.
-- **Creative Arts & Annual Events** — Painting exhibitions, recitations and a yearly event that showcased 200+ student paintings.
 
----
+Amader Pathshala (Sirjan Chapter) — Barshi village, Bankura. Offers structured education and runs the Bigyanusandhan Kendra (Science Center) for hands-on training.
 
-# Key Features
+Sokaler Pathshala (Bandwan Chapter) — Launched in 2023; morning study sessions now serving 60+ students with 7 volunteers.
 
-This system provides a robust feature set to manage volunteers, schedules, attendance, and events.
+Creative Arts & Annual Events — Painting exhibitions, recitations and a yearly event that showcased 200+ student paintings.
 
-## 1. Hierarchical Role-Based Access Control (RBAC)
-- **Role Structure:** Admin → Center Programme Director → Center Programme Coordinator → {Volunteer, Event Manager} → Student
-- **Secure Authentication:** Email/password login, sessions handled with HttpOnly JWT cookies.
-- **Granular Permissions:** Middleware (`middleware/authJwt.js`) enforces what each role can read or modify.
+✨ Key Features
+1. 🔐 Hierarchical Role-Based Access Control (RBAC)
+Role Structure: Admin → Center Programme Director → Center Programme Coordinator → {Volunteer, Event Manager} → Student.
 
-## 2. Advanced Volunteer & Staff Management
-- **Unified Profile System:** Role promotions copy core volunteer data so profiles remain consistent across roles. Edits via volunteer dashboard sync automatically.
-- **Dynamic Onboarding:** Admins may pre-register staff and volunteers; users complete registration with details later.
-- **Account Lifecycle:** Admins can activate/deactivate accounts. Deactivation removes or archives related data as configured.
+Secure Authentication: Email/password login, sessions handled with HttpOnly JWT cookies.
 
-## 3. Multi-Factor Attendance Verification
-- **Location-Based Check-in:** Device GPS must be within a configurable radius (default 100 meters) of scheduled coordinates.
-- **Face Verification:** Python microservice using InsightFace (`buffalo_l`) generates and compares facial embeddings (initially built from multiple images per user).
-- **Fingerprint Verification:** WebAuthn (passwordless) support for secure biometric check-ins.
-- **Media Storage:** Images and embeddings stored to Google Cloud Storage buckets.
+Granular Permissions: Middleware (middleware/authJwt.js) enforces what each role can read or modify.
 
-## 4. Comprehensive Schedule & Holiday Management
-- **Dynamic Scheduling:** Create day/shift/subject-specific schedules with GPS coordinates.
-- **Seasonal Schedules:** Cron jobs switch between summer/winter schedules automatically based on date.
-- **Holidays:** Foundation-specific holiday rules respected by absence and attendance logic.
+2. 👥 Advanced Volunteer & Staff Management
+Unified Profile System: Role promotions copy core volunteer data so profiles remain consistent. Edits via volunteer dashboard sync automatically.
 
-## 5. Event & Activity Reporting
-- **Dynamic Event Types:** Track events like Karate classes, Painting sessions, Science fairs with custom fields.
-- **Media Uploads:** Event photos upload directly to GCS.
-- **Filterable Reports:** Exportable and filterable reports for attendance, volunteer activity, and event summaries.
+Dynamic Onboarding: Admins may pre-register staff and volunteers; users complete registration with details later.
 
-## 6. Automated Cron Jobs
-- **Absence Checking:** Automatically marks absent volunteers on missed sessions.
-- **Lateness Tracking:** Marks check-ins as `late` when they are beyond a configurable threshold (default 15 minutes).
-- **Season Switcher:** Applies seasonal start/end times to schedules.
+Account Lifecycle: Admins can activate/deactivate accounts. Deactivation removes or archives related data as configured.
 
----
+3. ✅ Multi-Factor Attendance Verification
+📍 Location-Based Check-in: Device GPS must be within a configurable radius (default 100 meters) of scheduled coordinates.
 
-# Architecture Overview
+😊 Face Verification: Python microservice using InsightFace (buffalo_l) generates and compares facial embeddings.
 
-The project uses a hybrid microservice-oriented architecture: a monolithic Node.js application for the main business logic and a Python AI microservice for computationally intensive face recognition tasks.
+👆 Fingerprint Verification: WebAuthn (passwordless) support for secure biometric check-ins.
+
+📂 Media Storage: Images and embeddings stored to Google Cloud Storage buckets.
+
+4. 🗓️ Comprehensive Schedule & Holiday Management
+Dynamic Scheduling: Create day/shift/subject-specific schedules with GPS coordinates.
+
+Seasonal Schedules: Cron jobs switch between summer/winter schedules automatically based on date.
+
+Holidays: Foundation-specific holiday rules respected by absence and attendance logic.
+
+5. 🎉 Event & Activity Reporting
+Dynamic Event Types: Track events like Karate classes, Painting sessions, Science fairs with custom fields.
+
+Media Uploads: Event photos upload directly to GCS.
+
+Filterable Reports: Exportable and filterable reports for attendance, volunteer activity, and event summaries.
+
+6. 🤖 Automated Cron Jobs
+Absence Checking: Automatically marks absent volunteers on missed sessions.
+
+Lateness Tracking: Marks check-ins as late when they are beyond a configurable threshold (default 15 minutes).
+
+Season Switcher: Applies seasonal start/end times to schedules.
+
+🏗️ Architecture Overview
+The project uses a hybrid architecture combining a monolithic Node.js application with a Python microservice for AI tasks.
+
+Code snippet
 
 graph TD
-    subgraph "User's Browser"
-        A[Frontend UI<br>HTML/CSS/JS/Nunjucks]
+    subgraph "💻 User's Browser"
+        A[Frontend UI <br> HTML/CSS/JS]
     end
 
-    subgraph "Cloud Infrastructure"
+    subgraph "☁️ Cloud Infrastructure"
         B(Nginx Reverse Proxy)
-        C{Node.js Backend<br>(Docker on Linode)}
-        D[Python AI Service<br>(InsightFace on Linode)]
-        E[MySQL Database<br>(Aiven)]
-        F[MongoDB Database<br>(MongoDB Atlas)]
-        G[Google Cloud Storage<br>(User Photos, Embeddings, Event Media)]
+        C{Node.js Backend <br> (Docker on Linode)}
+        D[Python AI Service <br> (InsightFace on Linode)]
+        E[MySQL Database <br> (Aiven)]
+        F[MongoDB Database <br> (MongoDB Atlas)]
+        G[Google Cloud Storage <br> (User Photos, Embeddings, Event Media)]
     end
 
     A -- HTTP/S Requests --> B
     B -- Proxies to --> C
-    C -- AI Tasks --> D
-    C -- Relational Data --> E
-    C -- Non-Relational Data --> F
-    C -- File Operations --> G
-    D -- File Operations --> G
+    C -- 🧠 AI Tasks --> D
+    C -- 🗃️ Relational Data --> E
+    C -- 📄 Non-Relational Data --> F
+    C -- 📂 File Operations --> G
+    D -- 📂 File Operations --> G
+🛠️ Tech Stack
+<p align="center">
+<img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
+<img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js">
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+<img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+<img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx">
+<img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Google Cloud">
+</p>
 
----
-
-# Tech Stack
-
-Category	Technology
-Backend	Node.js, Express.js
-AI / Machine Learning	Python, InsightFace (buffalo_l), ONNX Runtime, OpenCV
-Frontend	HTML, CSS, JavaScript, Nunjucks (templating)
-Databases	MySQL (Aiven), MongoDB (Atlas)
-Authentication	JSON Web Tokens (JWT), bcrypt, WebAuthn
-File Handling	Multer (Node.js)
-Scheduling	node-cron
-Containerization	Docker, Docker Compose
-Deployment & Hosting	Linode, Aiven, MongoDB Atlas, Google Cloud Storage, Nginx
-
----
-
-# Getting Started
-
+🚀 Getting Started
 Follow these steps to get a local copy up and running for development.
 
-## Prerequisites
-- Git
-- Node.js (v18 or higher recommended)
-- npm (comes with Node)
-- Python 3.10 or higher
-- pip
-- Docker & Docker Compose (for running the whole stack)
+Prerequisites
+Git
 
-## Installation & Setup
+Node.js (v18 or higher recommended)
 
+npm (comes with Node)
+
+Python 3.10 or higher
+
+pip
+
+Docker & Docker Compose
+
+Installation & Setup
 Clone the repository:
+
+Bash
 
 git clone https://github.com/Saikat-dot678/sohojia-foundation.git
 cd sohojia-foundation
+Create and configure your .env file:
+Create a file named .env in the project root. Copy the contents of the example below and fill in your credentials.
 
-### Create and configure your `.env` file
-Create a file named `.env` in the project root. Copy the contents of `.env.example` and fill in your credentials.
+⚠️ Important: Do not commit .env to version control. It is already in .gitignore.
 
-> ⚠️ **Do not** commit `.env` to version control. Add it to `.gitignore`.
-
-#### Example `.env.example`
+Code snippet
 
 # Server
 PORT=3000
@@ -176,44 +189,35 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/your/gcloud_service_account.json
 GCLOUD_PROJECT=your_gcloud_project_id
 BUCKET1=your-primary-image-bucket-name
 BUCKET2=your-embeddings-bucket-name
+Install dependencies:
 
-### Install dependencies
+Bash
 
 # For the Node.js backend
 npm install
 
-# For the Python service (from the python-service/ or scripts/ directory)
-cd python-service/  # or scripts/
-pip install -r requirements.txt
-cd ..
+# For the Python service
+pip install -r python-service/requirements.txt
+Run the application:
 
-## Run the application
+Option A (Recommended): Docker Compose
 
-**Option A — Docker Compose (recommended for local dev of the full stack):**
+Bash
 
 docker-compose up --build
+Option B: Manually
+Run each service in a separate terminal after starting your databases.
 
-**Option B — Run services manually (development):**
-1. Start MySQL and MongoDB (local or connected cloud instances)
-2. Start Node backend:
+☁️ Deployment & Nginx Configuration
+The production environment runs as a Docker container on a Linode server, proxied by Nginx.
 
-npm run dev
-# or
-node server.js
+Below is a sample Nginx configuration. Replace your_domain.com and adjust paths for your SSL certificates.
 
-3. Start Python AI service:
-
-cd python-service/
-python app.py
-
----
-
-# Deployment & Nginx Configuration
-
-Production uses Docker containers on a Linode instance with Nginx as a reverse proxy. Below is an example Nginx configuration. Replace `your_domain.com` appropriately and adjust paths for SSL certs.
+Nginx
 
 # /etc/nginx/sites-available/your_domain.com
 
+# HTTP Server Block - Redirects all traffic to HTTPS
 server {
     listen 80;
     server_name your_domain.com www.your_domain.com;
@@ -249,94 +253,104 @@ server {
     }
 }
 
-### Obtaining an SSL certificate (Let's Encrypt / Certbot)
+-----
+
+### 📜 Obtaining an SSL Certificate (Let's Encrypt / Certbot)
 
 On Ubuntu with snap:
 
+```sh
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
 sudo certbot --nginx
+```
 
 Test and reload nginx after certbot completes:
 
+```sh
 sudo nginx -t
 sudo systemctl reload nginx
+```
 
----
+-----
 
-# Security & Privacy
+## 🔒 Security & Privacy
 
-- **Authentication:** JWT tokens stored in secure, HttpOnly cookies.
-- **Password Storage:** Passwords hashed with `bcrypt`.
-- **Biometric Data:** Facial images and embeddings are treated as sensitive — keep storage buckets private, use proper IAM service accounts, and rotate service keys.
-- **Data Retention:** Configure retention and archival policies for media and logs according to Foundation policy and local regulations.
+  * **Authentication:** JWT tokens stored in secure, HttpOnly cookies.
+  * **Password Storage:** Passwords hashed with `bcrypt`.
+  * **Biometric Data:** Facial images and embeddings are treated as sensitive — keep storage buckets private, use proper IAM service accounts, and rotate service keys.
+  * **Data Retention:** Configure retention and archival policies for media and logs according to Foundation policy and local regulations.
 
----
+-----
 
-# Development Notes
+## 💻 Development Notes
 
-- **AI Service:** The Python service exposes endpoints like `/generate-embedding` and `/verify-face` and uses InsightFace with ONNX Runtime for performance.
-- **Database design:** MySQL stores relational entities (users, roles, schedules). MongoDB stores logs, embeddings metadata, and large non-relational objects.
-- **File uploads:** Multer middleware handles uploads and streams final files to Google Cloud Storage.
-- **Cron jobs:** `node-cron` tasks handle absence checking, lateness updates, and seasonal schedule switching.
+  * **AI Service:** The Python service exposes endpoints like `/generate-embedding` and `/verify-face` and uses InsightFace with ONNX Runtime for performance.
+  * **Database Design:** MySQL stores relational entities (users, roles, schedules). MongoDB stores logs, embeddings metadata, and large non-relational objects.
+  * **File Uploads:** Multer middleware handles uploads and streams final files to Google Cloud Storage.
+  * **Cron Jobs:** `node-cron` tasks handle absence checking, lateness updates, and seasonal schedule switching.
 
-## Recommended local workflow
-1. Start DB services (or use cloud dev instances).
-2. Start Node backend in `nodemon`/`npm run dev`.
-3. Start Python AI service in a separate terminal.
-4. Use browser to access the UI and create test users and schedules.
+### workflow
 
----
+1.  Start DB services (or use cloud dev instances).
+2.  Start Node backend with `nodemon` or `npm run dev`.
+3.  Start Python AI service in a separate terminal.
+4.  Use a browser to access the UI and create test users and schedules.
 
-# Troubleshooting & FAQs
+-----
 
-**Q: Face verification failing for many users?**
-- Ensure the Python service is running and can access the GCS bucket.
-- Confirm embeddings were created with enough images per user (10 recommended by the project) and that model files are present.
-- Check logs in the Python service for image-read or ONNX errors.
+## 🔧 Troubleshooting & FAQs
 
-**Q: Cron jobs not running?**
-- Confirm `node-cron` code is active and the process is running inside the container. In some production setups, ensure only one instance runs scheduled jobs.
+**❓ Q: Face verification failing for many users?**
 
-**Q: File upload size errors in production?**
-- Increase `client_max_body_size` in Nginx and adjust Multer limits if needed.
+  * Ensure the Python service is running and can access the GCS bucket.
+  * Confirm embeddings were created with enough images (10 recommended).
+  * Check Python service logs for image-read or ONNX errors.
 
----
+**❓ Q: Cron jobs not running?**
 
-# Contributing
+  * Confirm `node-cron` is active and the process is running. In production, ensure only one instance runs scheduled jobs.
 
-Contributions are welcome! If you'd like to contribute:
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feat/my-feature`
-3. Commit your changes: `git commit -m "feat: describe your change"`
-4. Push and open a Pull Request
+**❓ Q: File upload size errors in production?**
+
+  * Increase `client_max_body_size` in your Nginx configuration.
+
+-----
+
+## 🤝 Contributing
+
+Contributions are welcome\! If you'd like to contribute:
+
+1.  Fork the repo
+2.  Create a feature branch: `git checkout -b feat/my-feature`
+3.  Commit your changes: `git commit -m "feat: describe your change"`
+4.  Push and open a Pull Request
 
 Please follow the code style and add tests where applicable.
 
----
+-----
 
-# License
+## 📜 License
 
 This project is licensed under the **MIT License**. See the `LICENSE` file for details.
 
----
+-----
 
-# Acknowledgments & Contributors
+## 🙏 Acknowledgments & Contributors
 
 This project stands on the shoulders of great open-source projects and cloud platforms. Special thanks to:
 
-- Node.js, Express.js
-- Python, InsightFace, ONNX Runtime
-- Docker & Docker Compose
-- MySQL (Aiven), MongoDB Atlas
-- Google Cloud Storage
-- Linode
+  * Node.js, Express.js
+  * Python, InsightFace, ONNX Runtime
+  * Docker & Docker Compose
+  * MySQL (Aiven), MongoDB Atlas
+  * Google Cloud Storage
+  * Linode
 
 **Authors & Maintainers**
-- Saikat-dot678 — Project Lead & Developer
 
-If you'd like to join the project or help onboard the Foundation staff, please open an issue or contact the repo maintainers.
+  * **Saikat-dot678** — *Project Lead & Developer*
 
----
+-----
 
-*Thank you for supporting the Sohojia Foundation — together we can make quality education accessible to more children in rural communities.*
+*Thank you for supporting the Sohojia Foundation — together we can make quality education accessible to more children in rural communities. ❤️*
