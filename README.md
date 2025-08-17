@@ -83,17 +83,23 @@ The project uses a hybrid microservice-oriented architecture: a monolithic Node.
 
 ```mermaid
 graph TD
-  subgraph "User's Browser"
-    A[Frontend UI\nHTML/CSS/JS/Nunjucks]
+  subgraph UsersBrowser[User's Browser]
+    A[Frontend UI
+HTML/CSS/JS/Nunjucks]
   end
 
-  subgraph "Cloud Infrastructure"
+  subgraph CloudInfra[Cloud Infrastructure]
     B[Nginx Reverse Proxy]
-    C[Node.js Backend\n(Docker on Linode)]
-    D[Python AI Service\n(InsightFace on Linode)]
-    E[MySQL Database\n(Aiven)]
-    F[MongoDB Database\n(MongoDB Atlas)]
-    G[Google Cloud Storage\n(User Photos, Embeddings, Event Media)]
+    C[Node.js Backend
+(Docker on Linode)]
+    D[Python AI Service
+(InsightFace on Linode)]
+    E[MySQL Database
+(Aiven)]
+    F[MongoDB Database
+(MongoDB Atlas)]
+    G[Google Cloud Storage
+(User Photos, Embeddings, Event Media)]
   end
 
   A -->|HTTP/S Requests| B
