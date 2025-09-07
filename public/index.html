@@ -128,6 +128,20 @@
       background-color: rgb(243, 79, 76);
       color: #fff;
     }
+    
+    /* --- New Style for Forgot Password Link --- */
+    .forgot-password-link {
+        display: block;
+        text-align: right;
+        margin-top: -10px; /* Adjust spacing to be tight to the password box */
+        margin-bottom: 16px; /* Space before the login button */
+        font-size: 14px;
+        color: #0066cc;
+        text-decoration: none;
+    }
+    .forgot-password-link:hover {
+        text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -144,6 +158,8 @@
 
           <label for="password">Password</label>
           <input type="password" id="password" name="password" placeholder="Enter Password" required>
+
+          <a href="/forgot-password" class="forgot-password-link">Forgot Password?</a>
 
           <label for="role">Role</label>
           <select id="role" name="role">

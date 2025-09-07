@@ -59,6 +59,7 @@ const directorListRoutes = require('./routes/directors');
 const coordinatorListRoutes = require('./routes/coordinators');
 const studentAttendanceRoutes = require('./routes/studentAttendance');
 const holidayManagementRoutes = require('./routes/holidayManagement');
+const passwordResetRoutes = require('./routes/passwordReset');
 
 // Admin Schedule Management Router
 const adminScheduleManagementRouter = require('./routes/adminScheduleManagement'); 
@@ -234,7 +235,15 @@ async function start() {
 
   app.post('/some-route', (req, res) => { res.status(404).json({ message: 'Not found' }); });
   app.get('/ping', (req, res) => res.send('pong'));
+  app.use('/', passwordResetRoutes);
 
+  // Serve the static HTML files for reset password process
+  app.get('/forgot-password', (req, res) => {
+      res.render('forgot-password.html'); // Assuming Nunjucks renders it, or use res.sendFile for static HTML
+  });
+  app.get('/reset-password.html', (req, res) => {
+      res.render('reset-password.html'); // Assuming Nunjucks renders it, or use res.sendFile for static HTML
+  });
   // 8) 404 Not Found Handler (Catch-all for unmatched routes)
   app.use((req, res) => res.status(404).send('Not found'));
 
