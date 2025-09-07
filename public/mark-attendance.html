@@ -316,7 +316,7 @@ canvas {
                 distanceToVenue.textContent = dist.toFixed(2);
                 locationInfo.style.display = 'block';
 
-                if (dist > 100) {
+                if (dist > 200) {
                     venueStatus.textContent = "You are outside the allowed attendance zone.";
                     showStatusMessage("You are outside the allowed attendance zone.", 'error');
                 } else {
